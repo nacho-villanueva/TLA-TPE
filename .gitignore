@@ -52,3 +52,7 @@ Mkfile.old
 dkms.conf
 
 .vscode/
+
+y.tab.c
+
+y.tab.h
