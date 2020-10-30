@@ -15,6 +15,8 @@
     float decimal;
 }
 
+%token<string> START_PROGRAM
+%token<string> END_PROGRAM
 %token<character> ENDL
 %token<character> EQUAL COLON
 %token<character> PLUS MINUS TIMES DIVIDE
@@ -36,9 +38,15 @@
 
  %%
 
-start: line | start line;
+start: start_program;
 
-line: define_figure | sum ENDL;
+start_program: START_PROGRAM ENDL {printf("public class Main() {\n\tpublic static void main () {\n\t\t");} begin;
+
+begin: line | begin line;
+
+line: define_figure | sum ENDL | end_program;
+
+end_program: END_PROGRAM ENDL  {printf("\t}\n}");};
 
 define_figure: FIGURE_TYPE IDENTIFIER EQUAL BRACKET_OPEN figure_atributes BRACKET_CLOSE {printf("\t--Created figure: '%s'--\n", $2);};
 

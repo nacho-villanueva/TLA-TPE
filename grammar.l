@@ -21,6 +21,8 @@ alpha [a-zA-Z]
 "float"		     		return FLOAT_TYPE;
 "figure"		    	return FIGURE_TYPE;
 "function"		  	return FUNCTION_TYPE;
+"start"             return START_PROGRAM;
+"end"               return END_PROGRAM;
 {alpha}({alpha}|{digit})*   	{yylval.string = strdup(yytext); return IDENTIFIER;}
 {digit}+		    	{yylval.number = atoi(yytext); return INTEGER;}
 \"[^\"]*\"			{yylval.string = strdup(yytext); return STRING;}

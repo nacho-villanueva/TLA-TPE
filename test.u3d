@@ -1,3 +1,5 @@
+start;
+
 figure cube = {
     type: "cube";
     size: 5;
@@ -7,3 +9,5 @@ figure cube = {
 }
 
 1 + 2 + 3;
+
+end;
