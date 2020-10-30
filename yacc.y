@@ -1,18 +1,22 @@
  %{
     #include <stdio.h>
+    #include <stddef.h>
+    #include "nodes/node.h"
 
     void yyerror();
     int yylex();
     
     extern int yylineno;
-
  %}
+
+ %parse-param {struct Node * root }
 
 %union {
     int number;
     char * string;
     char character;
     float decimal;
+    struct Node * node;
 }
 
 %token<character> ENDL
@@ -25,7 +29,12 @@
 %token<string> STRING
 %token<character> BRACKET_OPEN BRACKET_CLOSE
 
-%type<number> sum
+%type<node> line
+%type<node> sum
+%type<node> define_figure
+%type<node> figure_atributes
+%type<node> figure_atribute
+%type<node> value
 
 %right EQUAL
 %left PLUS MINUS
@@ -36,23 +45,27 @@
 
  %%
 
-start: line | start line;
+start: line { addChildrenToNode(root, 1, $1); }
+    | start line { addChildrenToNode(root, 1, $2); };
 
-line: define_figure | sum ENDL;
+line: define_figure { $$ = newNode(VARIABLE_NODE, NULL, 1, $1); }
+    | sum ENDL { $$ = $1; };
 
-define_figure: FIGURE_TYPE IDENTIFIER EQUAL BRACKET_OPEN figure_atributes BRACKET_CLOSE {printf("\t--Created figure: '%s'--\n", $2);};
+define_figure: FIGURE_TYPE IDENTIFIER EQUAL BRACKET_OPEN figure_atributes BRACKET_CLOSE {$$ = newNode(FIGURE_NODE, NULL, 1, $5);};
 
-figure_atributes: figure_atributes figure_atribute
-                | figure_atribute;
+figure_atributes: figure_atributes figure_atribute { addChildrenToNode($1, 1, $2);} 
+                | figure_atribute {$$ = newNode(ATTRIBUTE_LIST_NODE, NULL, 1, $1);}
+                ;
 
-figure_atribute: IDENTIFIER COLON value ENDL {printf("\tAttr Name: %s\n", $1);};
+figure_atribute: IDENTIFIER COLON value ENDL { $$ = newNode(ATTRIBUTE_NODE, NULL, 0); };
 
-value: INTEGER {printf("Attr Value: (int)%d\t--", $1);}
-    | FLOAT {printf("Attr Value: (float)%f\t--", $1);}
-    | STRING {printf("Attr Value: (string)%s\t--", $1);};
+value: INTEGER {$$ = newNode(INTEGER_CONSTANT_NODE, NULL, 0); }
+    | FLOAT {$$ = newNode(FLOAT_CONSTANT_NODE, NULL, 0); }
+    | STRING {$$ = newNode(STRING_CONSTANT_NODE, NULL, 0); }
+    ;
 
-sum: sum PLUS sum {$$ = $1 + $3; printf("Result= %d\n",$$);}
-    | INTEGER {$$ = $1; printf("+ %d\n", $1); }
+sum: sum PLUS sum {$$ = newNode(PLUS_NODE, NULL, 2, $1, $3); }
+    | INTEGER { $$ = newNode(INTEGER_CONSTANT_NODE, NULL, 0); }
     ; 
 
  %%
@@ -63,5 +76,7 @@ int yywrap()
 } 
 
 int main() {
-    yyparse();
+    Node * root = newNode(ROOT_NODE, NULL, 0, NULL);
+    yyparse(root);
+    printTree(root);
 } 
