@@ -4,6 +4,8 @@
     #include "y.tab.h"
 %}
 
+%option nounput noinput
+
 digit [0-9]
 alpha [a-zA-Z]
 
