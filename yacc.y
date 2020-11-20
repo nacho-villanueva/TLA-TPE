@@ -1,13 +1,15 @@
 %{
     #include <stdio.h>
+    #include <stdlib.h>
     #include <stddef.h>
     #include <stdbool.h>
 
     #include "nodes/node.h"
     #include "utils/logger.h"
+    #include "u3d.h"
 
     bool hasError = false;
-    void yyerror();
+    void yyerror (struct Node * node, char const * msg);
     int yylex();
 
     extern FILE *yyin;
@@ -24,8 +26,7 @@
     struct Node * node;
 }
 
-%token<string> START_PROGRAM
-%token<string> END_PROGRAM
+%token SETTINGS_BLOCK DRAW_BLOCK END_BLOCK 
 %token<character> ENDL
 %token<character> EQUAL COLON
 %token<character> PLUS MINUS TIMES DIVIDE
@@ -36,7 +37,8 @@
 %token<string> STRING
 %token<character> BRACKET_OPEN BRACKET_CLOSE
 
-%type<node> line
+%type<node> definitions settings draw
+%type<node> definition_list definition
 %type<node> sum
 %type<node> define_figure
 %type<node> figure_atributes
@@ -52,19 +54,33 @@
 
 
 %%
+start: definitions settings draw { addChildrenToNode(root, 3, $1, $2, $3); }
+     | error definitions { yyerror(root, "Definitions must be declared on top."); }
+     ;
 
-start: line { addChildrenToNode(root, 1, $1); }
-    |  start line { addChildrenToNode(root, 1, $2); }
-    |  start error { logError("Something is wrong"); }
+definitions: /* empty */{ $$ = NULL; }
+           | definition_list {$$ = $1; };
+           ;
 
-line: define_figure { $$ = newNode(VARIABLE_NODE, NULL, 1, $1); }
-    | sum ENDL { $$ = $1; }
+settings: /* empty */ { $$ = NULL; }
+        | SETTINGS_BLOCK END_BLOCK { $$ = newNode(SETTINGS_NODE, NULL, 0); }
+        ;
+
+draw: /* empty */ { $$ = NULL; }
+    | DRAW_BLOCK END_BLOCK { $$ = newNode(DRAW_NODE, NULL, 0); }
     ;
+
+definition_list: definition_list definition { addChildrenToNode($1, 1, $2); }
+               | definition { $$ = newNode(DEFINITIONS_NODE, NULL, 1, $1); }
+               ;
+
+definition: define_figure { $$ = newNode(VARIABLE_NODE, NULL, 1, $1); }
+          | sum ENDL { $$ = $1; };
 
 define_figure: FIGURE_TYPE IDENTIFIER EQUAL BRACKET_OPEN figure_atributes BRACKET_CLOSE {$$ = newNode(FIGURE_NODE, NULL, 1, $5);};
 
-figure_atributes: figure_atributes figure_atribute { addChildrenToNode($1, 1, $2);}
-                | figure_atribute {$$ = newNode(ATTRIBUTE_LIST_NODE, NULL, 1, $1);}
+figure_atributes: figure_atributes figure_atribute { addChildrenToNode($1, 1, $2); }
+                | figure_atribute {$$ = newNode(ATTRIBUTE_LIST_NODE, NULL, 1, $1); }
                 ;
 
 figure_atribute: IDENTIFIER COLON value ENDL { $$ = newNode(ATTRIBUTE_NODE, NULL, 0); };
@@ -85,26 +101,29 @@ int yywrap()
         return 1;
 }
 
-void yyerror(){
-    logError("Syntax error (Line: %d)\n", yylineno);
+void yyerror (struct Node * node, char const * msg){
+    logError(SYNTAX_ERROR, "%s (Line: %d)\n", msg, yylineno);
     hasError = true;
 }
 
 int main(int argc, char * argv[]) {
+    initDebugLog();
 
     if(argc < 2) {
-        logError("\033[0mu3d: \033[1;31mfatal error:\033[0m no input files\n");
+        logError(FATAL_ERROR, "No input files\n");
         return -1;
     }
     FILE *file = fopen(argv[1], "r");
 	if (!file) {
-		logError("\033[0mu3d: \033[1;31merror:\033[0m No such file.\n");
+		logError(FATAL_ERROR, "No such input file.\n");
 		return -1;
 	}
 
+    U3D * u3d = initU3D();
+    if(u3d == NULL)
+        return -1; 
 	yyin = file;
-
-    initDebugLog();
+    
     Node * root = newNode(ROOT_NODE, NULL, 0, NULL);
     yyparse(root);
 

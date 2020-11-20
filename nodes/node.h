@@ -5,6 +5,9 @@
 
 static const char * NODE_NAMES[] = {
     "ROOT_NODE",
+    "DEFINITIONS_NODE",
+    "SETTINGS_NODE",
+    "DRAW_NODE",
     "PLUS_NODE",
     "MINUS_NODE",
     "TIMES_NODE",
@@ -20,6 +23,9 @@ static const char * NODE_NAMES[] = {
 
 typedef enum _nodeType{
     ROOT_NODE = 0,
+    DEFINITIONS_NODE,
+    SETTINGS_NODE,
+    DRAW_NODE,
     PLUS_NODE,
     MINUS_NODE,
     TIMES_NODE,

@@ -1,5 +1,5 @@
 YACC_IN = yacc.y
-YACC_FLAGS = -Wall -v
+YACC_FLAGS = -Wall -Werror -d -Wno-empty-rule
 
 LEX_IN = grammar.l
 LEX_FLAGS =
@@ -28,7 +28,7 @@ debug: all
 
 
 compile:
-	${CC} -o ${GCC_OUT} utils/* nodes/*.c lex.yy.c y.tab.c ${GCC_FLAGS};
+	${CC} -o ${GCC_OUT} utils/* nodes/*.c u3d.c lex.yy.c y.tab.c ${GCC_FLAGS};
 
 
 clean:

@@ -1,4 +1,4 @@
-start;
+// Hello!
 
 figure cube = {
     type: "cube";
@@ -8,6 +8,11 @@ figure cube = {
     z: 3;
 }
 
-1 + 2 + 3;
+SETTINGS
 
-end;
+END
+
+DRAW
+
+END
+

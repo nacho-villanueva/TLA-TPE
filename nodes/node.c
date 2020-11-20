@@ -43,7 +43,7 @@ int parseNode(Node* node){
         return parseRootNode(node);
         break;
     default:
-        logError("Node parser not assigned (Type: %s)\n", NODE_NAMES[node->type]);
+        logDebug("WARNING: Node parser not assigned (Type: %s)\n", NODE_NAMES[node->type]);
         return -1;
         break;
     }
