@@ -4,9 +4,9 @@
     #include <stddef.h>
     #include <stdbool.h>
 
-    #include "nodes/node.h"
-    #include "utils/logger.h"
-    #include "u3d.h"
+    #include "src/nodes/node.h"
+    #include "src/utils/logger.h"
+    #include "src/u3d.h"
 
     bool hasError = false;
     void yyerror (struct Node * node, char const * msg);
