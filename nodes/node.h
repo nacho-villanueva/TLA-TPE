@@ -19,7 +19,7 @@ static const char * NODE_NAMES[] = {
 };
 
 typedef enum _nodeType{
-    ROOT_NODE,
+    ROOT_NODE = 0,
     PLUS_NODE,
     MINUS_NODE,
     TIMES_NODE,
@@ -53,6 +53,11 @@ Append multiple children node to another node.
 */
 void addChildrenToNode(Node* node, int childrenCount, ...);
 
+/*
+Parse node.
+Returns -1 on error.
+*/
+int parseNode(Node* node);
 
 /*
 Print node tree to stdout.

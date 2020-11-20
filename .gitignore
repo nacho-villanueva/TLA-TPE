@@ -62,3 +62,7 @@ lex.yy.c
 .idea/
 
 u3dc
+
+u3dc.log
+
+y.output

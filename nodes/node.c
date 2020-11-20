@@ -4,9 +4,11 @@
 #include <stdlib.h>
 #include "logger.h"
 
+#include "nodeRoot.h"
+
 Node* newNode(NodeType type, NodeValue value, int childrenCount, ...) {
     Node* node = malloc(NODE_SIZE);
-    logDebug("Creating node %p (NodeType: %d)\n", node, type);
+    logDebug("Creating node %p (NodeType: %s)\n", node, NODE_NAMES[type]);
     node->type = type;
     node->value = value;
     node->childrenCount=childrenCount;
@@ -28,26 +30,35 @@ void addChildrenToNode(Node* node, int newChildrenCount, ...){
     va_start(valist, newChildrenCount);
     for (size_t i = 0; i < newChildrenCount; i++){
         node->children[node->childrenCount + i] = va_arg(valist, Node*);
-        logDebug("Adding child node %p (NodeType: %d) to node %p (NodeType: %d)\n",node->children[node->childrenCount + i], node->children[node->childrenCount + i] != NULL ? node->children[node->childrenCount + i]->type : -1, node, node->type);
+        logDebug("Adding child node %p (NodeType: %s) to node %p (NodeType: %s)\n", node->children[node->childrenCount + i], node->children[node->childrenCount + i] != NULL ? NODE_NAMES[node->children[node->childrenCount + i]->type] : "NULL", node, NODE_NAMES[node->type]);
     }
     va_end(valist);
     node->childrenCount += newChildrenCount;
 }
 
+int parseNode(Node* node){
+    switch (node->type)
+    {
+    case ROOT_NODE:
+        return parseRootNode(node);
+        break;
+    default:
+        logError("Node parser not assigned (Type: %s)\n", NODE_NAMES[node->type]);
+        return -1;
+        break;
+    }
+}
+
 void printTreeRec(Node * node, int step){
     for(int i = 0; i < step; i++){
-        putchar(' ');
-        putchar(' ');
-        putchar(' ');
+        logInfo("   ");
     }
-    printf("|%s\n", NODE_NAMES[node->type]);
+    logInfo("|%s\n", NODE_NAMES[node->type]);
     if(node->childrenCount > 0){
         for(int i = 0; i < step; i++){
-            putchar(' ');
-            putchar(' ');
-            putchar(' ');
+            logInfo("   ");
         }
-        printf("   \\________\n");
+        logInfo("   \\________\n");
         for(int i = 0; i < node->childrenCount; i++){
             printTreeRec(node->children[i], step+1); 
         }

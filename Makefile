@@ -1,15 +1,14 @@
 YACC_IN = yacc.y
-YACC_FLAGS = -d
+YACC_FLAGS = -Wall -v
 
 LEX_IN = grammar.l
-LEX_FLAGS = 
+LEX_FLAGS =
 
 CC = gcc
 GCC_OUT = u3dc
-GCC_FLAGS = -Iutils/ -ly -Wall
+GCC_FLAGS = -Iutils/ -ly -Wall -Wno-unused-variable
 
-
-all: build compile
+all: build compile 
 	
 	
 
@@ -17,12 +16,11 @@ build:
 	${YACC} ${YACC_FLAGS} ${YACC_IN};
 	${LEX} ${LEX_FLAGS} ${LEX_IN};
 
-
-lex_debug: LEX_FLAGS +=
+lex_debug: LEX_FLAGS += -d
 lex_debug: all
 
 u3d_debug: GCC_FLAGS += -DDEBUG
-u3d_debug: all
+u3d_debug: all 
 
 debug: LEX_FLAGS +=
 debug: GCC_FLAGS += -DDEBUG
