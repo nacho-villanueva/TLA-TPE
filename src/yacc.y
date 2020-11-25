@@ -55,10 +55,10 @@
 
 %%
 start: definitions settings draw { addChildrenToNode(root, 3, $1, $2, $3); }
-     | error definitions { yyerror(root, "Definitions must be declared on top."); }
+     | error definitions { yyerror(root, "Blocks must be declared in the following order. Definitions, Settings and Draw.\n"); }
      ;
 
-definitions: /* empty */{ $$ = NULL; }
+definitions: /* empty */ { $$ = NULL; }
            | definition_list {$$ = $1; };
            ;
 
