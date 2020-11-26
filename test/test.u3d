@@ -3,22 +3,7 @@
 figure cube = {
     type: "cube";
     size: 5;
-    x: 1;
-    y: 2;
-    z: 3;
 }
-
-figure sphere = {
-    type: sphere;
-    size: 10;
-}
-
-figure sphere_cube = {
-    type: combine;
-    figure: cube;
-    figure: sphere;
-}
-
 
 SETTINGS
 
@@ -27,7 +12,7 @@ END
 
 
 DRAW
-    sphere_cube();
+
 END
 
 

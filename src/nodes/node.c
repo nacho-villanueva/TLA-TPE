@@ -44,12 +44,16 @@ int parseNode(Node* node){
     {
     case ROOT_NODE:
         return parseRootNode(node);
+    case DEFINITIONS_NODE:
+        return parseDefinitionsNode(node);
+    case SETTINGS_NODE:
+        return parseSettingsNode(node);
     case DRAW_NODE:
         return parseDrawNode(node);
-    case WHILE_NODE:
-        return parseWhileNode(node);
+    /*case WHILE_NODE:
+        return parseWhileNode(node);*/
     default:
-        logDebug("WARNING: Node parser not assigned (Type: %s)\n", NODE_NAMES[node->type]);
+        logInfo("WARNING: Node parser not assigned (Type: %s)\n", NODE_NAMES[node->type]);
         return -1;
     }
 }
@@ -67,7 +71,7 @@ void printTreeRec(Node * node, int step){
         logInfo("   \\________\n");
         for(int i = 0; i < node->childrenCount; i++){
             if(node->children[i])
-                printTreeRec(node->children[i], step+1); 
+                printTreeRec(node->children[i], step+1);
         }
     }
 }

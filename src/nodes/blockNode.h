@@ -3,6 +3,10 @@
 
 #include "node.h"
 
+int parseDefinitionsNode(Node * node);
+
+int parseSettingsNode(Node * node);
+
 int parseDrawNode(Node * node);
 
 

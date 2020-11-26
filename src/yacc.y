@@ -37,16 +37,16 @@
 %token<string> STRING
 %token<character> BRACKET_OPEN BRACKET_CLOSE
 
-%type<node> definitions settings draw
-%type<node> definition_list definition
-%type<node> sum
+%type<node> declaration_list definition
 %type<node> define_figure
 %type<node> figure_atributes
 %type<node> figure_atribute
 %type<node> value
+%type<node> block_list
+%type<node> block
 
 //%right EQUAL
-%left PLUS// MINUS
+//%left PLUS// MINUS
 //%left TIMES DIVIDE
 
 
@@ -54,28 +54,25 @@
 
 
 %%
-start: definitions settings draw { addChildrenToNode(root, 3, $1, $2, $3); }
-     | error definitions { yyerror(root, "Blocks must be declared in the following order. Definitions, Settings and Draw.\n"); }
+start: /* empty */                       { /* Do Nothing */} 
+     |  declaration_list block_list      { addChildrenToNode(root, 1, $1); }
+     |  block_list
+     |  declaration_list                 { addChildrenToNode(root, 1, $1); }
      ;
 
-definitions: /* empty */ { $$ = NULL; }
-           | definition_list {$$ = $1; };
-           ;
+block_list: block_list block { addChildrenToNode(root, 1, $2); }
+      | block { addChildrenToNode(root, 1, $1); }
+      ;
 
-settings: /* empty */ { $$ = NULL; }
-        | SETTINGS_BLOCK END_BLOCK { $$ = newNode(SETTINGS_NODE, NULL, 0); }
-        ;
+block: SETTINGS_BLOCK END_BLOCK { $$ = newNode(SETTINGS_NODE, NULL, 0); }
+     | DRAW_BLOCK END_BLOCK { $$ = newNode(DRAW_NODE, NULL, 0); }
+     ;
 
-draw: /* empty */ { $$ = NULL; }
-    | DRAW_BLOCK END_BLOCK { $$ = newNode(DRAW_NODE, NULL, 0); }
-    ;
-
-definition_list: definition_list definition { addChildrenToNode($1, 1, $2); }
+declaration_list: declaration_list definition { addChildrenToNode($1, 1, $2); }
                | definition { $$ = newNode(DEFINITIONS_NODE, NULL, 1, $1); }
                ;
 
-definition: define_figure { $$ = newNode(VARIABLE_NODE, NULL, 1, $1); }
-          | sum ENDL { $$ = $1; };
+definition: define_figure { $$ = newNode(VARIABLE_NODE, NULL, 1, $1); };
 
 define_figure: FIGURE_TYPE IDENTIFIER EQUAL BRACKET_OPEN figure_atributes BRACKET_CLOSE {$$ = newNode(FIGURE_NODE, NULL, 1, $5);};
 
@@ -89,10 +86,6 @@ value: INTEGER {$$ = newNode(INTEGER_CONSTANT_NODE, NULL, 0); }
     | FLOAT {$$ = newNode(FLOAT_CONSTANT_NODE, NULL, 0); }
     | STRING {$$ = newNode(STRING_CONSTANT_NODE, NULL, 0); }
     ;
-
-sum: sum PLUS sum {$$ = newNode(PLUS_NODE, NULL, 2, $1, $3); }
-    | INTEGER { $$ = newNode(INTEGER_CONSTANT_NODE, NULL, 0); }
-    ; 
 
 %%
 
@@ -120,10 +113,10 @@ int main(int argc, char * argv[]) {
 
     if(!hasError){
         parseNode(root);
-        printTree(root);
+        compileU3D(u3d);
     }
 
-    compileU3D(u3d);
+    printTree(root);
 
     closeU3D(u3d);
 } 
