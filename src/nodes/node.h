@@ -19,6 +19,7 @@ static const char * NODE_NAMES[] = {
     "FIGURE_NODE",
     "ATTRIBUTE_LIST_NODE",
     "ATTRIBUTE_NODE",
+    "WHILE_NODE"
 };
 
 typedef enum _nodeType{
@@ -37,6 +38,7 @@ typedef enum _nodeType{
     FIGURE_NODE,
     ATTRIBUTE_LIST_NODE,
     ATTRIBUTE_NODE,
+    WHILE_NODE
 } NodeType;
 
 typedef void * NodeValue;

@@ -68,3 +68,7 @@ u3dc.log
 y.output
 
 output/
+
+build/
+
+U3Dout/

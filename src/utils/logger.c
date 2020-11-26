@@ -28,6 +28,7 @@ void logDebug(char * format, ...){
     FILE * file = fopen(LOG_LOCATION, "a+");
     va_list args;
     va_start(args, format);
+    fprintf(file, "DEBUG: "); 
     vfprintf(file, format, args);  
     fclose(file);
     #endif

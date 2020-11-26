@@ -4,7 +4,8 @@
 #include <stdlib.h>
 #include "../utils/logger.h"
 
-#include "nodeRoot.h"
+#include "rootNode.h"
+#include "blockNode.h"
 
 Node* newNode(NodeType type, NodeValue value, int childrenCount, ...) {
     Node* node = malloc(NODE_SIZE);
@@ -37,15 +38,23 @@ void addChildrenToNode(Node* node, int newChildrenCount, ...){
 }
 
 int parseNode(Node* node){
+    if(node == NULL)
+        return 0;
     switch (node->type)
     {
     case ROOT_NODE:
         return parseRootNode(node);
-        break;
+    case DEFINITIONS_NODE:
+        return parseDefinitionsNode(node);
+    case SETTINGS_NODE:
+        return parseSettingsNode(node);
+    case DRAW_NODE:
+        return parseDrawNode(node);
+    /*case WHILE_NODE:
+        return parseWhileNode(node);*/
     default:
-        logDebug("WARNING: Node parser not assigned (Type: %s)\n", NODE_NAMES[node->type]);
+        logInfo("WARNING: Node parser not assigned (Type: %s)\n", NODE_NAMES[node->type]);
         return -1;
-        break;
     }
 }
 
@@ -53,14 +62,16 @@ void printTreeRec(Node * node, int step){
     for(int i = 0; i < step; i++){
         logInfo("   ");
     }
-    logInfo("|%s\n", NODE_NAMES[node->type]);
+    if(node != NULL)
+        logInfo("|%s\n", NODE_NAMES[node->type]);
     if(node->childrenCount > 0){
         for(int i = 0; i < step; i++){
             logInfo("   ");
         }
         logInfo("   \\________\n");
         for(int i = 0; i < node->childrenCount; i++){
-            printTreeRec(node->children[i], step+1); 
+            if(node->children[i])
+                printTreeRec(node->children[i], step+1);
         }
     }
 }
