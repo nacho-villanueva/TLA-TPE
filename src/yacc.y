@@ -42,27 +42,17 @@
 %token IF
 %token AND OR GT LT GE LE EQ NEQ
 
-%type<node> /*definitions settings*/ draw
-//%type<node> definition_list definition
-//%type<node> sum
-//%type<node> define_figure
-//%type<node> figure_atributes
-//%type<node> figure_atribute
-//%type<node> value
-%type<node> numeric_value
-%type<node> string_value
-%type<node> boolean_value
-%type<node> if
-%type<node> code_block
-%type<node> conditional
-%type<node> numeric_expression
-%type<node> string_expression
-%type<node> boolean_expression
+%type<node> declaration_list definition
+%type<node> define_figure
+%type<node> figure_atributes
+%type<node> figure_atribute
+%type<node> value
+%type<node> block_list
+%type<node> block
 
 
 //%right EQUAL
-%left PLUS// MINUS
-//%left code_block
+//%left PLUS// MINUS
 //%left TIMES DIVIDE
 %left AND
 %left OR
@@ -72,18 +62,25 @@
 
 
 %%
-start: draw;
+start: /* empty */                       { /* Do Nothing */} 
+     |  declaration_list block_list      { addChildrenToNode(root, 1, $1); }
+     |  block_list
+     |  declaration_list                 { addChildrenToNode(root, 1, $1); }
+     ;
 
-draw: /* empty */ { $$ = NULL; }
-    | DRAW_BLOCK code_block END_BLOCK { $$ = newNode(DRAW_NODE, NULL, 0); }
-    ;
+block_list: block_list block { addChildrenToNode(root, 1, $2); }
+      | block { addChildrenToNode(root, 1, $1); }
+      ;
 
-/* definition_list: definition_list definition { addChildrenToNode($1, 1, $2); }
+block: SETTINGS_BLOCK END_BLOCK { $$ = newNode(SETTINGS_NODE, NULL, 0); }
+     | DRAW_BLOCK END_BLOCK { $$ = newNode(DRAW_NODE, NULL, 0); }
+     ;
+
+declaration_list: declaration_list definition { addChildrenToNode($1, 1, $2); }
                | definition { $$ = newNode(DEFINITIONS_NODE, NULL, 1, $1); }
                ;
 
-definition: define_figure { $$ = newNode(VARIABLE_NODE, NULL, 1, $1); }
-          | sum ENDL { $$ = $1; }; */
+definition: define_figure { $$ = newNode(VARIABLE_NODE, NULL, 1, $1); };
 
 /* define_figure: FIGURE_TYPE IDENTIFIER EQUAL BRACKET_OPEN figure_atributes BRACKET_CLOSE {$$ = newNode(FIGURE_NODE, NULL, 1, $5);};
 
@@ -97,62 +94,6 @@ figure_atribute: IDENTIFIER COLON value ENDL { $$ = newNode(ATTRIBUTE_NODE, NULL
      | string_value { $$ = $1; };
      | boolean_value { $$ = $1; };
      ; */
-
-numeric_value: INTEGER {$$ = newNode(INTEGER_CONSTANT_NODE, $1, 0); }
-             | FLOAT {$$ = newNode(FLOAT_CONSTANT_NODE, NULL, 0); }
-             ; 
-
-string_value: STRING {$$ = newNode(STRING_CONSTANT_NODE, NULL, 0); };
-
-boolean_value: BOOLEAN {$$ = newNode(BOOLEAN_CONSTANT_NODE, NULL, 0); };
-
-/* sum: sum PLUS sum {$$ = newNode(PLUS_NODE, NULL, 2, $1, $3); }
-   | INTEGER { $$ = newNode(INTEGER_CONSTANT_NODE, NULL, 0); }
-   ; */
-
-code_block: /* empty */ { $$ = NULL; }
-           //| code_block code_block
-           | if {$$ = $1; }
-           //| variable_definition
-           //| function_call
-           ;
-
-
-if: IF '(' conditional ')' '{' code_block '}'  {$$ = newNode(IF_NODE, NULL, 2, $3, $6)};
-
-conditional: conditional AND conditional {$$ = newNode(AND_NODE, NULL, 2, $1, $3); }
-            | conditional OR conditional {$$ = newNode(OR_NODE, NULL, 2, $1, $3); }
-            | numeric_expression LT numeric_expression {$$ = newNode(LT_NUMERIC_NODE, NULL, 2, $1, $3); }
-            | numeric_expression GT numeric_expression {$$ = newNode(GT_NUMERIC_NODE, NULL, 2, $1, $3); }
-            | numeric_expression LE numeric_expression {$$ = newNode(LE_NUMERIC_NODE, NULL, 2, $1, $3); }
-            | numeric_expression GE numeric_expression {$$ = newNode(GE_NUMERIC_NODE, NULL, 2, $1, $3); }
-            | numeric_expression EQ numeric_expression {$$ = newNode(EQ_NUMERIC_NODE, NULL, 2, $1, $3); }
-            | numeric_expression NEQ numeric_expression {$$ = newNode(NEQ_NUMERIC_NODE, NULL, 2, $1, $3); }
-            | string_expression EQ string_expression {$$ = newNode(EQ_STRING_NODE, NULL, 2, $1, $3); }
-            | string_expression NEQ string_expression {$$ = newNode(NEQ_STRING_NODE, NULL, 2, $1, $3); }
-            | boolean_expression EQ boolean_expression {$$ = newNode(EQ_BOOLEAN_NODE, NULL, 2, $1, $3); }
-            | boolean_expression NEQ boolean_expression {$$ = newNode(NEQ_BOOLEAN_NODE, NULL, 2, $1, $3); }
-            | boolean_expression  { $$ = $1; }
-            ;
-            
-//No soportamos que dentro del if o while haya un numero o un string como condicional, 
-//asique si queres hacer un ciclo infinito pones while(true)
-
-numeric_expression: numeric_expression PLUS numeric_expression {$$ = newNode(PLUS_NODE, NULL, 2, $1, $3); }
-                    | numeric_expression MINUS numeric_expression {$$ = newNode(MINUS_NODE, NULL, 2, $1, $3); }
-                    | numeric_expression TIMES numeric_expression {$$ = newNode(TIMES_NODE, NULL, 2, $1, $3); }
-                    | numeric_expression DIVIDE numeric_expression {$$ = newNode(DIVIDE_NODE, NULL, 2, $1, $3); }
-                    | numeric_expression MODULE numeric_expression {$$ = newNode(MODULE_NODE, NULL, 2, $1, $3); }
-                    | numeric_value { $$ = $1; }
-                    ;
-
-boolean_expression: boolean_value { $$ = $1; }
-                    ;
-
-string_expression: string_value { $$ = $1; }
-                    ;
-
-//while: WHILE '(' conditional ')' '{' code_block '}' {$$ = newNode(WHILE_NODE, NULL, 2, $3, $6)}; 
 
 %%
 
@@ -180,10 +121,10 @@ int main(int argc, char * argv[]) {
 
     if(!hasError){
         parseNode(root);
-        printTree(root);
+        compileU3D(u3d);
     }
 
-    compileU3D(u3d);
+    printTree(root);
 
     closeU3D(u3d);
 } 

@@ -3,21 +3,30 @@
 #include "../utils/parser.h"
 
 int parseDefinitionsNode(Node * node){
-    
+    return 0;
 }
 
 int parseSettingsNode(Node * node){
-}
-
-int parseDrawNode(Node * node){
-    parse("void draw() { ");
+    parse("\nvoid setup() { \n");
 
     int ret = 0;
     for(int i = 0; i < node->childrenCount; i++){
         ret += parseNode(node->children[i]);
     }
 
-    parse("}");
+    parse("\n}\n");
+    return 0;
+}
+
+int parseDrawNode(Node * node){
+    parse("\nvoid draw() { \n");
+
+    int ret = 0;
+    for(int i = 0; i < node->childrenCount; i++){
+        ret += parseNode(node->children[i]);
+    }
+
+    parse("\n}\n");
     return 0;
 }
 

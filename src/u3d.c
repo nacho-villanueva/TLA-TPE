@@ -79,9 +79,15 @@ U3D * initU3D(int argc, char * argv[]){
         strcpy(settings -> outputDir, DEFAULT_OUTPUT_DIR);
     }
 
+    int dirret = 0; 
     struct stat st = {0};
+    logDebug("Creating output folder: %s\n", settings -> outputDir);
     if (stat(settings -> outputDir, &st) == -1) {
-        mkdir(settings -> outputDir, 0700);
+        if(mkdir(settings -> outputDir, 0700) < 0){
+            logError(ERROR, "Could not create output directory: %s\n", settings -> outputDir);
+            closeU3D(settings);
+            return NULL;
+        }
     }
 
     /* ----- OPEN OUTPUT FILE ----- */
