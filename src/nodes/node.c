@@ -49,6 +49,8 @@ int parseNode(Node* node){
         return parseDrawNode(node);
     case WHILE_NODE:
         return parseWhileNode(node);
+    case IF_NODE:
+        return parseIfNode(node);
     default:
         logDebug("WARNING: Node parser not assigned (Type: %s)\n", NODE_NAMES[node->type]);
         return -1;

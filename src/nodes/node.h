@@ -1,6 +1,8 @@
 #ifndef _NODE_H_
 #define _NODE_H_
 
+#include <stdbool.h>
+
 #define NODE_SIZE sizeof(struct Node)
 
 static const char * NODE_NAMES[] = {
@@ -12,14 +14,35 @@ static const char * NODE_NAMES[] = {
     "MINUS_NODE",
     "TIMES_NODE",
     "DIVIDE_NODE",
+    "MODULE_NODE",
     "VARIABLE_NODE",
     "INTEGER_CONSTANT_NODE",
     "STRING_CONSTANT_NODE",
     "FLOAT_CONSTANT_NODE",
+    "BOOLEAN_CONSTANT_NODE",
     "FIGURE_NODE",
     "ATTRIBUTE_LIST_NODE",
     "ATTRIBUTE_NODE",
-    "WHILE_NODE"
+    /* conditional names */
+    "CONDITIONAL_NODE",
+    "AND_NODE",
+    "OR_NODE",
+    /* numeric expression names */
+    "LT_NUMERIC_NODE",
+    "GT_NUMERIC_NODE",
+    "LE_NUMERIC_NODE",
+    "GE_NUMERIC_NODE",
+    "EQ_NUMERIC_NODE",
+    "NEQ_NUMERIC_NODE",
+    /* string expression names */
+    "EQ_STRING_NODE",
+    "NEQ_STRING_NODE",
+     /* boolean expression names */
+    "EQ_BOOLEAN_NODE",
+    "NEQ_BOOLEAN_NODE",
+    "WHILE_NODE",
+    "IF_NODE",
+    "CODE_BLOCK_NODE",
 };
 
 typedef enum _nodeType{
@@ -31,17 +54,43 @@ typedef enum _nodeType{
     MINUS_NODE,
     TIMES_NODE,
     DIVIDE_NODE,
+    MODULE_NODE,
     VARIABLE_NODE,
     INTEGER_CONSTANT_NODE,
     STRING_CONSTANT_NODE,
     FLOAT_CONSTANT_NODE,
+    BOOLEAN_CONSTANT_NODE,
     FIGURE_NODE,
     ATTRIBUTE_LIST_NODE,
     ATTRIBUTE_NODE,
-    WHILE_NODE
+    /* conditional names */
+    CONDITIONAL_NODE,
+    AND_NODE,
+    OR_NODE,
+    /* numeric expression names */
+    LT_NUMERIC_NODE,
+    GT_NUMERIC_NODE,
+    LE_NUMERIC_NODE,
+    GE_NUMERIC_NODE,
+    EQ_NUMERIC_NODE,
+    NEQ_NUMERIC_NODE,
+    /* string expression names */
+    EQ_STRING_NODE,
+    NEQ_STRING_NODE,
+    /* boolean expression names */
+    EQ_BOOLEAN_NODE,
+    NEQ_BOOLEAN_NODE,
+    WHILE_NODE,
+    IF_NODE,
+    CODE_BLOCK_NODE,
 } NodeType;
 
-typedef void * NodeValue;
+typedef union {
+    int integer;
+    float floating;
+    char * string;
+    bool boolean;
+}NodeValue;
 
 typedef struct Node
 {
