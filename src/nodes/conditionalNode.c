@@ -15,10 +15,10 @@ int parseOrAndConditionalNode(Node * node) {
     }
     ret += parseNode(node -> children[0]);
 
-    if(node->type == 'AND_NODE') {
+    if(node->type == "AND_NODE") {
         parse(" && ");
         //TODO: chequear valor de retorno de la 1era parte. SI es false, no analizamos el 2do nodo
-    } else if(node->type == 'OR_TYPE') {
+    } else if(node->type == "OR_TYPE") {
         parse(" || ");
         //TODO: chequear valor de retorno de la 1era parte. SI es true, no analizamos el 2do nodo
     }
@@ -80,9 +80,9 @@ int parseStringConditionalNode(Node * node) {
     }
     ret += parseNode(node -> children[0]);
 
-    if(node->type == 'EQ_STRING_NODE') {
+    if(node->type == "EQ_STRING_NODE") {
         parse(" == ");
-    } else if(node->type == 'NEQ_STRING_NODE') {
+    } else if(node->type == "NEQ_STRING_NODE") {
         parse(" != ");
     }
     
@@ -110,9 +110,9 @@ int parseBooleanConditionalNode(Node * node) {
     }
     ret += parseNode(node -> children[0]);
 
-    if(node->type == 'EQ_BOOLEAN_NODE') {
+    if(node->type == "EQ_BOOLEAN_NODE") {
         parse(" == ");
-    } else if(node->type == 'NEQ_BOOLEAN_NODE') {
+    } else if(node->type == "NEQ_BOOLEAN_NODE") {
         parse(" != ");
     }
     
