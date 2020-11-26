@@ -111,7 +111,11 @@ U3D * initU3D(int argc, char * argv[]){
     return settings;
 }
 
-int compileU3D(U3D * settings){
+int compileU3D(U3D * settings, Node * root){
+
+    U3D_Context context = {0};
+    parseNode(root, &context);
+
     char cmd[2048];
     char cwd[256];
     getcwd(cwd, 256);

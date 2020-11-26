@@ -3,11 +3,11 @@
 
 #include "node.h"
 
-int parseDefinitionsNode(Node * node);
+int parseDefinitionsNode(Node * node, U3D_Context * context);
 
-int parseSettingsNode(Node * node);
+int parseSettingsNode(Node * node, U3D_Context * context);
 
-int parseDrawNode(Node * node);
+int parseDrawNode(Node * node, U3D_Context * context);
 
 
 #endif /* _BLOCKNODE_H_ */

@@ -112,8 +112,7 @@ int main(int argc, char * argv[]) {
     yyparse(root);
 
     if(!hasError){
-        parseNode(root);
-        compileU3D(u3d);
+        compileU3D(u3d, root);
     }
 
     printTree(root);
