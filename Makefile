@@ -6,7 +6,7 @@ LEX_FLAGS =
 
 CC = gcc
 GCC_OUT = u3dc
-GCC_FLAGS = -Iutils/ -ly -Wall -Wno-unused-variable
+GCC_FLAGS = -Iutils/ -Wall -Wno-unused-variable -g
 
 all: build compile 
 	
@@ -28,7 +28,7 @@ debug: all
 
 
 compile:
-	${CC} -o ${GCC_OUT} src/utils/* src/nodes/*.c src/u3d.c lex.yy.c y.tab.c ${GCC_FLAGS};
+	${CC} ${GCC_FLAGS} -o ${GCC_OUT} src/utils/* src/nodes/*.c src/u3d.c lex.yy.c y.tab.c ;
 
 
 clean:

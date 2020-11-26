@@ -109,20 +109,11 @@ void yyerror (struct Node * node, char const * msg){
 int main(int argc, char * argv[]) {
     initDebugLog();
 
-    if(argc < 2) {
-        logError(FATAL_ERROR, "No input files\n");
-        return -1;
-    }
-    FILE *file = fopen(argv[1], "r");
-	if (!file) {
-		logError(FATAL_ERROR, "No such input file.\n");
-		return -1;
-	}
-
-    U3D * u3d = initU3D();
+    U3D * u3d = initU3D(argc, argv);
     if(u3d == NULL)
-        return -1; 
-	yyin = file;
+        return -1;
+
+	yyin = getU3DInputFile(u3d);
     
     Node * root = newNode(ROOT_NODE, NULL, 0, NULL);
     yyparse(root);
@@ -132,5 +123,7 @@ int main(int argc, char * argv[]) {
         printTree(root);
     }
 
-    fclose(file);
+    compileU3D(u3d);
+
+    closeU3D(u3d);
 } 
