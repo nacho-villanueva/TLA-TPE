@@ -4,8 +4,7 @@
 #include <stdlib.h>
 #include "../utils/logger.h"
 
-#include "rootNode.h"
-#include "blockNode.h"
+#include "rootNodes.h"
 
 Node* newNode(NodeType type, NodeValue value, int childrenCount, ...) {
     Node* node = malloc(NODE_SIZE);

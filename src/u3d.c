@@ -113,8 +113,12 @@ U3D * initU3D(int argc, char * argv[]){
 
 int compileU3D(U3D * settings, Node * root){
 
-    U3D_Context context = {0};
-    parseNode(root, &context);
+    U3D_Context context;
+    memset(&context, 0, sizeof(U3D_Context));
+    
+    if(parseNode(root, &context) < 0){
+        return -1;
+    }
 
     char cmd[2048];
     char cwd[256];
