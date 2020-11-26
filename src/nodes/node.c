@@ -38,19 +38,21 @@ void addChildrenToNode(Node* node, int newChildrenCount, ...){
     node->childrenCount += newChildrenCount;
 }
 
-int parseNode(Node* node){
-    if(node == NULL)
+int parseNode(Node* node, U3D_Context *  context){
+    if(node == NULL){
+        logInfo("WARNING: parseNode called with NULL node.\n");
         return 0;
+    }
     switch (node->type)
     {
     case ROOT_NODE:
-        return parseRootNode(node);
+        return parseRootNode(node, context);
     case DEFINITIONS_NODE:
-        return parseDefinitionsNode(node);
+        return parseDefinitionsNode(node, context);
     case SETTINGS_NODE:
-        return parseSettingsNode(node);
+        return parseSettingsNode(node, context);
     case DRAW_NODE:
-        return parseDrawNode(node);
+        return parseDrawNode(node, context);
     /*case WHILE_NODE:
         return parseWhileNode(node);*/
     case WHILE_NODE:

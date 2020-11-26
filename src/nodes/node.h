@@ -1,8 +1,8 @@
 #ifndef _NODE_H_
 #define _NODE_H_
 
+#include "../u3ddef.h"
 #include <stdbool.h>
-
 #define NODE_SIZE sizeof(struct Node)
 
 static const char * NODE_NAMES[] = {
@@ -114,7 +114,7 @@ void addChildrenToNode(Node* node, int childrenCount, ...);
 Parse node.
 Returns -1 on error.
 */
-int parseNode(Node* node);
+int parseNode(Node* node, U3D_Context *  context);
 
 /*
 Print node tree to stdout.

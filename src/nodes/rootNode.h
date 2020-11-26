@@ -3,7 +3,7 @@
 
 #include "node.h"
 
-int parseRootNode(Node * node);
+int parseRootNode(Node * node, U3D_Context *  context);
 
 
 #endif /* _ROOTNODE_H_ */
