@@ -26,6 +26,7 @@ alpha [a-zA-Z]
 "float"							return FLOAT_TYPE;
 "figure"						return FIGURE_TYPE;
 "function"						return FUNCTION_TYPE;
+"while"                         return WHILE;
 (S|s)(E|e)(T|t)(T|t)(I|i)(N|n)(G|g)(S|s) return SETTINGS_BLOCK;
 (D|d)(R|r)(A|a)(W|w)           	return DRAW_BLOCK;
 (E|e)(N|n)(D|d)       			return END_BLOCK; 

@@ -36,6 +36,8 @@
 %token<decimal> FLOAT
 %token<string> STRING
 %token<character> BRACKET_OPEN BRACKET_CLOSE
+%token WHILE
+%toke AND OR GT LT GE LE EQ NEQ
 
 %type<node> definitions settings draw
 %type<node> definition_list definition
@@ -44,9 +46,13 @@
 %type<node> figure_atributes
 %type<node> figure_atribute
 %type<node> value
+%type<node> code_block
+%type<node> while
+%type<node> conditional
 
 //%right EQUAL
 %left PLUS// MINUS
+%left code_block
 //%left TIMES DIVIDE
 
 
@@ -59,7 +65,7 @@ start: definitions settings draw { addChildrenToNode(root, 3, $1, $2, $3); }
      ;
 
 definitions: /* empty */ { $$ = NULL; }
-           | definition_list {$$ = $1; };
+           | definition_list { $$ = $1; };
            ;
 
 settings: /* empty */ { $$ = NULL; }
@@ -67,7 +73,7 @@ settings: /* empty */ { $$ = NULL; }
         ;
 
 draw: /* empty */ { $$ = NULL; }
-    | DRAW_BLOCK END_BLOCK { $$ = newNode(DRAW_NODE, NULL, 0); }
+    | DRAW_BLOCK code_block END_BLOCK { $$ = newNode(DRAW_NODE, NULL, 0); }
     ;
 
 definition_list: definition_list definition { addChildrenToNode($1, 1, $2); }
@@ -93,6 +99,24 @@ value: INTEGER {$$ = newNode(INTEGER_CONSTANT_NODE, NULL, 0); }
 sum: sum PLUS sum {$$ = newNode(PLUS_NODE, NULL, 2, $1, $3); }
     | INTEGER { $$ = newNode(INTEGER_CONSTANT_NODE, NULL, 0); }
     ; 
+
+code_block: /* empty */
+          | code_block code_block
+          | while
+          | if
+          | variable_definition
+          | function_call
+          ;
+
+
+conditional: conditional AND conditional
+            | conditional OR conditional
+            | expression LT expression
+            | expression GT expression
+            ;
+
+while: WHILE '(' conditional ')' '{' code_block '}' {$$ = newNode(WHILE_NODE, NULL, 2, $3, $6)}; 
+
 
 %%
 
