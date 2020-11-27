@@ -10,7 +10,8 @@ typedef enum {
     FIGURE_SPHERE,
     FIGURE_PYRAMID,
     FIGURE_COMPOSITE,
-    FIGURE_CUSTOM
+    FIGURE_CUSTOM,
+    FIGURE_INVALID
 } FigureType;
 
 typedef enum {
@@ -19,16 +20,15 @@ typedef enum {
     ATTR_ROTATION,
     ATTR_COLOR,
     ATTR_CHILD,
-    ATTR_PATH
+    ATTR_PATH,
+    ATTR_INVALID
 } FigureAttributeType;
 
 typedef union 
 {
-    Vector3 scale;
-    Vector3 position;
-    Vector3 rotation;
-    Vector3 color;
-    Figure child;
+    Vector3 vector;
+    Vector3Int vectorInt;
+    Figure figure;
     char * path;
 } FigureAttributeValue;
 
@@ -37,7 +37,11 @@ Figure newFigure(char * name, FigureType type);
 
 void setFigureAttribute(Figure figure, FigureAttributeType attr, FigureAttributeValue val);
 
+char * getFigureName(Figure figure);
+
 void parseFigure(Figure figure);
+
+void printFigure(Figure figure);
 
 void freeFigure(Figure figure);
 

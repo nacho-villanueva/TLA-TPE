@@ -35,14 +35,15 @@ Figure newFigure(char * name, FigureType type){
     figure -> type = type;
     figure -> attributes_count = 0;
     figure -> attributes = NULL;
+
     return figure;
 }
 
 void setFigureAttribute(Figure figure, FigureAttributeType attr, FigureAttributeValue val){
     figure -> attributes_count++;
     figure -> attributes = realloc(figure -> attributes, figure -> attributes_count * sizeof(FigureAttribute));
-    figure -> attributes[figure -> attributes_count].type = attr;  
-    figure -> attributes[figure -> attributes_count].value = val;  
+    figure -> attributes[figure -> attributes_count-1].type = attr;  
+    figure -> attributes[figure -> attributes_count-1].value = val;  
 }
 
 void parseFigure(Figure figure){
@@ -71,7 +72,7 @@ void parseFigure(Figure figure){
 Vector3 getFigurePosition(Figure figure){
     for(size_t i = 0; i < figure->attributes_count; i++){
         if(figure -> attributes[i].type == ATTR_POSITION){
-            return figure -> attributes[i].value.position;
+            return figure -> attributes[i].value.vector;
         }
     }
     return NULL;
@@ -80,7 +81,7 @@ Vector3 getFigurePosition(Figure figure){
 Vector3 getFigureScale(Figure figure){
     for(size_t i = 0; i < figure->attributes_count; i++){
         if(figure -> attributes[i].type == ATTR_SCALE){
-            return figure -> attributes[i].value.scale;
+            return figure -> attributes[i].value.vector;
         }
     }
     return NULL;
@@ -89,7 +90,7 @@ Vector3 getFigureScale(Figure figure){
 Vector3 getFigureRotation(Figure figure){
     for(size_t i = 0; i < figure->attributes_count; i++){
         if(figure -> attributes[i].type == ATTR_ROTATION){
-            return figure -> attributes[i].value.rotation;
+            return figure -> attributes[i].value.vector;
         }
     }
     return NULL;
@@ -98,7 +99,7 @@ Vector3 getFigureRotation(Figure figure){
 Vector3 getFigureColor(Figure figure){
     for(size_t i = 0; i < figure->attributes_count; i++){
         if(figure -> attributes[i].type == ATTR_COLOR){
-            return figure -> attributes[i].value.color;
+            return figure -> attributes[i].value.vector;
         }
     }
     return NULL;
@@ -106,6 +107,10 @@ Vector3 getFigureColor(Figure figure){
 
 void freeFigure(Figure figure){
     logInfo("WARNING: freeFigure() not implemented.\n");
+}
+
+char *getFigureName(Figure figure) {
+    return figure->name;
 }
 
 void drawBox(Figure figure){
@@ -136,4 +141,66 @@ void drawComposite(Figure figure){
 
 void drawCustom(Figure figure){
 
+}
+
+const char* figureTypeToString(FigureType type){
+    switch (type) {
+        case FIGURE_BOX:
+            return "box";
+        case FIGURE_SPHERE:
+            return "sphere";
+        case FIGURE_PYRAMID:
+            return "pyramid";
+        case FIGURE_COMPOSITE:
+            return "composite";
+        case FIGURE_CUSTOM:
+            return "custom";
+        case FIGURE_INVALID:
+            return "invalid";
+        default:
+            return "null";
+    }
+}
+
+void printAttribute(FigureAttribute attribute){
+    switch (attribute.type) {
+        case ATTR_SCALE:
+            logInfo("Scale: ");
+            printVector3(attribute.value.vector);
+            logInfo("\n");
+            break;
+        case ATTR_POSITION:
+            logInfo("Position: ");
+            printVector3(attribute.value.vector);
+            logInfo("\n");
+            break;
+        case ATTR_ROTATION:
+            logInfo("Rotation: ");
+            printVector3(attribute.value.vector);
+            logInfo("\n");
+            break;
+        case ATTR_COLOR:
+            logInfo("Color: ");
+            printVector3Int(attribute.value.vectorInt);
+            logInfo("\n");
+            break;
+        case ATTR_CHILD:
+            logInfo("Child Figure: %s\n", attribute.value.figure->name);
+            break;
+        case ATTR_PATH:
+            logInfo("Path: %s\n", attribute.value.path);
+            break;
+        default:
+        case ATTR_INVALID:
+            logInfo("Attr: Invalid Attr\n");
+            return;
+    }
+}
+
+void printFigure(Figure figure){
+    logInfo("--| Figure: %s (Type: %s) |--\n", figure->name, figureTypeToString(figure->type));
+    for (size_t i = 0; i < figure->attributes_count; ++i) {
+        printAttribute(figure->attributes[i]);
+    }
+    logInfo("|-- Figure: %s (Type: %s) --|\n", figure->name, figureTypeToString(figure->type));
 }

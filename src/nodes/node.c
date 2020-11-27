@@ -109,12 +109,41 @@ int parseNode(Node* node, U3D_Context * context){
     }
 }
 
+void printNodeValue(Node * node){
+    switch (node->type) {
+        case STRING_CONSTANT_NODE:
+        case IDENTIFIER_NODE:
+            logInfo("(%s)", node->value.string);
+            break;
+        case INTEGER_CONSTANT_NODE:
+            logInfo("(%d)", node->value.integer);
+            break;
+        case FLOAT_CONSTANT_NODE:
+            logInfo("(%f)", node->value.decimal);
+            break;
+        case BOOLEAN_CONSTANT_NODE:
+            logInfo("(%d)", node->value.boolean);
+            break;
+        case VECTOR3_NODE:
+            printVector3(node->value.vector);
+            break;
+        case VECTOR3INT_NODE:
+            printVector3Int(node->value.vectorInt);
+            break;
+        default:
+            break;
+    }
+}
+
 void printTreeRec(Node * node, int step){
     for(int i = 0; i < step; i++){
         logInfo("   ");
     }
-    if(node != NULL)
-        logInfo("|%s\n", NODE_NAMES[node->type]);
+    if(node != NULL) {
+        logInfo("|%s ", NODE_NAMES[node->type]);
+        printNodeValue(node);
+        logInfo("\n");
+    }
     if(node->childrenCount > 0){
         for(int i = 0; i < step; i++){
             logInfo("   ");
