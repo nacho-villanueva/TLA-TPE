@@ -72,3 +72,5 @@ output/
 build/
 
 U3Dout/
+
+cmake-build-debug/

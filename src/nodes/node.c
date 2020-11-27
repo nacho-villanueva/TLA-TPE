@@ -21,7 +21,7 @@ Node* newNode(NodeType type, NodeValue value, int childrenCount, ...) {
 
     va_list valist;
     va_start(valist, childrenCount);
-    for (size_t i = 0; i < childrenCount; i++)
+    for (int i = 0; i < childrenCount; i++)
         node->children[i] = va_arg(valist, Node*);
     va_end(valist);
 
@@ -33,7 +33,7 @@ void addChildrenToNode(Node* node, int newChildrenCount, ...){
     
     va_list valist;
     va_start(valist, newChildrenCount);
-    for (size_t i = 0; i < newChildrenCount; i++){
+    for (int i = 0; i < newChildrenCount; i++){
         node->children[node->childrenCount + i] = va_arg(valist, Node*);
         logDebug("Adding child node %p (NodeType: %s) to node %p (NodeType: %s)\n", node->children[node->childrenCount + i], node->children[node->childrenCount + i] != NULL ? NODE_NAMES[node->children[node->childrenCount + i]->type] : "NULL", node, NODE_NAMES[node->type]);
     }

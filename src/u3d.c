@@ -7,14 +7,12 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <unistd.h>
-#include <strings.h>
 #include <string.h>
-#include <sys/types.h>
 #include <sys/stat.h>
 
 #define PROCESSING_JAVA "processing-java"
 
-struct _u3d_settings {
+struct u3d_settings {
     const char* u3dre_path;
     FILE * inputFile;
     char outputFile[MAX_PATH_SIZE];
@@ -22,10 +20,11 @@ struct _u3d_settings {
 };
 
 U3D * initU3D(int argc, char * argv[]){
-    U3D * settings = calloc(1, sizeof(struct _u3d_settings));
+    U3D * settings = calloc(1, sizeof(struct u3d_settings));
 
     if(argc < 2) {
         logError(ERROR, "Invalid arguments amount.\n");
+        closeU3D(settings);
         return NULL;
     }
 
@@ -79,7 +78,6 @@ U3D * initU3D(int argc, char * argv[]){
         strcpy(settings -> outputDir, DEFAULT_OUTPUT_DIR);
     }
 
-    int dirret = 0; 
     struct stat st = {0};
     logDebug("Creating output folder: %s\n", settings -> outputDir);
     if (stat(settings -> outputDir, &st) == -1) {

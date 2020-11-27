@@ -94,7 +94,7 @@ declaration_list: declaration_list definition { addChildrenToNode($1, 1, $2); }
                | definition { $$ = newNode(DEFINITIONS_NODE, emptyNodeValue, 1, $1); }
                ;
 
-definition: define_figure { $$ = newNode(VARIABLE_NODE, emptyNodeValue, 1, $1); };
+definition: define_figure { $$ = $1; }
 
 define_figure: FIGURE_TYPE IDENTIFIER EQUAL BRACKET_OPEN figure_atributes BRACKET_CLOSE {$$ = newNode(FIGURE_NODE, emptyNodeValue, 1, $5);};
 
