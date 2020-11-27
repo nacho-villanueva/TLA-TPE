@@ -3,7 +3,12 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include "../utils/logger.h"
+#include "../utils/parser.h"
 
+#include "conditionalNode.h"
+#include "codeBlockNode.h"
+#include "codeLineNode.h"
+#include "ifNode.h"
 #include "rootNodes.h"
 
 Node* newNode(NodeType type, NodeValue value, int childrenCount, ...) {
@@ -36,7 +41,8 @@ void addChildrenToNode(Node* node, int newChildrenCount, ...){
     node->childrenCount += newChildrenCount;
 }
 
-int parseNode(Node* node, U3D_Context *  context){
+int parseNode(Node* node, U3D_Context * context){
+    //printf("ENTRANDO AL  node.c:parseNode()\n");
     if(node == NULL){
         logInfo("WARNING: parseNode called with NULL node.\n");
         return 0;
@@ -51,8 +57,41 @@ int parseNode(Node* node, U3D_Context *  context){
         return parseSettingsNode(node, context);
     case DRAW_NODE:
         return parseDrawNode(node, context);
-    /*case WHILE_NODE:
-        return parseWhileNode(node);*/
+    case IF_NODE:
+        return parseIfNode(node, context);
+    // case CONDITIONAL_NODE:
+    //     return parseConditionalNode(node, context);
+    case AND_NODE:
+    case OR_NODE:
+        return parseOrAndConditionalNode(node, context);
+    case LT_NUMERIC_NODE:
+    case GT_NUMERIC_NODE:
+    case LE_NUMERIC_NODE:
+    case GE_NUMERIC_NODE:
+    case EQ_NUMERIC_NODE:
+    case NEQ_NUMERIC_NODE:
+        return parseNumericConditionalNode(node, context);
+    case EQ_STRING_NODE:
+    case NEQ_STRING_NODE:
+        return parseStringConditionalNode(node, context);
+    case EQ_BOOLEAN_NODE:
+    case NEQ_BOOLEAN_NODE:
+        return parseBooleanConditionalNode(node, context);
+
+    case BOOLEAN_CONSTANT_NODE:
+        if(node->value.boolean == true)
+            parse("%s", "true");
+        else
+            parse("%s", "false");
+        return 0;
+    case INTEGER_CONSTANT_NODE:
+        parse("%d", node->value.integer);
+        return 0;
+
+    case CODE_BLOCK_NODE:
+        return parseCodeBlockNode(node, context);
+    case CODE_LINE_NODE:
+        return parseCodeLineNode(node, context);
     default:
         logInfo("WARNING: Node parser not assigned (Type: %s)\n", NODE_NAMES[node->type]);
         return -1;

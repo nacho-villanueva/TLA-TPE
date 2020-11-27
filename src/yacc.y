@@ -14,6 +14,8 @@
 
     extern FILE *yyin;
     extern int yylineno;
+
+    union NodeValue emptyNodeValue;
 %}
 
 %parse-param {struct Node * root }
@@ -24,18 +26,23 @@
     char character;
     float decimal;
     struct Node * node;
+    bool boolean;
 }
 
 %token SETTINGS_BLOCK DRAW_BLOCK END_BLOCK 
 %token<character> ENDL
 %token<character> EQUAL COLON
-%token<character> PLUS MINUS TIMES DIVIDE
-%token<string> INT_TYPE FLOAT_TYPE FIGURE_TYPE FUNCTION_TYPE
+%token<character> PLUS MINUS TIMES DIVIDE MODULE
+%token<string> INT_TYPE FLOAT_TYPE FIGURE_TYPE FUNCTION_TYPE BOOLEAN_TYPE
 %token<string> IDENTIFIER
 %token<number> INTEGER
 %token<decimal> FLOAT
 %token<string> STRING
-%token<character> BRACKET_OPEN BRACKET_CLOSE
+%token<boolean> BOOLEAN
+%token<character> BRACKET_OPEN BRACKET_CLOSE OPEN CLOSE
+%token WHILE
+%token IF
+%token AND OR GT LT GE LE EQ NEQ
 
 %type<node> declaration_list definition
 %type<node> define_figure
@@ -44,14 +51,27 @@
 %type<node> value
 %type<node> block_list
 %type<node> block
+%type<node> numeric_value
+%type<node> string_value
+%type<node> boolean_value
+%type<node> numeric_expression
+%type<node> code_block
+%type<node> code_line
+%type<node> if
+%type<node> conditional
+
 
 //%right EQUAL
 //%left PLUS// MINUS
 //%left TIMES DIVIDE
-
+%left AND
+%left OR
+%left PLUS MINUS
+%left TIMES DIVIDE
+%left MODULE 
+//%left GT LT GE LE EQ NEQ
 
 %start start
-
 
 %%
 start: /* empty */                       { /* Do Nothing */} 
@@ -64,34 +84,101 @@ block_list: block_list block { addChildrenToNode(root, 1, $2); }
       | block { addChildrenToNode(root, 1, $1); }
       ;
 
-block: SETTINGS_BLOCK END_BLOCK { $$ = newNode(SETTINGS_NODE, NULL, 0); }
-     | DRAW_BLOCK END_BLOCK { $$ = newNode(DRAW_NODE, NULL, 0); }
-     ;
+block: SETTINGS_BLOCK END_BLOCK { $$ = newNode(SETTINGS_NODE, emptyNodeValue, 0); }
+     | DRAW_BLOCK code_block END_BLOCK { $$ = newNode(DRAW_NODE, emptyNodeValue, 1, $2); }
+     ; 
+
+
 
 declaration_list: declaration_list definition { addChildrenToNode($1, 1, $2); }
-               | definition { $$ = newNode(DEFINITIONS_NODE, NULL, 1, $1); }
+               | definition { $$ = newNode(DEFINITIONS_NODE, emptyNodeValue, 1, $1); }
                ;
 
 definition: define_figure { $$ = $1; }
 
-define_figure: FIGURE_TYPE IDENTIFIER EQUAL BRACKET_OPEN figure_atributes BRACKET_CLOSE {$$ = newNode(FIGURE_NODE, NULL, 1, $5);};
+define_figure: FIGURE_TYPE IDENTIFIER EQUAL BRACKET_OPEN figure_atributes BRACKET_CLOSE {$$ = newNode(FIGURE_NODE, emptyNodeValue, 1, $5);};
 
 figure_atributes: figure_atributes figure_atribute { addChildrenToNode($1, 1, $2); }
-                | figure_atribute {$$ = newNode(ATTRIBUTE_LIST_NODE, NULL, 1, $1); }
+                | figure_atribute {$$ = newNode(ATTRIBUTE_LIST_NODE, emptyNodeValue, 1, $1); }
                 ;
 
-figure_atribute: IDENTIFIER COLON value ENDL { $$ = newNode(ATTRIBUTE_NODE, NULL, 0); };
+figure_atribute: IDENTIFIER COLON value ENDL { $$ = newNode(ATTRIBUTE_NODE, emptyNodeValue, 1, $3); };
 
-value: INTEGER {$$ = newNode(INTEGER_CONSTANT_NODE, NULL, 0); }
-    | FLOAT {$$ = newNode(FLOAT_CONSTANT_NODE, NULL, 0); }
-    | STRING {$$ = newNode(STRING_CONSTANT_NODE, NULL, 0); }
-    ;
+value: numeric_value { $$ = $1; };
+     | string_value { $$ = $1; };
+     | boolean_value { $$ = $1; };
+     ;
+
+
+/* TODO: estos valores numericos se crean sin valores dentro suyo? Como hacemos para parsearlos? 
+         esto pasa con los otros trminales, como los strings*/
+
+
+// TODO: ver como "agarrar" el valor en vez de pasarle el 4 hardcodeado
+numeric_value: INTEGER { union NodeValue integer_constant_value;
+                         integer_constant_value.integer = 4; 
+                         $$ = newNode(INTEGER_CONSTANT_NODE,  integer_constant_value, 0); 
+             }
+             | FLOAT {$$ = newNode(FLOAT_CONSTANT_NODE, emptyNodeValue, 0); }
+             ; 
+
+string_value: STRING {$$ = newNode(STRING_CONSTANT_NODE, emptyNodeValue, 0); };
+
+
+boolean_value: BOOLEAN { union NodeValue boolean_constant_value; 
+                         boolean_constant_value.boolean = true;
+                         $$ = newNode(BOOLEAN_CONSTANT_NODE, boolean_constant_value, 0); };
+
+
+code_block: code_block code_line { addChildrenToNode($1, 1, $2); }
+           | code_line {$$ = newNode(CODE_BLOCK_NODE, emptyNodeValue, 1, $1); }
+           ;
+           
+
+code_line: if { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
+           | numeric_value { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
+           ;
+
+
+if: IF OPEN conditional CLOSE BRACKET_OPEN code_block BRACKET_CLOSE  {$$ = newNode(IF_NODE, emptyNodeValue, 2, $3, $6); };
+
+
+conditional: conditional AND conditional {$$ = newNode(AND_NODE, emptyNodeValue, 2, $1, $3); }
+            | conditional OR conditional {$$ = newNode(OR_NODE, emptyNodeValue, 2, $1, $3); }
+            | numeric_expression LT numeric_expression {$$ = newNode(LT_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+            | numeric_expression GT numeric_expression {$$ = newNode(GT_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+            | numeric_expression LE numeric_expression {$$ = newNode(LE_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+            | numeric_expression GE numeric_expression {$$ = newNode(GE_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+            | numeric_expression EQ numeric_expression {$$ = newNode(EQ_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+            | numeric_expression NEQ numeric_expression {$$ = newNode(NEQ_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+            | string_value EQ string_value {$$ = newNode(EQ_STRING_NODE, emptyNodeValue, 2, $1, $3); }
+            | string_value NEQ string_value {$$ = newNode(NEQ_STRING_NODE, emptyNodeValue, 2, $1, $3); }
+            | boolean_value EQ boolean_value {$$ = newNode(EQ_BOOLEAN_NODE, emptyNodeValue, 2, $1, $3); }
+            | boolean_value NEQ boolean_value {$$ = newNode(NEQ_BOOLEAN_NODE, emptyNodeValue, 2, $1, $3); }
+            | 
+            // TODO: ver como "agarrar" el valor en vez de pasarle el true hardcodeado
+            BOOLEAN { union NodeValue boolean_constant_value; 
+                         boolean_constant_value.boolean = true;
+                         $$ = newNode(BOOLEAN_CONSTANT_NODE, boolean_constant_value, 0); }
+
+            | numeric_value { $$ = $1; }
+            ;
+//No soportamos que dentro del if o while haya un numero o un string como condicional, 
+//asique si queres hacer un ciclo infinito pones while(true)
+
+numeric_expression: numeric_expression PLUS numeric_expression {$$ = newNode(PLUS_NODE, emptyNodeValue, 2, $1, $3); }
+                    | numeric_expression MINUS numeric_expression {$$ = newNode(MINUS_NODE, emptyNodeValue, 2, $1, $3); }
+                    | numeric_expression TIMES numeric_expression {$$ = newNode(TIMES_NODE, emptyNodeValue, 2, $1, $3); }
+                    | numeric_expression DIVIDE numeric_expression {$$ = newNode(DIVIDE_NODE, emptyNodeValue, 2, $1, $3); }
+                    | numeric_expression MODULE numeric_expression {$$ = newNode(MODULE_NODE, emptyNodeValue, 2, $1, $3); }
+                    | numeric_value { $$ = $1; }
+                    ; 
 
 %%
 
 int yywrap()
 {
-        return 1;
+    return 1;
 }
 
 void yyerror (struct Node * node, char const * msg){
@@ -108,7 +195,7 @@ int main(int argc, char * argv[]) {
 
 	yyin = getU3DInputFile(u3d);
     
-    Node * root = newNode(ROOT_NODE, NULL, 0, NULL);
+    Node * root = newNode(ROOT_NODE, emptyNodeValue, 0, NULL);
     yyparse(root);
 
     if(!hasError){
