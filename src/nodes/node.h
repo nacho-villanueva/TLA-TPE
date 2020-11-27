@@ -44,6 +44,11 @@ static const char * NODE_NAMES[] = {
     "IF_NODE",
     "CODE_BLOCK_NODE",
     "CODE_LINE_NODE",
+    /*variable types*/
+    "STRING_VARIABLE_NODE",
+    "INTEGER_VARIABLE_NODE",
+    "FLOAT_VARIABLE_NODE",
+    "BOOLEAN_VARIABLE_NODE",
 };
 
 typedef enum _nodeType{
@@ -94,6 +99,12 @@ typedef enum _nodeType{
     
     CODE_BLOCK_NODE,
     CODE_LINE_NODE,
+
+    /* variable types */
+    STRING_VARIABLE_NODE,
+    INTEGER_VARIABLE_NODE,
+    FLOAT_VARIABLE_NODE,
+    BOOLEAN_VARIABLE_NODE,
 } NodeType;
 
 typedef union NodeValue {
@@ -102,6 +113,7 @@ typedef union NodeValue {
     //double decimal;
     char * string;
     bool boolean;
+    char * identifier;
 } NodeValue;
 
 typedef struct Node

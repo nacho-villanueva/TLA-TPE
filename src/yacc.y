@@ -1,6 +1,7 @@
 %{
     #include <stdio.h>
     #include <stdlib.h>
+    #include <string.h>
     #include <stddef.h>
     #include <stdbool.h>
 
@@ -24,7 +25,6 @@
     int number;
     char * string;
     char character;
-    //double decimal;
     float decimal;
     struct Node * node;
     bool boolean;
@@ -34,7 +34,7 @@
 %token<character> ENDL
 %token<character> EQUAL COLON
 %token<character> PLUS MINUS TIMES DIVIDE MODULE
-%token<string> INT_TYPE FLOAT_TYPE FIGURE_TYPE FUNCTION_TYPE BOOLEAN_TYPE
+%token<string> INT_TYPE FLOAT_TYPE FIGURE_TYPE FUNCTION_TYPE BOOLEAN_TYPE STRING_TYPE
 %token<string> IDENTIFIER
 %token<number> INTEGER
 %token<decimal> FLOAT
@@ -61,8 +61,7 @@
 %type<node> if
 %type<node> while
 %type<node> conditional
-
-
+%type<node> variable_creation
 
 %left AND
 %left OR
@@ -113,14 +112,11 @@ numeric_value: INTEGER { union NodeValue integer_constant_value;
              }
              | FLOAT {union NodeValue float_constant_value;
                          float_constant_value.decimal = $1;
-                         $$ = newNode(FLOAT_CONSTANT_NODE,  float_constant_value, 0);
-             }
-             ; 
+                         $$ = newNode(FLOAT_CONSTANT_NODE,  float_constant_value, 0); }; 
 
 string_value: STRING {union NodeValue string_constant_value;
                       string_constant_value.string = $1;
-                      $$ = newNode(STRING_CONSTANT_NODE,  string_constant_value, 0);
-            };
+                      $$ = newNode(STRING_CONSTANT_NODE,  string_constant_value, 0); };
 
 
 boolean_value: BOOLEAN { union NodeValue boolean_constant_value; 
@@ -136,8 +132,46 @@ code_block: code_block code_line { addChildrenToNode($1, 1, $2); }
 code_line: if { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
            | while { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
            | numeric_value { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
+           | variable_creation { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
            ;
 
+variable_creation: INT_TYPE IDENTIFIER EQUAL INTEGER ENDL { union NodeValue integer_variable_value;
+                                                            integer_variable_value.integer = $4;
+                                                            integer_variable_value.identifier = malloc(strlen($2) + 1);
+                                                            strcpy(integer_variable_value.identifier, $2);
+                                                            $$ = newNode(INTEGER_VARIABLE_NODE, integer_variable_value, 0); }
+                 | STRING_TYPE IDENTIFIER EQUAL STRING ENDL {union NodeValue string_variable_value;
+                                                            
+                                                            string_variable_value.identifier = calloc(1, strlen($2) + 1);
+                                                            strcpy(string_variable_value.identifier, $2); 
+                                                            
+                                                            string_variable_value.string = calloc(1, strlen($4) + 1);
+                                                            strcpy(string_variable_value.string, $4); 
+
+                                                            printf("%s ----   %s\n", $4, string_variable_value.string);     
+                                                            printf("%s ----   %s\n", $2, string_variable_value.identifier);                                               
+                                                            $$ = newNode(STRING_VARIABLE_NODE, string_variable_value, 0);}
+                 | FLOAT_TYPE IDENTIFIER EQUAL FLOAT ENDL {union NodeValue float_variable_value;
+                                                            float_variable_value.decimal = $4;
+                                                            $$ = newNode(FLOAT_VARIABLE_NODE, float_variable_value, 0);}
+                 | INT_TYPE IDENTIFIER ENDL {union NodeValue integer_variable_value;
+                                            integer_variable_value.integer = 0;
+                                            $$ = newNode(INTEGER_VARIABLE_NODE, integer_variable_value, 0);}
+                 | STRING_TYPE IDENTIFIER ENDL {union NodeValue string_variable_value;
+                                            string_variable_value.string = "";
+                                            $$ = newNode(STRING_VARIABLE_NODE, string_variable_value, 0);}
+                 | FLOAT_TYPE IDENTIFIER ENDL {union NodeValue float_variable_value;
+                                            float_variable_value.decimal = 0.0;
+                                            $$ = newNode(FLOAT_VARIABLE_NODE, float_variable_value, 0);}
+                 | BOOLEAN_TYPE IDENTIFIER EQUAL BOOLEAN ENDL {union NodeValue boolean_variable_value;
+                                            boolean_variable_value.boolean = $4;
+                                            $$ = newNode(BOOLEAN_VARIABLE_NODE, boolean_variable_value, 0);}
+                 | BOOLEAN_TYPE IDENTIFIER ENDL {union NodeValue boolean_variable_value;
+                                            boolean_variable_value.boolean = false;
+                                            $$ = newNode(BOOLEAN_VARIABLE_NODE, boolean_variable_value, 0);}
+                 ;
+
+/* variable_assignment:  */
 
 if: IF OPEN conditional CLOSE BRACKET_OPEN code_block BRACKET_CLOSE  {$$ = newNode(IF_NODE, emptyNodeValue, 2, $3, $6); };
 

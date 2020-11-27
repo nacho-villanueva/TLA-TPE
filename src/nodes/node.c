@@ -10,6 +10,7 @@
 #include "codeLineNode.h"
 #include "numericExpressionNode.h"
 #include "ifWhileNode.h"
+#include "variableNode.h"
 #include "rootNodes.h"
 
 Node* newNode(NodeType type, NodeValue value, int childrenCount, ...) {
@@ -100,6 +101,11 @@ int parseNode(Node* node, U3D_Context * context){
         return parseCodeBlockNode(node, context);
     case CODE_LINE_NODE:
         return parseCodeLineNode(node, context);
+    case STRING_VARIABLE_NODE:
+    case INTEGER_VARIABLE_NODE:
+    case FLOAT_VARIABLE_NODE:
+    case BOOLEAN_VARIABLE_NODE:
+        return parseVariableNode(node, context);
     default:
         logInfo("WARNING: Node parser not assigned (Type: %s)\n", NODE_NAMES[node->type]);
         return -1;
