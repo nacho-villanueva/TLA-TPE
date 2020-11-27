@@ -3,40 +3,6 @@
 #include "../utils/logger.h"
 #include "../utils/parser.h"
 
-// int parseConditionalNode(Node * node, U3D_Context *  context) {
-    
-//     int ret = 0;
-
-//     if(node->childrenCount != 1){
-//         logError(SYNTAX_ERROR, "Expected 1 child\n");
-//         return -1;
-//     }
-
-//     if(
-//        node -> children[0] -> type != AND_NODE && 
-//        node -> children[0] -> type != OR_NODE && 
-//        node -> children[0] -> type != LT_NUMERIC_NODE && 
-//        node -> children[0] -> type != GT_NUMERIC_NODE && 
-//        node -> children[0] -> type != LE_NUMERIC_NODE && 
-//        node -> children[0] -> type != EQ_NUMERIC_NODE && 
-//        node -> children[0] -> type != NEQ_NUMERIC_NODE && 
-//        node -> children[0] -> type != EQ_STRING_NODE && 
-//        node -> children[0] -> type != NEQ_STRING_NODE && 
-//        node -> children[0] -> type != EQ_BOOLEAN_NODE && 
-//        node -> children[0] -> type != NEQ_BOOLEAN_NODE &&
-//        node -> children[0] -> type != BOOLEAN_CONSTANT_NODE &&
-//        node -> children[0] -> type != INTEGER_CONSTANT_NODE
-//        ){
-//            printf("----%d-----\n", node->children[0]->type);
-//         logError(SYNTAX_ERROR, "Conditional node expected\n");
-//         return -1;
-//     }
-
-//     ret += parseNode(node->children[0], context);
-
-//     return ret;
-// }
-
 int parseOrAndConditionalNode(Node * node, U3D_Context *  context) {
     int ret = 0;
 
@@ -45,11 +11,7 @@ int parseOrAndConditionalNode(Node * node, U3D_Context *  context) {
         return -1;
     }
 
-    // if(node -> children[0] -> type != CONDITIONAL_NODE){
-    //     logError(SYNTAX_ERROR, "Conditional node expected\n");
-    //     return -1;
-    // }
-
+    // Hay que asegurarnos que el 1er hijo sea algun tipo de condicional especifico
     if(
        node -> children[0] -> type != AND_NODE && 
        node -> children[0] -> type != OR_NODE && 
@@ -64,7 +26,6 @@ int parseOrAndConditionalNode(Node * node, U3D_Context *  context) {
        node -> children[0] -> type != NEQ_BOOLEAN_NODE &&
        node -> children[0] -> type != BOOLEAN_CONSTANT_NODE
        ){
-           printf("----%d-----\n", node->children[0]->type);
         logError(SYNTAX_ERROR, "Some type of conditional node expected\n");
         return -1;
     }
@@ -80,11 +41,7 @@ int parseOrAndConditionalNode(Node * node, U3D_Context *  context) {
         //TODO: chequear valor de retorno de la 1era parte. SI es true, no analizamos el 2do nodo
     }
 
-    // if(node -> children[1] -> type != CONDITIONAL_NODE){
-    //     logError(SYNTAX_ERROR, "Conditional node expected\n");
-    //     return -1;
-    // }
-
+    // Hay que asegurarnos que el 2do hijo sea algun tipo de condicional especifico
     if(
        node -> children[0] -> type != AND_NODE && 
        node -> children[0] -> type != OR_NODE && 
@@ -99,7 +56,6 @@ int parseOrAndConditionalNode(Node * node, U3D_Context *  context) {
        node -> children[0] -> type != NEQ_BOOLEAN_NODE &&
        node -> children[0] -> type != BOOLEAN_CONSTANT_NODE
        ){
-           printf("----%d-----\n", node->children[0]->type);
         logError(SYNTAX_ERROR, "Some type of conditional node expected\n");
         return -1;
     }

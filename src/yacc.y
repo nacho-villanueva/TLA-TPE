@@ -134,8 +134,8 @@ code_block: code_block code_line { addChildrenToNode($1, 1, $2); }
            
 
 code_line: if { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
-           | numeric_value { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
            | while { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
+           | numeric_value { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
            ;
 
 

@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "ifWhileNode.h"
 #include "../utils/logger.h"
 #include "../utils/parser.h"
@@ -33,7 +32,6 @@ int parseIfWhileNode(Node * node, U3D_Context *  context){
        node -> children[0] -> type != INTEGER_CONSTANT_NODE &&
        node -> children[0] -> type != DOUBLE_CONSTANT_NODE
        ){
-           printf("----%d-----\n", node->children[0]->type);
         logError(SYNTAX_ERROR, "Some type of conditional node expected\n");
         return -1;
     }

@@ -6,7 +6,6 @@ int parseCodeBlockNode(Node * node, U3D_Context *  context){
     int ret = 0;
     for(int i = 0; i < node->childrenCount; i++){
         if(node->children[i] != NULL) {
-            printf("CodeBlock llama al parseNode para sus hijos\n");
             ret += parseNode(node->children[i], context);
         }
     }
