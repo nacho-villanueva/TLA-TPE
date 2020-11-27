@@ -21,8 +21,8 @@ int parseCodeLineNode(Node * node, U3D_Context *  context) {
         case INTEGER_CONSTANT_NODE:
             parse("%d",node->children[0]->value.integer);
             return 0;
-        case DOUBLE_CONSTANT_NODE:
-            parse("%g",node->children[0]->value.decimal);
+        case FLOAT_CONSTANT_NODE:
+            parse("%f",node->children[0]->value.decimal);
             return 0;
         default:
             logError(SYNTAX_ERROR, "Impossible children type in CODE_LINE_NODE\n");

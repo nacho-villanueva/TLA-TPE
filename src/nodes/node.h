@@ -18,7 +18,7 @@ static const char * NODE_NAMES[] = {
     "VARIABLE_NODE",
     "INTEGER_CONSTANT_NODE",
     "STRING_CONSTANT_NODE",
-    "DOUBLE_CONSTANT_NODE",
+    "FLOAT_CONSTANT_NODE",
     "BOOLEAN_CONSTANT_NODE",
     "FIGURE_NODE",
     "ATTRIBUTE_LIST_NODE",
@@ -59,7 +59,7 @@ typedef enum _nodeType{
     VARIABLE_NODE,
     INTEGER_CONSTANT_NODE,
     STRING_CONSTANT_NODE,
-    DOUBLE_CONSTANT_NODE,
+    FLOAT_CONSTANT_NODE,
     BOOLEAN_CONSTANT_NODE,
     FIGURE_NODE,
     ATTRIBUTE_LIST_NODE,
@@ -89,8 +89,8 @@ typedef enum _nodeType{
 
 typedef union NodeValue {
     int integer;
-    float floating;
-    double decimal;
+    float decimal;
+    //double decimal;
     char * string;
     bool boolean;
 } NodeValue;

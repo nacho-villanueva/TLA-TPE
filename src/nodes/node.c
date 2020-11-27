@@ -92,8 +92,8 @@ int parseNode(Node* node, U3D_Context * context){
     case INTEGER_CONSTANT_NODE:
         parse("%d", node->value.integer);
         return 0;
-    case DOUBLE_CONSTANT_NODE:
-        parse("%g", node->value.decimal);
+    case FLOAT_CONSTANT_NODE:
+        parse("%f", node->value.decimal);
         return 0;
     case STRING_CONSTANT_NODE:
         parse("%s", node->value.string);

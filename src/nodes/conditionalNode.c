@@ -74,7 +74,7 @@ int parseNumericConditionalNode(Node * node, U3D_Context *  context) {
     }
 
     for(int i = 0; i < node->childrenCount; i++) {
-        if(node->children[i]->type != INTEGER_CONSTANT_NODE && node->children[i]->type != DOUBLE_CONSTANT_NODE 
+        if(node->children[i]->type != INTEGER_CONSTANT_NODE && node->children[i]->type != FLOAT_CONSTANT_NODE 
                 && node->children[i]->type != PLUS_NODE && node->children[i]->type != MINUS_NODE && node->children[i]->type != TIMES_NODE 
                 && node->children[i]->type != DIVIDE_NODE && node->children[i]->type != MODULE_NODE) {
             logError(SYNTAX_ERROR, "Numeric expression node expected (in conditionalNode)\n");

@@ -30,7 +30,7 @@ int parseIfWhileNode(Node * node, U3D_Context *  context){
        node -> children[0] -> type != NEQ_BOOLEAN_NODE &&
        node -> children[0] -> type != BOOLEAN_CONSTANT_NODE &&
        node -> children[0] -> type != INTEGER_CONSTANT_NODE &&
-       node -> children[0] -> type != DOUBLE_CONSTANT_NODE
+       node -> children[0] -> type != FLOAT_CONSTANT_NODE
        ){
         logError(SYNTAX_ERROR, "Some type of conditional node expected\n");
         return -1;

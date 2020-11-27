@@ -24,8 +24,8 @@
     int number;
     char * string;
     char character;
-    double decimal;
-    //float decimal;
+    //double decimal;
+    float decimal;
     struct Node * node;
     bool boolean;
 }
@@ -34,10 +34,10 @@
 %token<character> ENDL
 %token<character> EQUAL COLON
 %token<character> PLUS MINUS TIMES DIVIDE MODULE
-%token<string> INT_TYPE FLOAT_TYPE DOUBLE_TYPE FIGURE_TYPE FUNCTION_TYPE BOOLEAN_TYPE
+%token<string> INT_TYPE FLOAT_TYPE FIGURE_TYPE FUNCTION_TYPE BOOLEAN_TYPE
 %token<string> IDENTIFIER
 %token<number> INTEGER
-%token<decimal> DOUBLE
+%token<decimal> FLOAT
 %token<string> STRING
 %token<boolean> BOOLEAN
 %token<character> BRACKET_OPEN BRACKET_CLOSE OPEN CLOSE
@@ -111,9 +111,9 @@ numeric_value: INTEGER { union NodeValue integer_constant_value;
                          integer_constant_value.integer = $1;
                          $$ = newNode(INTEGER_CONSTANT_NODE,  integer_constant_value, 0); 
              }
-             | DOUBLE {union NodeValue double_constant_value;
-                         double_constant_value.decimal = $1;
-                         $$ = newNode(DOUBLE_CONSTANT_NODE,  double_constant_value, 0);
+             | FLOAT {union NodeValue float_constant_value;
+                         float_constant_value.decimal = $1;
+                         $$ = newNode(FLOAT_CONSTANT_NODE,  float_constant_value, 0);
              }
              ; 
 
