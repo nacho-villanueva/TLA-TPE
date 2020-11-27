@@ -24,6 +24,7 @@
     int number;
     char * string;
     char character;
+    //double decimal;
     float decimal;
     struct Node * node;
     bool boolean;
@@ -59,18 +60,17 @@
 %type<node> code_block
 %type<node> code_line
 %type<node> if
+%type<node> while
 %type<node> conditional
 %type<node> identifier
 
 
-//%right EQUAL
-//%left PLUS// MINUS
-//%left TIMES DIVIDE
+
 %left AND
 %left OR
 %left PLUS MINUS
-%left TIMES DIVIDE
-%left MODULE 
+%left TIMES DIVIDE 
+%left MODULE
 //%left GT LT GE LE EQ NEQ
 
 %start start
@@ -131,19 +131,21 @@ string_value: STRING {$$ = newNode(STRING_CONSTANT_NODE, (NodeValue)$1, 0); };
 
 boolean_value: BOOLEAN { $$ = newNode(BOOLEAN_CONSTANT_NODE, (NodeValue)$1, 0); };
 
-
+// Comentario: code_block no puede ser vacío (daba shift/reduce conflict)
 code_block: code_block code_line { addChildrenToNode($1, 1, $2); }
            | code_line {$$ = newNode(CODE_BLOCK_NODE, emptyNodeValue, 1, $1); }
            ;
            
 
 code_line: if { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
+           | while { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
            | numeric_value { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
            ;
 
 
 if: IF OPEN conditional CLOSE BRACKET_OPEN code_block BRACKET_CLOSE  {$$ = newNode(IF_NODE, emptyNodeValue, 2, $3, $6); };
 
+while: WHILE OPEN conditional CLOSE BRACKET_OPEN code_block BRACKET_CLOSE {$$ = newNode(WHILE_NODE, emptyNodeValue, 2, $3, $6); };
 
 conditional: conditional AND conditional {$$ = newNode(AND_NODE, emptyNodeValue, 2, $1, $3); }
             | conditional OR conditional {$$ = newNode(OR_NODE, emptyNodeValue, 2, $1, $3); }
@@ -155,18 +157,14 @@ conditional: conditional AND conditional {$$ = newNode(AND_NODE, emptyNodeValue,
             | numeric_expression NEQ numeric_expression {$$ = newNode(NEQ_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
             | string_value EQ string_value {$$ = newNode(EQ_STRING_NODE, emptyNodeValue, 2, $1, $3); }
             | string_value NEQ string_value {$$ = newNode(NEQ_STRING_NODE, emptyNodeValue, 2, $1, $3); }
+            
+            /*   NO ANDAN LOS TIPOS BOOLEANOS
             | boolean_value EQ boolean_value {$$ = newNode(EQ_BOOLEAN_NODE, emptyNodeValue, 2, $1, $3); }
             | boolean_value NEQ boolean_value {$$ = newNode(NEQ_BOOLEAN_NODE, emptyNodeValue, 2, $1, $3); }
-            | 
-            // TODO: ver como "agarrar" el valor en vez de pasarle el true hardcodeado
-            BOOLEAN { union NodeValue boolean_constant_value; 
-                         boolean_constant_value.boolean = true;
-                         $$ = newNode(BOOLEAN_CONSTANT_NODE, boolean_constant_value, 0); }
-
+            | boolean_value
+            */
             | numeric_value { $$ = $1; }
             ;
-//No soportamos que dentro del if o while haya un numero o un string como condicional, 
-//asique si queres hacer un ciclo infinito pones while(true)
 
 numeric_expression: numeric_expression PLUS numeric_expression {$$ = newNode(PLUS_NODE, emptyNodeValue, 2, $1, $3); }
                     | numeric_expression MINUS numeric_expression {$$ = newNode(MINUS_NODE, emptyNodeValue, 2, $1, $3); }
