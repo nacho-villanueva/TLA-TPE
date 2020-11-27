@@ -17,14 +17,16 @@ static const char * NODE_NAMES[] = {
     "MODULE_NODE",
     "IDENTIFIER_NODE",
     "VALUE_NODE",
+    "IDENTIFIER_NODE",
+    "VALUE_NODE",
     "VARIABLE_NODE",
     "INTEGER_CONSTANT_NODE",
     "STRING_CONSTANT_NODE",
     "FLOAT_CONSTANT_NODE",
     "BOOLEAN_CONSTANT_NODE",
     "FIGURE_NODE",
-    "ATTRIBUTE_LIST_NODE",
-    "ATTRIBUTE_NODE",
+    "FIGURE_ATTRIBUTE_LIST_NODE",
+    "FIGURE_ATTRIBUTE_NODE",
     /* conditional names */
     //"CONDITIONAL_NODE",
     "AND_NODE",
@@ -60,6 +62,8 @@ typedef enum nodeType{
     DIVIDE_NODE, /* x / y || 5 / y */
     MODULE_NODE, /* x % y || 5 % y */
 
+    IDENTIFIER_NODE,
+    VALUE_NODE,
     VARIABLE_NODE,
 
     INTEGER_CONSTANT_NODE,  /* 5 */
