@@ -1,7 +1,7 @@
 // Hello!
 
 figure cube = {
-    type: "cube";
+    type: "box";
     size: 5;
 }
 

@@ -123,3 +123,17 @@ void printTree(Node * node) {
     printTreeRec(node, 0);
 }
 
+Node *getChildNode(Node *node, NodeType type) {
+    Node * ret = NULL;
+    for(int i = 0; i < node->childrenCount; i++){
+        if(node->children[i]->type == type) {
+            if (ret == NULL)
+                ret = node->children[i];
+            else
+                logInfo("WARNING: getChildNode(): Found multiple children of type: %s. Returning the first.",
+                        NODE_NAMES[type]);
+        }
+    }
+    return ret;
+}
+

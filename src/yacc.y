@@ -47,7 +47,7 @@
 %type<node> draw
 %type<node> declaration_list definition
 %type<node> define_figure
-%type<node> figure_atributes
+%type<node> figure_atribute_list
 %type<node> figure_atribute
 %type<node> value
 %type<node> block_list
@@ -60,6 +60,7 @@
 %type<node> code_line
 %type<node> if
 %type<node> conditional
+%type<node> identifier
 
 
 //%right EQUAL
@@ -87,7 +88,7 @@ block_list: block_list block { addChildrenToNode(root, 1, $2); }
 
 block: SETTINGS_BLOCK END_BLOCK { $$ = newNode(SETTINGS_NODE, emptyNodeValue, 0); }
      | draw { $$ = $1; }
-     ; 
+     ;  
 
 draw: DRAW_BLOCK END_BLOCK { $$ = newNode(DRAW_NODE, emptyNodeValue, 0); }
     | DRAW_BLOCK code_block END_BLOCK { $$ = newNode(DRAW_NODE, emptyNodeValue, 1, $2); }
@@ -99,18 +100,20 @@ declaration_list: declaration_list definition { addChildrenToNode($1, 1, $2); }
 
 definition: define_figure { $$ = $1; }
 
-define_figure: FIGURE_TYPE IDENTIFIER EQUAL BRACKET_OPEN figure_atributes BRACKET_CLOSE {$$ = newNode(FIGURE_NODE, (NodeValue)$2, 1, $5); }
+define_figure: FIGURE_TYPE IDENTIFIER EQUAL BRACKET_OPEN figure_atribute_list BRACKET_CLOSE {$$ = newNode(FIGURE_NODE, (NodeValue)$2, 1, $5); }
 	     ;
 
-figure_atributes: figure_atributes figure_atribute { addChildrenToNode($1, 1, $2); }
-                | figure_atribute {$$ = newNode(ATTRIBUTE_LIST_NODE, emptyNodeValue, 1, $1); }
+figure_atribute_list: figure_atribute_list figure_atribute { addChildrenToNode($1, 1, $2); }
+                | figure_atribute {$$ = newNode(FIGURE_ATTRIBUTE_LIST_NODE, emptyNodeValue, 1, $1); }
                 ;
 
-figure_atribute: IDENTIFIER COLON value ENDL { $$ = newNode(ATTRIBUTE_NODE, emptyNodeValue, 1, $3); };
+figure_atribute: identifier COLON value ENDL { $$ = newNode(FIGURE_ATTRIBUTE_NODE, emptyNodeValue, 2, $1, $3); };
 
-value: numeric_value { $$ = $1; };
-     | string_value { $$ = $1; };
-     | boolean_value { $$ = $1; };
+identifier: IDENTIFIER { $$ = newNode(IDENTIFIER_NODE, (NodeValue)$1, 0); }
+
+value: numeric_value { $$ = newNode(VALUE_NODE, emptyNodeValue, 1, $1); }
+     | string_value { $$ = newNode(VALUE_NODE, emptyNodeValue, 1, $1); };
+     | boolean_value { $$ = newNode(VALUE_NODE, emptyNodeValue, 1, $1); };
      ;
 
 
@@ -119,19 +122,14 @@ value: numeric_value { $$ = $1; };
 
 
 // TODO: ver como "agarrar" el valor en vez de pasarle el 4 hardcodeado
-numeric_value: INTEGER { union NodeValue integer_constant_value;
-                         integer_constant_value.integer = 4; 
-                         $$ = newNode(INTEGER_CONSTANT_NODE,  integer_constant_value, 0); 
-             }
-             | FLOAT {$$ = newNode(FLOAT_CONSTANT_NODE, emptyNodeValue, 0); }
+numeric_value: INTEGER {$$ = newNode(INTEGER_CONSTANT_NODE,  (NodeValue)$1, 0); }
+             | FLOAT {$$ = newNode(FLOAT_CONSTANT_NODE, (NodeValue)$1, 0); }
              ; 
 
-string_value: STRING {$$ = newNode(STRING_CONSTANT_NODE, emptyNodeValue, 0); };
+string_value: STRING {$$ = newNode(STRING_CONSTANT_NODE, (NodeValue)$1, 0); };
 
 
-boolean_value: BOOLEAN { union NodeValue boolean_constant_value; 
-                         boolean_constant_value.boolean = true;
-                         $$ = newNode(BOOLEAN_CONSTANT_NODE, boolean_constant_value, 0); };
+boolean_value: BOOLEAN { $$ = newNode(BOOLEAN_CONSTANT_NODE, (NodeValue)$1, 0); };
 
 
 code_block: code_block code_line { addChildrenToNode($1, 1, $2); }
