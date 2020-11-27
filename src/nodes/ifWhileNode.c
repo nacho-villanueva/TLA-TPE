@@ -1,9 +1,8 @@
-#include <stdio.h>
-#include "ifNode.h"
+#include "ifWhileNode.h"
 #include "../utils/logger.h"
 #include "../utils/parser.h"
 
-int parseIfNode(Node * node, U3D_Context *  context){
+int parseIfWhileNode(Node * node, U3D_Context *  context){
     int ret = 0;
     
     if(node->childrenCount != 2){
@@ -11,13 +10,11 @@ int parseIfNode(Node * node, U3D_Context *  context){
         return -1;
     }
     
-    parse("if(");
-
-    // if(node->children[0]->type != CONDITIONAL_NODE) {
-    //     logError(SYNTAX_ERROR, "Conditional node expected\n");
-    //     return -1;
-    // }
-
+    if(node->type == IF_NODE){
+        parse("if(");
+    }else if(node->type == WHILE_NODE){
+        parse("while(");
+    }
 
     if(
        node -> children[0] -> type != AND_NODE && 
@@ -32,9 +29,9 @@ int parseIfNode(Node * node, U3D_Context *  context){
        node -> children[0] -> type != EQ_BOOLEAN_NODE && 
        node -> children[0] -> type != NEQ_BOOLEAN_NODE &&
        node -> children[0] -> type != BOOLEAN_CONSTANT_NODE &&
-       node -> children[0] -> type != INTEGER_CONSTANT_NODE
+       node -> children[0] -> type != INTEGER_CONSTANT_NODE &&
+       node -> children[0] -> type != FLOAT_CONSTANT_NODE
        ){
-           printf("----%d-----\n", node->children[0]->type);
         logError(SYNTAX_ERROR, "Some type of conditional node expected\n");
         return -1;
     }

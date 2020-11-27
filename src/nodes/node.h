@@ -89,7 +89,8 @@ typedef enum _nodeType{
 
 typedef union NodeValue {
     int integer;
-    float floating;
+    float decimal;
+    //double decimal;
     char * string;
     bool boolean;
 } NodeValue;
