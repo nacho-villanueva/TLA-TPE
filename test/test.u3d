@@ -5,26 +5,12 @@ figure cube = {
     size: 5;
 }
 
-figure sphere = {
-    type: sphere;
-    size: 10;
-}
-
-figure sphere_cube = {
-    type: combine;
-    figure: cube;
-    figure: sphere;
-}
-
-
 SETTINGS
 
 END
 
-
-
 DRAW
-    sphere_cube();
+
 END
 
 

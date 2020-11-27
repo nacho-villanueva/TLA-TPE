@@ -9,10 +9,13 @@ void addFigureToTable(Figure figure, U3D_Context * context) {
     context->figuresTable[context->figuresCount-1] = figure;
 }
 
-/*Figure generateFigure(Node * node) {
-    char * name = node->value;
-}*/
+Figure generateFigure(Node * node) {
+    char * name = node->value.string;
+    logDebug("Generating figure: %s\n", name);
+    return NULL;
+}
 
 int parseFigureNode(Node * node, U3D_Context * context){
+    generateFigure(node);
     return 0;
 }

@@ -44,6 +44,7 @@
 %token IF
 %token AND OR GT LT GE LE EQ NEQ
 
+%type<node> draw
 %type<node> declaration_list definition
 %type<node> define_figure
 %type<node> figure_atributes
@@ -85,9 +86,11 @@ block_list: block_list block { addChildrenToNode(root, 1, $2); }
       ;
 
 block: SETTINGS_BLOCK END_BLOCK { $$ = newNode(SETTINGS_NODE, emptyNodeValue, 0); }
-     | DRAW_BLOCK code_block END_BLOCK { $$ = newNode(DRAW_NODE, emptyNodeValue, 1, $2); }
+     | draw { $$ = $1; }
      ; 
 
+draw: DRAW_BLOCK END_BLOCK { $$ = newNode(DRAW_NODE, emptyNodeValue, 0); }
+    | DRAW_BLOCK code_block END_BLOCK { $$ = newNode(DRAW_NODE, emptyNodeValue, 1, $2); }
 
 
 declaration_list: declaration_list definition { addChildrenToNode($1, 1, $2); }
@@ -96,7 +99,8 @@ declaration_list: declaration_list definition { addChildrenToNode($1, 1, $2); }
 
 definition: define_figure { $$ = $1; }
 
-define_figure: FIGURE_TYPE IDENTIFIER EQUAL BRACKET_OPEN figure_atributes BRACKET_CLOSE {$$ = newNode(FIGURE_NODE, emptyNodeValue, 1, $5);};
+define_figure: FIGURE_TYPE IDENTIFIER EQUAL BRACKET_OPEN figure_atributes BRACKET_CLOSE {$$ = newNode(FIGURE_NODE, (NodeValue)$2, 1, $5); }
+	     ;
 
 figure_atributes: figure_atributes figure_atribute { addChildrenToNode($1, 1, $2); }
                 | figure_atribute {$$ = newNode(ATTRIBUTE_LIST_NODE, emptyNodeValue, 1, $1); }
