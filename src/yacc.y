@@ -136,41 +136,15 @@ code_line: if { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
            | variable_creation { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
            ;
 
-variable_creation: INT_TYPE IDENTIFIER EQUAL INTEGER ENDL { union NodeValue integer_variable_value;
-                                                            integer_variable_value.integer = $4;
-                                                            integer_variable_value.identifier = malloc(strlen($2) + 1);
-                                                            strcpy(integer_variable_value.identifier, $2);
-                                                            $$ = newNode(INTEGER_VARIABLE_NODE, integer_variable_value, 0); }
-                 | STRING_TYPE IDENTIFIER EQUAL STRING ENDL {union NodeValue string_variable_value;
-                                                            
-                                                            string_variable_value.identifier = calloc(1, strlen($2) + 1);
-                                                            strcpy(string_variable_value.identifier, $2); 
-                                                            
-                                                            string_variable_value.string = calloc(1, strlen($4) + 1);
-                                                            strcpy(string_variable_value.string, $4); 
-
-                                                            printf("%s ----   %s\n", $4, string_variable_value.string);     
-                                                            printf("%s ----   %s\n", $2, string_variable_value.identifier);                                               
-                                                            $$ = newNode(STRING_VARIABLE_NODE, string_variable_value, 0);}
-                 | FLOAT_TYPE IDENTIFIER EQUAL FLOAT ENDL {union NodeValue float_variable_value;
-                                                            float_variable_value.decimal = $4;
-                                                            $$ = newNode(FLOAT_VARIABLE_NODE, float_variable_value, 0);}
-                 | INT_TYPE IDENTIFIER ENDL {union NodeValue integer_variable_value;
-                                            integer_variable_value.integer = 0;
-                                            $$ = newNode(INTEGER_VARIABLE_NODE, integer_variable_value, 0);}
-                 | STRING_TYPE IDENTIFIER ENDL {union NodeValue string_variable_value;
-                                            string_variable_value.string = "";
-                                            $$ = newNode(STRING_VARIABLE_NODE, string_variable_value, 0);}
-                 | FLOAT_TYPE IDENTIFIER ENDL {union NodeValue float_variable_value;
-                                            float_variable_value.decimal = 0.0;
-                                            $$ = newNode(FLOAT_VARIABLE_NODE, float_variable_value, 0);}
-                 | BOOLEAN_TYPE IDENTIFIER EQUAL BOOLEAN ENDL {union NodeValue boolean_variable_value;
-                                            boolean_variable_value.boolean = $4;
-                                            $$ = newNode(BOOLEAN_VARIABLE_NODE, boolean_variable_value, 0);}
-                 | BOOLEAN_TYPE IDENTIFIER ENDL {union NodeValue boolean_variable_value;
-                                            boolean_variable_value.boolean = false;
-                                            $$ = newNode(BOOLEAN_VARIABLE_NODE, boolean_variable_value, 0);}
-                 ;
+variable_creation: INT_TYPE identifier EQUAL numeric_value ENDL { $$ = newNode(INTEGER_VARIABLE_NODE, emptyNodeValue, 2, $2, $4); }
+                 | STRING_TYPE identifier EQUAL string_value ENDL { $$ = newNode(STRING_VARIABLE_NODE, emptyNodeValue, 2, $2, $4); }
+                 | FLOAT_TYPE identifier EQUAL numeric_value ENDL { $$ = newNode(FLOAT_VARIABLE_NODE, emptyNodeValue, 2, $2, $4); }
+                 | INT_TYPE identifier ENDL { $$ = newNode(INTEGER_VARIABLE_NODE, emptyNodeValue, 1, $2); }
+                 | STRING_TYPE identifier ENDL { $$ = newNode(STRING_VARIABLE_NODE, emptyNodeValue, 1, $2); }
+                 | FLOAT_TYPE identifier ENDL { $$ = newNode(FLOAT_VARIABLE_NODE, emptyNodeValue, 1, $2); }
+                 | BOOLEAN_TYPE identifier EQUAL BOOLEAN ENDL { $$ = newNode(BOOLEAN_VARIABLE_NODE, emptyNodeValue, 2, $2, $4); }
+                 | BOOLEAN_TYPE identifier ENDL { $$ = newNode(BOOLEAN_VARIABLE_NODE, emptyNodeValue, 1, $2); }
+                 ; 
 
 /* variable_assignment:  */
 

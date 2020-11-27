@@ -141,9 +141,9 @@ int compileU3D(U3D * settings, Node * root){
     printf("%s\n", cmd);
     system(cmd);
     // Clean Up
-    snprintf(cmd, 2048, "rm -f %s/%s && rmdir %s/%s/%s", cwd, settings->outputFile, cwd,settings -> outputDir, "bin");
-    printf("%s\n", cmd);
-    system(cmd);
+    // snprintf(cmd, 2048, "rm -f %s/%s && rmdir %s/%s/%s", cwd, settings->outputFile, cwd,settings -> outputDir, "bin");
+    // printf("%s\n", cmd);
+    // system(cmd);
 
     return 0;
 }

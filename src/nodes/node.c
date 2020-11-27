@@ -109,6 +109,8 @@ int parseNode(Node* node, U3D_Context * context){
     case FLOAT_VARIABLE_NODE:
     case BOOLEAN_VARIABLE_NODE:
         return parseVariableNode(node, context);
+    case IDENTIFIER_NODE:
+        parse("%s", node->value.string);
     default:
         logInfo("WARNING: Node parser not assigned (Type: %s)\n", NODE_NAMES[node->type]);
         return -1;

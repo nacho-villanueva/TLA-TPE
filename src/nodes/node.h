@@ -115,14 +115,11 @@ typedef enum nodeType{
 typedef union NodeValue {
     int integer;
     float decimal;
-    //double decimal;
     char * string;
     bool boolean;
-    char * identifier;
 } NodeValue;
 
-typedef struct Node
-{
+typedef struct Node{
     NodeType type;
     NodeValue value;
     int childrenCount;
