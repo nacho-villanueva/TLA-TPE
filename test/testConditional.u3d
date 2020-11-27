@@ -3,7 +3,9 @@ SETTINGS
 END
 
 
+// FALTA PROBAR EL CASO:     while(10-7 < 1){4}
 
 DRAW
-if(4){7}
+while("hola" != "chau" || 4>5 && "a" == "b"){4}
 END
+

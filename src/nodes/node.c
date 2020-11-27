@@ -10,7 +10,8 @@
 #include "conditionalNode.h"
 #include "codeBlockNode.h"
 #include "codeLineNode.h"
-#include "ifNode.h"
+#include "numericExpressionNode.h"
+#include "ifWhileNode.h"
 
 Node* newNode(NodeType type, NodeValue value, int childrenCount, ...) {
     Node* node = malloc(NODE_SIZE);
@@ -43,7 +44,6 @@ void addChildrenToNode(Node* node, int newChildrenCount, ...){
 }
 
 int parseNode(Node* node, U3D_Context * context){
-    //printf("ENTRANDO AL  node.c:parseNode()\n");
     if(node == NULL){
         logInfo("WARNING: parseNode called with NULL node.\n");
         return 0;
@@ -59,9 +59,8 @@ int parseNode(Node* node, U3D_Context * context){
     case DRAW_NODE:
         return parseDrawNode(node, context);
     case IF_NODE:
-        return parseIfNode(node, context);
-    // case CONDITIONAL_NODE:
-    //     return parseConditionalNode(node, context);
+    case WHILE_NODE:
+        return parseIfWhileNode(node, context);
     case AND_NODE:
     case OR_NODE:
         return parseOrAndConditionalNode(node, context);
@@ -78,7 +77,12 @@ int parseNode(Node* node, U3D_Context * context){
     case EQ_BOOLEAN_NODE:
     case NEQ_BOOLEAN_NODE:
         return parseBooleanConditionalNode(node, context);
-
+    case PLUS_NODE:
+    case MINUS_NODE:
+    case TIMES_NODE:
+    case DIVIDE_NODE:
+    case MODULE_NODE:
+        return parseNumericExpressionNode(node, context);
     case BOOLEAN_CONSTANT_NODE:
         if(node->value.boolean == true)
             parse("%s", "true");
@@ -88,7 +92,11 @@ int parseNode(Node* node, U3D_Context * context){
     case INTEGER_CONSTANT_NODE:
         parse("%d", node->value.integer);
         return 0;
-
+    case DOUBLE_CONSTANT_NODE:
+        parse("%g", node->value.decimal);
+        return 0;
+    case STRING_CONSTANT_NODE:
+        parse("%s", node->value.string);
     case CODE_BLOCK_NODE:
         return parseCodeBlockNode(node, context);
     case CODE_LINE_NODE:

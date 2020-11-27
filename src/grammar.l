@@ -22,13 +22,22 @@ boolean_primitive [true|false]
 "+"								return PLUS;
 "-"								return MINUS;
 "*"								return TIMES;
-"\\"							return DIVIDE;
+"/"							    return DIVIDE;
+"&&"                            return AND;
+"||"                            return OR;
+"<"                             return LT;
+">"                             return GT;
+"<="                            return LE;
+">="                            return GE;
+"=="                            return EQ;
+"!="                            return NEQ;
 "("                             return OPEN;
 ")"                             return CLOSE;
 "{"								return BRACKET_OPEN;
 "}"								return BRACKET_CLOSE;
 "int"							return INT_TYPE;
 "float"							return FLOAT_TYPE;
+"double"                        return DOUBLE_TYPE;
 "figure"						return FIGURE_TYPE;
 "boolean"                       return BOOLEAN_TYPE;
 "function"						return FUNCTION_TYPE;
@@ -38,9 +47,9 @@ boolean_primitive [true|false]
 (D|d)(R|r)(A|a)(W|w)           	return DRAW_BLOCK;
 (E|e)(N|n)(D|d)       			return END_BLOCK; 
 {alpha}({alpha}|{digit})*		{yylval.string = strdup(yytext); return IDENTIFIER; };
-{digit}+						{yylval.number = atoi(yytext); return INTEGER;};
+-?{digit}+						{yylval.number = atoi(yytext); return INTEGER;};
 \"[^\"]*\"						{yylval.string = strdup(yytext); return STRING;};
--?{digit}+\.{digit}+			{yylval.decimal = atof(yytext); return STRING;};
+-?{digit}+\.{digit}+			{yylval.decimal = atof(yytext); return DOUBLE;};
 {boolean_primitive}             {   
                                     if(strcmp(yytext, "true") == 0){ 
                                         yylval.boolean = true; 
