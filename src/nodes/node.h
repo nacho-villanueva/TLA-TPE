@@ -24,7 +24,7 @@ static const char * NODE_NAMES[] = {
     "ATTRIBUTE_LIST_NODE",
     "ATTRIBUTE_NODE",
     /* conditional names */
-    "CONDITIONAL_NODE",
+    //"CONDITIONAL_NODE",
     "AND_NODE",
     "OR_NODE",
     /* numeric expression names */
@@ -65,7 +65,7 @@ typedef enum _nodeType{
     ATTRIBUTE_LIST_NODE,
     ATTRIBUTE_NODE,
     /* conditional names */
-    CONDITIONAL_NODE,
+    //CONDITIONAL_NODE,
     AND_NODE,
     OR_NODE,
     /* numeric expression names */

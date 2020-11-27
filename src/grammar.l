@@ -11,6 +11,7 @@
 digit [0-9]
 alpha [a-zA-Z]
 boolean_primitive [true|false]
+/* boolean_primitive (t|T)(r|R)(u|U)(e|E) */
 
 %%
 \/\/(.*) 						/* ignore single line comments */; 
@@ -36,9 +37,9 @@ boolean_primitive [true|false]
 (S|s)(E|e)(T|t)(T|t)(I|i)(N|n)(G|g)(S|s) return SETTINGS_BLOCK;
 (D|d)(R|r)(A|a)(W|w)           	return DRAW_BLOCK;
 (E|e)(N|n)(D|d)       			return END_BLOCK; 
-{alpha}({alpha}|{digit})*		{yylval.string = strdup(yytext); return IDENTIFIER; }
-{digit}+						{yylval.number = atoi(yytext); return INTEGER;}
-\"[^\"]*\"						{yylval.string = strdup(yytext); return STRING;}
+{alpha}({alpha}|{digit})*		{yylval.string = strdup(yytext); return IDENTIFIER; };
+{digit}+						{yylval.number = atoi(yytext); return INTEGER;};
+\"[^\"]*\"						{yylval.string = strdup(yytext); return STRING;};
 -?{digit}+\.{digit}+			{yylval.decimal = atof(yytext); return STRING;};
 {boolean_primitive}             {   
                                     if(strcmp(yytext, "true") == 0){ 

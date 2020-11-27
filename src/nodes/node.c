@@ -3,10 +3,10 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include "../utils/logger.h"
+#include "../utils/parser.h"
 
 #include "rootNode.h"
 #include "blockNode.h"
-#include "whileNode.h"
 #include "conditionalNode.h"
 #include "codeBlockNode.h"
 #include "codeLineNode.h"
@@ -58,10 +58,10 @@ int parseNode(Node* node, U3D_Context * context){
         return parseSettingsNode(node, context);
     case DRAW_NODE:
         return parseDrawNode(node, context);
-    case WHILE_NODE:
-        return parseWhileNode(node, context);
     case IF_NODE:
         return parseIfNode(node, context);
+    // case CONDITIONAL_NODE:
+    //     return parseConditionalNode(node, context);
     case AND_NODE:
     case OR_NODE:
         return parseOrAndConditionalNode(node, context);
@@ -78,6 +78,17 @@ int parseNode(Node* node, U3D_Context * context){
     case EQ_BOOLEAN_NODE:
     case NEQ_BOOLEAN_NODE:
         return parseBooleanConditionalNode(node, context);
+
+    case BOOLEAN_CONSTANT_NODE:
+        if(node->value.boolean == true)
+            parse("%s", "true");
+        else
+            parse("%s", "false");
+        return 0;
+    case INTEGER_CONSTANT_NODE:
+        parse("%d", node->value.integer);
+        return 0;
+
     case CODE_BLOCK_NODE:
         return parseCodeBlockNode(node, context);
     case CODE_LINE_NODE:
