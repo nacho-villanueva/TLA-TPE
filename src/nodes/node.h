@@ -10,23 +10,28 @@ static const char * NODE_NAMES[] = {
     "DEFINITIONS_NODE",
     "SETTINGS_NODE",
     "DRAW_NODE",
+
     "PLUS_NODE",
     "MINUS_NODE",
     "TIMES_NODE",
     "DIVIDE_NODE",
     "MODULE_NODE",
-    "IDENTIFIER_NODE",
-    "VALUE_NODE",
+
     "IDENTIFIER_NODE",
     "VALUE_NODE",
     "VARIABLE_NODE",
+
     "INTEGER_CONSTANT_NODE",
     "STRING_CONSTANT_NODE",
     "FLOAT_CONSTANT_NODE",
     "BOOLEAN_CONSTANT_NODE",
+    "VECTOR3_NODE",
+    "VECTOR3INT_NODE",
+
     "FIGURE_NODE",
     "FIGURE_ATTRIBUTE_LIST_NODE",
     "FIGURE_ATTRIBUTE_NODE",
+
     /* conditional names */
     //"CONDITIONAL_NODE",
     "AND_NODE",
@@ -44,8 +49,10 @@ static const char * NODE_NAMES[] = {
      /* boolean expression names */
     "EQ_BOOLEAN_NODE",
     "NEQ_BOOLEAN_NODE",
+
     "WHILE_NODE",
     "IF_NODE",
+
     "CODE_BLOCK_NODE",
     "CODE_LINE_NODE",
     /*variable types*/
@@ -75,6 +82,8 @@ typedef enum nodeType{
     STRING_CONSTANT_NODE,   /* "hola" */
     FLOAT_CONSTANT_NODE,    /* 5.5 */
     BOOLEAN_CONSTANT_NODE,  /* true */
+    VECTOR3_NODE,           /* (1.0, 2.0, 3.0) */
+    VECTOR3INT_NODE,        /* (1, 2, 3) */
 
     FIGURE_NODE,
     FIGURE_ATTRIBUTE_LIST_NODE,
@@ -117,6 +126,8 @@ typedef union NodeValue {
     float decimal;
     char * string;
     bool boolean;
+    Vector3 vector;
+    Vector3Int vectorInt;
 } NodeValue;
 
 typedef struct Node{

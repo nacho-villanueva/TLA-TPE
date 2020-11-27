@@ -28,7 +28,7 @@ debug: all
 
 
 compile:
-	${CC} ${GCC_FLAGS} -o ${GCC_OUT} src/utils/*        src/nodes/*.c    src/u3d.c lex.yy.c y.tab.c ;
+	${CC} ${GCC_FLAGS} -o ${GCC_OUT} src/utils/* src/adt/*.c src/nodes/*.c  src/u3d.c lex.yy.c y.tab.c -lm;
 
 
 clean:

@@ -35,6 +35,7 @@ boolean_primitive [true|false]
 ")"                             return CLOSE;
 "{"								return BRACKET_OPEN;
 "}"								return BRACKET_CLOSE;
+","                             return COMMA;
 "int"							return INT_TYPE;
 "float"							return FLOAT_TYPE;
 "string"                        return STRING_TYPE;
@@ -48,7 +49,7 @@ boolean_primitive [true|false]
 (E|e)(N|n)(D|d)       			return END_BLOCK; 
 {alpha}({alpha}|{digit})*		{yylval.string = strdup(yytext); return IDENTIFIER; };
 -?{digit}+						{yylval.number = atoi(yytext); return INTEGER;};
-\"[^\"]*\"						{yylval.string = strdup(yytext); return STRING;};
+\"[^\"]*\"						{int len = strlen(yytext); yylval.string = strndup(yytext+1,len-2); return STRING;};
 -?{digit}+\.{digit}+			{yylval.decimal = atof(yytext); return FLOAT;};
 {boolean_primitive}             {   
                                     if(strcmp(yytext, "true") == 0){ 

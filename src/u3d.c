@@ -17,10 +17,14 @@ struct u3d_settings {
     FILE * inputFile;
     char outputFile[MAX_PATH_SIZE];
     char outputDir[MAX_PATH_SIZE];
+    bool compileToSource;
 };
 
 U3D * initU3D(int argc, char * argv[]){
+    logDebug(" ---- Init U3D ----\n");
+
     U3D * settings = calloc(1, sizeof(struct u3d_settings));
+
 
     if(argc < 2) {
         logError(ERROR, "Invalid arguments amount.\n");
@@ -91,9 +95,9 @@ U3D * initU3D(int argc, char * argv[]){
         char cmd[2048];
         char cwd[256];
         getcwd(cwd, 256);
-        // Clear folder if it exists
         snprintf(cmd, 2048, "rm -f -r %s/%s/*", cwd, settings -> outputDir);
-        printf("%s\n", cmd);
+        logDebug("Output folder already exists. Cleaning up contents.\n", cmd);
+        logDebug("SYSTEM COMMAND: %s\n", cmd);
         system(cmd);
     }
 
@@ -115,37 +119,51 @@ U3D * initU3D(int argc, char * argv[]){
         return NULL;
     }
 
+    settings->compileToSource = getCompilationType(argc, argv);
+
+    logDebug(" ---- YACC ----\n");
+
     return settings;
 }
 
 int compileU3D(U3D * settings, Node * root){
 
+    logDebug(" ---- Parsing Nodes ----\n");
+
     U3D_Context context;
     memset(&context, 0, sizeof(U3D_Context));
-    
+
     if(parseNode(root, &context) < 0){
         return -1;
     }
 
-    char cmd[2048];
-    char cwd[256];
-    getcwd(cwd, 256);
+    if(!settings->compileToSource) {
+        logDebug(" ---- Compiling Processing Code ----\n");
 
-    // Compile Processing File
-    snprintf(cmd, 2048, "%s/%s --sketch=%s/%s --output=%s/%s/%s --force --export", settings->u3dre_path, PROCESSING_JAVA, cwd, settings -> outputDir, cwd,settings -> outputDir, "bin");
-    printf("%s\n", cmd);
-    system(cmd);
+        char cmd[CMD_BUFFER_SIZE];
+        char cwd[MAX_PATH_SIZE];
+        getcwd(cwd, MAX_PATH_SIZE);
 
-    // Clean Up
-    snprintf(cmd, 2048, "mv %s/%s/%s/* %s/%s && rm -f %s/%s/%s", cwd,settings -> outputDir, "bin", cwd,settings -> outputDir, cwd, settings -> outputDir, settings->outputFile);
-    printf("%s\n", cmd);
-    system(cmd);
-    // Clean Up
-    // snprintf(cmd, 2048, "rm -f %s/%s && rmdir %s/%s/%s", cwd, settings->outputFile, cwd,settings -> outputDir, "bin");
-    // printf("%s\n", cmd);
-    // system(cmd);
+        // Compile Processing File
+        snprintf(cmd, CMD_BUFFER_SIZE, "%s/%s --sketch=%s/%s --output=%s/%s/%s --force --export", settings->u3dre_path,
+                 PROCESSING_JAVA, cwd, settings->outputDir, cwd, settings->outputDir, "bin");
+        logDebug("Running Processing compiler:\n");
+        logDebug("SYSTEM COMMAND: %s\n", cmd);
+        system(cmd);
 
-    return 0;
+        // Clean Up
+        snprintf(cmd, CMD_BUFFER_SIZE, "mv %s/%s/%s/* %s/%s && rm -f %s/%s/%s", cwd, settings->outputDir, "bin", cwd,
+                 settings->outputDir, cwd, settings->outputDir, settings->outputFile);
+        logDebug("Cleaning Up:\n");
+        logDebug("SYSTEM COMMAND: %s\n", cmd);
+        system(cmd);
+        // Clean Up
+        snprintf(cmd, CMD_BUFFER_SIZE, "rm -f %s/%s && rmdir %s/%s/%s", cwd, settings->outputFile, cwd, settings->outputDir, "bin");
+        logDebug("SYSTEM COMMAND: %s\n", cmd);
+        system(cmd);
+    }
+
+    return 0;   // TODO: manage errors
 }
 
 
