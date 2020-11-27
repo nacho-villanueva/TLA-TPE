@@ -22,7 +22,11 @@ int parseRootNode(Node * node, U3D_Context *  context){
 }
 
 int parseDefinitionsNode(Node * node, U3D_Context *  context){
-    return 0;
+    int ret = 0;
+    for(int i = 0; i < node->childrenCount; i++){
+        ret += parseNode(node->children[i], context);
+    }
+    return ret;
 }
 
 int parseSettingsNode(Node * node, U3D_Context * context){

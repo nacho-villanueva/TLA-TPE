@@ -15,14 +15,18 @@ static const char * NODE_NAMES[] = {
     "TIMES_NODE",
     "DIVIDE_NODE",
     "MODULE_NODE",
+    "IDENTIFIER_NODE",
+    "VALUE_NODE",
+    "IDENTIFIER_NODE",
+    "VALUE_NODE",
     "VARIABLE_NODE",
     "INTEGER_CONSTANT_NODE",
     "STRING_CONSTANT_NODE",
     "FLOAT_CONSTANT_NODE",
     "BOOLEAN_CONSTANT_NODE",
     "FIGURE_NODE",
-    "ATTRIBUTE_LIST_NODE",
-    "ATTRIBUTE_NODE",
+    "FIGURE_ATTRIBUTE_LIST_NODE",
+    "FIGURE_ATTRIBUTE_NODE",
     /* conditional names */
     //"CONDITIONAL_NODE",
     "AND_NODE",
@@ -51,7 +55,7 @@ static const char * NODE_NAMES[] = {
     "BOOLEAN_VARIABLE_NODE",
 };
 
-typedef enum _nodeType{
+typedef enum nodeType{
     ROOT_NODE = 0,
     DEFINITIONS_NODE,
     SETTINGS_NODE,
@@ -63,6 +67,8 @@ typedef enum _nodeType{
     DIVIDE_NODE, /* x / y || 5 / y */
     MODULE_NODE, /* x % y || 5 % y */
 
+    IDENTIFIER_NODE,
+    VALUE_NODE,
     VARIABLE_NODE,
 
     INTEGER_CONSTANT_NODE,  /* 5 */
@@ -71,9 +77,8 @@ typedef enum _nodeType{
     BOOLEAN_CONSTANT_NODE,  /* true */
 
     FIGURE_NODE,
-    ATTRIBUTE_LIST_NODE,
-    ATTRIBUTE_NODE,
-
+    FIGURE_ATTRIBUTE_LIST_NODE,
+    FIGURE_ATTRIBUTE_NODE,
     /* conditional names */
     AND_NODE,   /* A && B */
     OR_NODE,    /* A || B */
@@ -139,6 +144,8 @@ Parse node.
 Returns -1 on error.
 */
 int parseNode(Node* node, U3D_Context *  context);
+
+Node * getChildNode(Node * node, NodeType type);
 
 /*
 Print node tree to stdout.
