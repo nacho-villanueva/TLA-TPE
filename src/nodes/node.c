@@ -10,6 +10,7 @@
 #include "codeLineNode.h"
 #include "ifNode.h"
 #include "rootNodes.h"
+#include "figureNode.h"
 
 Node* newNode(NodeType type, NodeValue value, int childrenCount, ...) {
     Node* node = malloc(NODE_SIZE);
@@ -57,6 +58,8 @@ int parseNode(Node* node, U3D_Context * context){
         return parseSettingsNode(node, context);
     case DRAW_NODE:
         return parseDrawNode(node, context);
+    case FIGURE_NODE:
+       return parseFigureNode(node, context);
     case IF_NODE:
         return parseIfNode(node, context);
     // case CONDITIONAL_NODE:
@@ -118,5 +121,19 @@ void printTreeRec(Node * node, int step){
 
 void printTree(Node * node) {
     printTreeRec(node, 0);
+}
+
+Node *getChildNode(Node *node, NodeType type) {
+    Node * ret = NULL;
+    for(int i = 0; i < node->childrenCount; i++){
+        if(node->children[i]->type == type) {
+            if (ret == NULL)
+                ret = node->children[i];
+            else
+                logInfo("WARNING: getChildNode(): Found multiple children of type: %s. Returning the first.",
+                        NODE_NAMES[type]);
+        }
+    }
+    return ret;
 }
 

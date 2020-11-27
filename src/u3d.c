@@ -56,9 +56,10 @@ U3D * initU3D(int argc, char * argv[]){
     settings -> u3dre_path = u3dre_path;
 
     /* ----- OPEN INPUT FILE ----- */
-    settings -> inputFile = fopen(getInputFile(argc, argv), "r"); 
+    char * inputFile = getInputFile(argc, argv);
+    settings -> inputFile = fopen(inputFile, "r");
 	if (!settings -> inputFile) { 
-		logError(FATAL_ERROR, "No such input file.\n"); 
+		logError(FATAL_ERROR, "No such input file: %s.\n", inputFile);
         closeU3D(settings);
 		return NULL; 
 	} 
@@ -86,6 +87,14 @@ U3D * initU3D(int argc, char * argv[]){
             closeU3D(settings);
             return NULL;
         }
+    } else {
+        char cmd[2048];
+        char cwd[256];
+        getcwd(cwd, 256);
+        // Clear folder if it exists
+        snprintf(cmd, 2048, "rm -f -r %s/%s/*", cwd, settings -> outputDir);
+        printf("%s\n", cmd);
+        system(cmd);
     }
 
     /* ----- OPEN OUTPUT FILE ----- */
@@ -121,9 +130,22 @@ int compileU3D(U3D * settings, Node * root){
     char cmd[2048];
     char cwd[256];
     getcwd(cwd, 256);
+
+    // Compile Processing File
     snprintf(cmd, 2048, "%s/%s --sketch=%s/%s --output=%s/%s/%s --force --export", settings->u3dre_path, PROCESSING_JAVA, cwd, settings -> outputDir, cwd,settings -> outputDir, "bin");
     printf("%s\n", cmd);
-    return system(cmd);
+    system(cmd);
+
+    // Clean Up
+    snprintf(cmd, 2048, "mv %s/%s/%s/* %s/%s && rm -f %s/%s/%s", cwd,settings -> outputDir, "bin", cwd,settings -> outputDir, cwd, settings -> outputDir, settings->outputFile);
+    printf("%s\n", cmd);
+    system(cmd);
+    // Clean Up
+    snprintf(cmd, 2048, "rm -f %s/%s && rmdir %s/%s/%s", cwd, settings->outputFile, cwd,settings -> outputDir, "bin");
+    printf("%s\n", cmd);
+    system(cmd);
+
+    return 0;
 }
 
 
