@@ -37,5 +37,6 @@ clean:
 	rm -f y.tab.h
 	rm -f ${GCC_OUT}
 	rm -f u3dc.log
+	rm -f -r U3Dout
 
 	
