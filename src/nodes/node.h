@@ -51,38 +51,47 @@ typedef enum _nodeType{
     DEFINITIONS_NODE,
     SETTINGS_NODE,
     DRAW_NODE,
-    PLUS_NODE,
-    MINUS_NODE,
-    TIMES_NODE,
-    DIVIDE_NODE,
-    MODULE_NODE,
+
+    PLUS_NODE,   /* x + y || 5 + y */
+    MINUS_NODE,  /* x - y || 5 - y */
+    TIMES_NODE,  /* x * y || 5 * y */
+    DIVIDE_NODE, /* x / y || 5 / y */
+    MODULE_NODE, /* x % y || 5 % y */
+
     VARIABLE_NODE,
-    INTEGER_CONSTANT_NODE,
-    STRING_CONSTANT_NODE,
-    FLOAT_CONSTANT_NODE,
-    BOOLEAN_CONSTANT_NODE,
+
+    INTEGER_CONSTANT_NODE,  /* 5 */
+    STRING_CONSTANT_NODE,   /* "hola" */
+    FLOAT_CONSTANT_NODE,    /* 5.5 */
+    BOOLEAN_CONSTANT_NODE,  /* true */
+
     FIGURE_NODE,
     ATTRIBUTE_LIST_NODE,
     ATTRIBUTE_NODE,
+
     /* conditional names */
-    //CONDITIONAL_NODE,
-    AND_NODE,
-    OR_NODE,
+    AND_NODE,   /* A && B */
+    OR_NODE,    /* A || B */
+
     /* numeric expression names */
-    LT_NUMERIC_NODE,
-    GT_NUMERIC_NODE,
-    LE_NUMERIC_NODE,
-    GE_NUMERIC_NODE,
-    EQ_NUMERIC_NODE,
-    NEQ_NUMERIC_NODE,
+    LT_NUMERIC_NODE,  /* x < y   ||  5 < y  */
+    GT_NUMERIC_NODE,  /* x > y   ||  5 > y  */
+    LE_NUMERIC_NODE,  /* x <= y  ||  5 <= y */
+    GE_NUMERIC_NODE,  /* x >= y  ||  5 >= y */
+    EQ_NUMERIC_NODE,  /* x == y  ||  5 == y */
+    NEQ_NUMERIC_NODE, /* x != y  ||  5 != y */
+
     /* string expression names */
-    EQ_STRING_NODE,
-    NEQ_STRING_NODE,
+    EQ_STRING_NODE,   /* x == y  ||  "hola" == y */
+    NEQ_STRING_NODE,  /* x != y  ||  "hola" != y */
+
     /* boolean expression names */
-    EQ_BOOLEAN_NODE,
-    NEQ_BOOLEAN_NODE,
-    WHILE_NODE,
-    IF_NODE,
+    EQ_BOOLEAN_NODE,  /* x == y  ||  true == y */
+    NEQ_BOOLEAN_NODE, /* x != y  ||  true != y */
+
+    WHILE_NODE,       /* while(A){B} */
+    IF_NODE,          /* if(A){B} */
+    
     CODE_BLOCK_NODE,
     CODE_LINE_NODE,
 } NodeType;
