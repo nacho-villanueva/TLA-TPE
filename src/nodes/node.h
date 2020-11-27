@@ -43,6 +43,7 @@ static const char * NODE_NAMES[] = {
     "WHILE_NODE",
     "IF_NODE",
     "CODE_BLOCK_NODE",
+    "CODE_LINE_NODE",
 };
 
 typedef enum _nodeType{
@@ -83,14 +84,15 @@ typedef enum _nodeType{
     WHILE_NODE,
     IF_NODE,
     CODE_BLOCK_NODE,
+    CODE_LINE_NODE,
 } NodeType;
 
-typedef union {
+typedef union NodeValue {
     int integer;
     float floating;
     char * string;
     bool boolean;
-}NodeValue;
+} NodeValue;
 
 typedef struct Node
 {

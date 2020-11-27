@@ -3,6 +3,6 @@
 
 #include "node.h"
 
-int parseIfNode(Node * node);
+int parseIfNode(Node * node, U3D_Context *  context);
 
 #endif /* _IFNODE_H_ */

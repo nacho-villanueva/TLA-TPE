@@ -3,12 +3,12 @@
 
 #include "node.h"
 
-int parseOrAndNode(Node * node);
+int parseOrAndConditionalNode(Node * node, U3D_Context *  context);
 
-int parseNumericConditionalNode(Node * node);
+int parseNumericConditionalNode(Node * node, U3D_Context *  context);
 
-int parseStringConditionalNode(Node * node);
+int parseStringConditionalNode(Node * node, U3D_Context *  context);
 
-int parseBooleanConditionalNode(Node * node);
+int parseBooleanConditionalNode(Node * node, U3D_Context *  context);
 
 #endif

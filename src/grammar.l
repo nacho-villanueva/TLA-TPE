@@ -1,6 +1,7 @@
 %{
     #include <stdio.h>
     #include <string.h>
+    #include <stdbool.h>
     #include "y.tab.h"
 %}
 
@@ -9,6 +10,7 @@
 
 digit [0-9]
 alpha [a-zA-Z]
+boolean_primitive [true|false]
 
 %%
 \/\/(.*) 						/* ignore single line comments */; 
@@ -20,6 +22,8 @@ alpha [a-zA-Z]
 "-"								return MINUS;
 "*"								return TIMES;
 "\\"							return DIVIDE;
+"("                             return OPEN;
+")"                             return CLOSE;
 "{"								return BRACKET_OPEN;
 "}"								return BRACKET_CLOSE;
 "int"							return INT_TYPE;
@@ -36,6 +40,13 @@ alpha [a-zA-Z]
 {digit}+						{yylval.number = atoi(yytext); return INTEGER;}
 \"[^\"]*\"						{yylval.string = strdup(yytext); return STRING;}
 -?{digit}+\.{digit}+			{yylval.decimal = atof(yytext); return STRING;};
+{boolean_primitive}             {   
+                                    if(strcmp(yytext, "true") == 0){ 
+                                        yylval.boolean = true; 
+                                    } else if(strcmp(yytext, "false") == 0) {
+                                        yylval.boolean = false;
+                                    } return BOOLEAN; 
+                                };
 \n								/* ignore end of line */;
 [ \t]+							/* ignore whitespace */;
 

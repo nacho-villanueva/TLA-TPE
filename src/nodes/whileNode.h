@@ -3,7 +3,6 @@
 
 #include "node.h"
 
-int parseWhileNode(Node * node);
-
+int parseWhileNode(Node * node, U3D_Context *  context);
 
 #endif /* _WHILENODE_H_ */
