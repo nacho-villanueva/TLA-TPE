@@ -22,3 +22,13 @@ bool getCompilationType(int argc, char **argv) {
     }
     return false;
 }
+
+const char * getCompilationPlatform(int argc, char **argv) {
+    for(int i = 0; i < argc-1; i++){
+        if(strcmp(argv[i], "-w") == 0 || strcmp(argv[1], "--windows") == 0)
+            return "windows";
+        if(strcmp(argv[i], "-l") == 0 || strcmp(argv[1], "--linux") == 0)
+            return "linux";
+    }
+    return "linux";
+}
