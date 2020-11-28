@@ -1,7 +1,7 @@
 #ifndef _NODE_H_
 #define _NODE_H_
 
-#include "../u3ddef.h"
+#include "../u3d_context.h"
 #include <stdbool.h>
 #define NODE_SIZE sizeof(struct Node)
 
