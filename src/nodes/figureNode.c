@@ -5,22 +5,6 @@
 #include "figureNode.h"
 #include "../utils/logger.h"
 
-
-void addFigureToTable(Figure figure, U3D_Context * context) {
-    context->figuresCount++;
-    context->figuresTable = reallocarray(context->figuresTable, context->figuresCount, sizeof(Figure));
-    context->figuresTable[context->figuresCount-1] = figure;
-}
-
-Figure getFigureFromTable(char* name, U3D_Context * context){
-    for(size_t i = 0; i < context->figuresCount; i++){
-        if(strcmp(getFigureName(context->figuresTable[i]), name) == 0){
-            return context->figuresTable[i];
-        }
-    }
-    return NULL;
-}
-
 Node * getFigureAttributeValueNode(Node * node, char * attr){
     Node * attrList = getChildNode(node, FIGURE_ATTRIBUTE_LIST_NODE);
     if(attrList != NULL){
@@ -174,6 +158,9 @@ Figure generateFigure(Node * node, U3D_Context * context) {
 
 int parseFigureNode(Node * node, U3D_Context * context){
     Figure figure = generateFigure(node, context);
-    addFigureToTable(figure, context);
+    if(addFigureToTable(figure, context) < 0){
+        freeFigure(figure);
+        return -1;
+    }
     return 0;
 }
