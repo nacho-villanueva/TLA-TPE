@@ -36,11 +36,11 @@ boolean_primitive [true|false]
 "{"								return BRACKET_OPEN;
 "}"								return BRACKET_CLOSE;
 ","                             return COMMA;
+"."                             return DOT;
 "int"							return INT_TYPE;
 "float"							return FLOAT_TYPE;
 "figure"						return FIGURE_TYPE;
 "boolean"                       return BOOLEAN_TYPE;
-"function"						return FUNCTION_TYPE;
 "while"                         return WHILE;
 "if"                            return IF;
 (S|s)(E|e)(T|t)(T|t)(I|i)(N|n)(G|g)(S|s) return SETTINGS_BLOCK;
