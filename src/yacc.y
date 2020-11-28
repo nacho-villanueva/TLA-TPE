@@ -67,6 +67,7 @@
 %type<node> conditional
 %type<node> identifier
 %type<node> variable_creation
+%type<node> variable_value_update
 
 %left AND
 %left OR
@@ -139,9 +140,10 @@ code_block: code_block code_line { addChildrenToNode($1, 1, $2); }
            ;
            
 
-code_line: if { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
-           | while { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
-           | variable_creation { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
+code_line: if { $$ = $1; }
+           | while { $$ = $1; }
+           | variable_creation { $$ = $1; }
+           | variable_value_update { $$ = $1; }
            ;
 
 variable_creation: INT_TYPE identifier EQUAL numeric_value ENDL { $$ = newNode(INTEGER_VARIABLE_CREATION_NODE, emptyNodeValue, 2, $2, $4); }
@@ -152,7 +154,13 @@ variable_creation: INT_TYPE identifier EQUAL numeric_value ENDL { $$ = newNode(I
                  | FLOAT_TYPE identifier ENDL { $$ = newNode(FLOAT_VARIABLE_CREATION_NODE, emptyNodeValue, 1, $2); }
                  | BOOLEAN_TYPE identifier EQUAL BOOLEAN ENDL { $$ = newNode(BOOLEAN_VARIABLE_CREATION_NODE, emptyNodeValue, 2, $2, $4); }
                  | BOOLEAN_TYPE identifier ENDL { $$ = newNode(BOOLEAN_VARIABLE_CREATION_NODE, emptyNodeValue, 1, $2); }
-                 ; 
+                 ;
+
+variable_value_update: identifier EQUAL numeric_value ENDL { $$ = newNode(NUMERIC_VARIABLE_UPDATE_NODE, emptyNodeValue, 2, $1, $3); }
+                     | identifier EQUAL string_value ENDL { $$ = newNode(STRING_VARIABLE_UPDATE_NODE, emptyNodeValue, 2, $1, $3); }
+                     | identifier EQUAL boolean_value ENDL { $$ = newNode(BOOLEAN_VARIABLE_UPDATE_NODE, emptyNodeValue, 2, $1, $3); }
+                     | identifier EQUAL identifier ENDL { $$ = newNode(IDENTIFIER_VARIABLE_UPDATE_NODE, emptyNodeValue, 2, $1, $3); }
+                     ;
 
 /* variable_assignment:  */
 
@@ -170,20 +178,63 @@ conditional: conditional AND conditional {$$ = newNode(AND_NODE, emptyNodeValue,
             | numeric_expression NEQ numeric_expression {$$ = newNode(NEQ_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
             | string_value EQ string_value {$$ = newNode(EQ_STRING_NODE, emptyNodeValue, 2, $1, $3); }
             | string_value NEQ string_value {$$ = newNode(NEQ_STRING_NODE, emptyNodeValue, 2, $1, $3); }
+
+            // todo: a partir de aca hacia abajo, hay que completar el newNode(XXX...)
+            | identifier LT numeric_expression {$$ = newNode(LT_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+	    | identifier GT numeric_expression {$$ = newNode(GT_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+	    | identifier LE numeric_expression {$$ = newNode(LE_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+	    | identifier GE numeric_expression {$$ = newNode(GE_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+	    | identifier EQ numeric_expression {$$ = newNode(EQ_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+	    | identifier NEQ numeric_expression {$$ = newNode(NEQ_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+	    | identifier EQ string_value {$$ = newNode(EQ_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+            | identifier NEQ string_value {$$ = newNode(NEQ_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+            | identifier EQ boolean_value {$$ = newNode(EQ_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+            | identifier NEQ boolean_value {$$ = newNode(NEQ_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+
+            | numeric_expression LT identifier {$$ = newNode(LT_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+	    | numeric_expression GT identifier {$$ = newNode(GT_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+	    | numeric_expression LE identifier {$$ = newNode(LE_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+	    | numeric_expression GE identifier {$$ = newNode(GE_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+	    | numeric_expression EQ identifier {$$ = newNode(EQ_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+	    | numeric_expression NEQ identifier {$$ = newNode(NEQ_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+            | string_value EQ identifier {$$ = newNode(EQ_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+            | string_value NEQ identifier {$$ = newNode(NEQ_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+            | boolean_value EQ identifier {$$ = newNode(EQ_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
+            | boolean_value NEQ identifier {$$ = newNode(NEQ_NUMERIC_NODE, emptyNodeValue, 2, $1, $3); }
             
             /*   NO ANDAN LOS TIPOS BOOLEANOS
             | boolean_value EQ boolean_value {$$ = newNode(EQ_BOOLEAN_NODE, emptyNodeValue, 2, $1, $3); }
             | boolean_value NEQ boolean_value {$$ = newNode(NEQ_BOOLEAN_NODE, emptyNodeValue, 2, $1, $3); }
             | boolean_value
             */
-            | numeric_value { $$ = $1; }
             ;
+
+// x = 5+5;   x = y+5;   x = y+z; x = 5+y;
 
 numeric_expression: numeric_expression PLUS numeric_expression {$$ = newNode(PLUS_NODE, emptyNodeValue, 2, $1, $3); }
                     | numeric_expression MINUS numeric_expression {$$ = newNode(MINUS_NODE, emptyNodeValue, 2, $1, $3); }
                     | numeric_expression TIMES numeric_expression {$$ = newNode(TIMES_NODE, emptyNodeValue, 2, $1, $3); }
                     | numeric_expression DIVIDE numeric_expression {$$ = newNode(DIVIDE_NODE, emptyNodeValue, 2, $1, $3); }
                     | numeric_expression MODULE numeric_expression {$$ = newNode(MODULE_NODE, emptyNodeValue, 2, $1, $3); }
+
+                    | identifier PLUS numeric_expression {$$ = newNode(PLUS_NODE, emptyNodeValue, 2, $1, $3); }
+		    | identifier MINUS numeric_expression {$$ = newNode(MINUS_NODE, emptyNodeValue, 2, $1, $3); }
+		    | identifier TIMES numeric_expression {$$ = newNode(TIMES_NODE, emptyNodeValue, 2, $1, $3); }
+		    | identifier DIVIDE numeric_expression {$$ = newNode(DIVIDE_NODE, emptyNodeValue, 2, $1, $3); }
+		    | identifier MODULE numeric_expression {$$ = newNode(MODULE_NODE, emptyNodeValue, 2, $1, $3); }
+
+		    | numeric_expression PLUS identifier {$$ = newNode(PLUS_NODE, emptyNodeValue, 2, $1, $3); }
+		    | numeric_expression MINUS identifier {$$ = newNode(MINUS_NODE, emptyNodeValue, 2, $1, $3); }
+		    | numeric_expression TIMES identifier {$$ = newNode(TIMES_NODE, emptyNodeValue, 2, $1, $3); }
+		    | numeric_expression DIVIDE identifier {$$ = newNode(DIVIDE_NODE, emptyNodeValue, 2, $1, $3); }
+		    | numeric_expression MODULE identifier {$$ = newNode(MODULE_NODE, emptyNodeValue, 2, $1, $3); }
+
+		    | identifier PLUS identifier {$$ = newNode(PLUS_NODE, emptyNodeValue, 2, $1, $3); }
+		    | identifier MINUS identifier {$$ = newNode(MINUS_NODE, emptyNodeValue, 2, $1, $3); }
+		    | identifier TIMES identifier {$$ = newNode(TIMES_NODE, emptyNodeValue, 2, $1, $3); }
+		    | identifier DIVIDE identifier {$$ = newNode(DIVIDE_NODE, emptyNodeValue, 2, $1, $3); }
+		    | identifier MODULE identifier {$$ = newNode(MODULE_NODE, emptyNodeValue, 2, $1, $3); }
+
                     | numeric_value { $$ = $1; }
                     ; 
 

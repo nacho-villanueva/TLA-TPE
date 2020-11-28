@@ -5,4 +5,6 @@
 
 int parseVariableCreationNode(Node * node, U3D_Context *  context);
 
+int parseVariableUpdateNode(Node * node, U3D_Context *  context);
+
 #endif

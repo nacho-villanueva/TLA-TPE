@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 
+typedef struct Variable * Variable;
+
 enum VariableType{
     VARIABLE_STRING = 0,
     VARIABLE_INTEGER,
@@ -18,14 +20,16 @@ union VariableValue {
     void * notFound;
 };
 
-int newVariable(char * identifier, enum VariableType type, union VariableValue value);
-
 void freeVariable(char * identifier);
 
-int checkIfIdentifierIsUsed(char * identifier);
+struct Variable * insertNewVariable(struct Variable ** first_variable, char * identifier, enum VariableType type, union VariableValue value);
 
-union VariableValue getVariableValue(char * identifier);
+int checkIfIdentifierIsUsed(char * identifier, Variable first);
 
-int setVariableValue(char * identifier, enum VariableType type, union VariableValue value);
+union VariableValue getVariableValue(char * identifier, Variable first);
+
+int setVariableValue(char * identifier, enum VariableType type, union VariableValue value, Variable first);
+
+enum VariableType getVariableType(char * identifier, struct Variable * first);
 
 #endif 

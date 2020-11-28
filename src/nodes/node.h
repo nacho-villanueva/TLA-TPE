@@ -54,12 +54,18 @@ static const char * NODE_NAMES[] = {
     "IF_NODE",
 
     "CODE_BLOCK_NODE",
-    "CODE_LINE_NODE",
+
     /*variable types*/
     "STRING_VARIABLE_CREATION_NODE",
     "INTEGER_VARIABLE_CREATION_NODE",
     "FLOAT_VARIABLE_CREATION_NODE",
     "BOOLEAN_VARIABLE_CREATION_NODE",
+
+    /* variable update types */
+    "NUMERIC_VARIABLE_UPDATE_NODE",
+    "STRING_VARIABLE_UDATE_NODE",
+    "BOOLEAN_VARIABLE_UPDATE_NODE",
+    "IDENTIFIER_VARIABLE_UPDATE_NODE"
 };
 
 typedef enum nodeType{
@@ -112,13 +118,19 @@ typedef enum nodeType{
     IF_NODE,          /* if(A){B} */
     
     CODE_BLOCK_NODE,
-    CODE_LINE_NODE,
 
-    /* variable types */
-    STRING_VARIABLE_CREATION_NODE,
-    INTEGER_VARIABLE_CREATION_NODE,
-    FLOAT_VARIABLE_CREATION_NODE,
-    BOOLEAN_VARIABLE_CREATION_NODE,
+    /* variable creation types */
+    STRING_VARIABLE_CREATION_NODE,  /* string a = "hola"; || string a; */
+    INTEGER_VARIABLE_CREATION_NODE, /* int a = 4;         || int a; */
+    FLOAT_VARIABLE_CREATION_NODE,   /* float a = 4.5;     || float a; */
+    BOOLEAN_VARIABLE_CREATION_NODE, /* boolean a = trueM  || boolean a; */
+
+    /* variable update types */
+    NUMERIC_VARIABLE_UPDATE_NODE,    /* a = 5  ||   a = 5.5 */
+    STRING_VARIABLE_UPDATE_NODE,     /* a = "hola" */
+    BOOLEAN_VARIABLE_UPDATE_NODE,    /* a = true */
+    IDENTIFIER_VARIABLE_UPDATE_NODE, /* a = b */
+
 } NodeType;
 
 typedef union NodeValue {

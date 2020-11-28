@@ -7,12 +7,12 @@
 
 #include "conditionalNode.h"
 #include "codeBlockNode.h"
-#include "codeLineNode.h"
 #include "numericExpressionNode.h"
 #include "ifWhileNode.h"
 #include "variableNode.h"
 #include "rootNodes.h"
 #include "figureNode.h"
+
 
 Node* newNode(NodeType type, NodeValue value, int childrenCount, ...) {
     Node* node = malloc(NODE_SIZE);
@@ -99,17 +99,20 @@ int parseNode(Node* node, U3D_Context * context){
         parse("%f", node->value.decimal);
         return 0;
     case STRING_CONSTANT_NODE:
-        parse("%s", node->value.string);
+        parse("\"%s\"", node->value.string);
         return 0;
     case CODE_BLOCK_NODE:
         return parseCodeBlockNode(node, context);
-    case CODE_LINE_NODE:
-        return parseCodeLineNode(node, context);
     case STRING_VARIABLE_CREATION_NODE:
     case INTEGER_VARIABLE_CREATION_NODE:
     case FLOAT_VARIABLE_CREATION_NODE:
     case BOOLEAN_VARIABLE_CREATION_NODE:
         return parseVariableCreationNode(node, context);
+    case NUMERIC_VARIABLE_UPDATE_NODE:
+    case STRING_VARIABLE_UPDATE_NODE:
+    case BOOLEAN_VARIABLE_UPDATE_NODE:
+    case IDENTIFIER_VARIABLE_UPDATE_NODE:
+        return parseVariableUpdateNode(node, context);
     case IDENTIFIER_NODE:
         parse("%s", node->value.string);
         return 0;

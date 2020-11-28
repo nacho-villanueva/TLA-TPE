@@ -34,11 +34,13 @@ int parseSettingsNode(Node * node, U3D_Context * context){
 
     int ret = 0;
     for(int i = 0; i < node->childrenCount; i++){
-        ret += parseNode(node->children[i], context);
+        ret = parseNode(node->children[i], context);
+        if(ret < 0)
+            return ret;
     }
 
     parse("\n}\n");
-    return 0;
+    return ret;
 }
 
 int parseDrawNode(Node * node, U3D_Context * context){
@@ -46,9 +48,11 @@ int parseDrawNode(Node * node, U3D_Context * context){
 
     int ret = 0;
     for(int i = 0; i < node->childrenCount; i++){
-        ret += parseNode(node->children[i], context);
+        ret = parseNode(node->children[i], context);
+        if(ret < 0)
+            return ret;
     }
 
     parse("\n}\n");
-    return 0;
+    return ret;
 }
