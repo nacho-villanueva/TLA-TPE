@@ -28,6 +28,12 @@ Vector3Int newVector3Int(int x, int y, int z){
     return vector;
 }
 
+Vector3 vector3IntToVector3(Vector3Int vector3Int) {
+    Vector3 vector3 = newVector3((float)vector3Int->x,(float)vector3Int->y,(float)vector3Int->z);
+    free(vector3Int);
+    return vector3;
+}
+
 void addVector3(Vector3 vectorA, Vector3 vectorB, Vector3 result){
     result -> x = vectorA -> x + vectorB -> x;
     result -> y = vectorA -> y + vectorB -> y;
@@ -55,4 +61,12 @@ float distanceVector3(Vector3 vectorA, Vector3 vectorB){
     difZ *= difZ;
 
     return (float)sqrt((double)difX + difY + difZ);
-} 
+}
+
+void printVector3Int(Vector3Int vector3Int) {
+    logInfo("(%d, %d, %d)", vector3Int->x, vector3Int->y, vector3Int->z);
+}
+
+void printVector3(Vector3 vector3) {
+    logInfo("(%.2f, %.2f, %.2f)", vector3->x, vector3->y, vector3->z);
+}

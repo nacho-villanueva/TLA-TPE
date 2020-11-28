@@ -5,4 +5,4 @@ AUX_SOURCE_DIRECTORY(nodes nodesSRC)
 add_library(U3DC_LIB u3d.c
         ${nodesSRC}
         ${adtSRC}
-        ${utilsSRC})
+        ${utilsSRC} u3d_context.c)

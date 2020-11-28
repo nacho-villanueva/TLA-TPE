@@ -1,8 +1,15 @@
 // Hello!
 
 figure cube = {
-    type: "box";
-    size: 5;
+    type: "sphere";
+    scale: (1.0,2.0,3.0);
+    position: (20,35,15);
+    color: (255,255,255);
+}
+
+figure comp = {
+	type: "composite";
+	child: "cube";
 }
 
 SETTINGS
