@@ -93,14 +93,14 @@ block: SETTINGS_BLOCK END_BLOCK { $$ = newNode(SETTINGS_NODE, emptyNodeValue, 0)
      ;
 
 draw: DRAW_BLOCK END_BLOCK { $$ = newNode(DRAW_NODE, emptyNodeValue, 0); }
-    | DRAW_BLOCK code_block END_BLOCK { $$ = newNode(DRAW_NODE, emptyNodeValue, 1, $2); }
+    | DRAW_BLOCK code_block END_BLOCK { $$ = newNode(DRAW_NODE, emptyNodeValue, 1, $2); };
 
 
 declaration_list: declaration_list definition { addChildrenToNode($1, 1, $2); }
                | definition { $$ = newNode(DEFINITIONS_NODE, emptyNodeValue, 1, $1); }
                ;
 
-definition: define_figure { $$ = $1; }
+definition: define_figure { $$ = $1; };
 
 define_figure: FIGURE_TYPE IDENTIFIER EQUAL BRACKET_OPEN figure_atribute_list BRACKET_CLOSE {$$ = newNode(FIGURE_NODE, (NodeValue)$2, 1, $5); }
 	         ;
@@ -112,7 +112,7 @@ figure_atribute_list: figure_atribute_list figure_atribute { addChildrenToNode($
 figure_atribute: identifier COLON value ENDL { $$ = newNode(FIGURE_ATTRIBUTE_NODE, emptyNodeValue, 2, $1, $3); }
                ;
 
-identifier: IDENTIFIER { $$ = newNode(IDENTIFIER_NODE, (NodeValue)$1, 0); }
+identifier: IDENTIFIER { $$ = newNode(IDENTIFIER_NODE, (NodeValue)$1, 0); };
 
 value: numeric_value { $$ = newNode(VALUE_NODE, emptyNodeValue, 1, $1); }
      | string_value { $$ = newNode(VALUE_NODE, emptyNodeValue, 1, $1); }
@@ -122,7 +122,7 @@ value: numeric_value { $$ = newNode(VALUE_NODE, emptyNodeValue, 1, $1); }
 
 
 vector_value: OPEN FLOAT COMMA FLOAT COMMA FLOAT CLOSE { $$ = newNode(VECTOR3_NODE, (NodeValue)newVector3($2,$4,$6), 0); }
-            | OPEN INTEGER COMMA INTEGER COMMA INTEGER CLOSE { $$ = newNode(VECTOR3INT_NODE, (NodeValue)newVector3Int($2,$4,$6), 0); }
+            | OPEN INTEGER COMMA INTEGER COMMA INTEGER CLOSE { $$ = newNode(VECTOR3INT_NODE, (NodeValue)newVector3Int($2,$4,$6), 0); };
 
 numeric_value: INTEGER {$$ = newNode(INTEGER_CONSTANT_NODE,  (NodeValue)$1, 0); }
              | FLOAT {$$ = newNode(FLOAT_CONSTANT_NODE, (NodeValue)$1, 0); }
@@ -141,18 +141,17 @@ code_block: code_block code_line { addChildrenToNode($1, 1, $2); }
 
 code_line: if { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
            | while { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
-           | numeric_value { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
            | variable_creation { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
            ;
 
-variable_creation: INT_TYPE identifier EQUAL numeric_value ENDL { $$ = newNode(INTEGER_VARIABLE_NODE, emptyNodeValue, 2, $2, $4); }
-                 | STRING_TYPE identifier EQUAL string_value ENDL { $$ = newNode(STRING_VARIABLE_NODE, emptyNodeValue, 2, $2, $4); }
-                 | FLOAT_TYPE identifier EQUAL numeric_value ENDL { $$ = newNode(FLOAT_VARIABLE_NODE, emptyNodeValue, 2, $2, $4); }
-                 | INT_TYPE identifier ENDL { $$ = newNode(INTEGER_VARIABLE_NODE, emptyNodeValue, 1, $2); }
-                 | STRING_TYPE identifier ENDL { $$ = newNode(STRING_VARIABLE_NODE, emptyNodeValue, 1, $2); }
-                 | FLOAT_TYPE identifier ENDL { $$ = newNode(FLOAT_VARIABLE_NODE, emptyNodeValue, 1, $2); }
-                 | BOOLEAN_TYPE identifier EQUAL BOOLEAN ENDL { $$ = newNode(BOOLEAN_VARIABLE_NODE, emptyNodeValue, 2, $2, $4); }
-                 | BOOLEAN_TYPE identifier ENDL { $$ = newNode(BOOLEAN_VARIABLE_NODE, emptyNodeValue, 1, $2); }
+variable_creation: INT_TYPE identifier EQUAL numeric_value ENDL { $$ = newNode(INTEGER_VARIABLE_CREATION_NODE, emptyNodeValue, 2, $2, $4); }
+                 | STRING_TYPE identifier EQUAL string_value ENDL { $$ = newNode(STRING_VARIABLE_CREATION_NODE, emptyNodeValue, 2, $2, $4); }
+                 | FLOAT_TYPE identifier EQUAL numeric_value ENDL { $$ = newNode(FLOAT_VARIABLE_CREATION_NODE, emptyNodeValue, 2, $2, $4); }
+                 | INT_TYPE identifier ENDL { $$ = newNode(INTEGER_VARIABLE_CREATION_NODE, emptyNodeValue, 1, $2); }
+                 | STRING_TYPE identifier ENDL { $$ = newNode(STRING_VARIABLE_CREATION_NODE, emptyNodeValue, 1, $2); }
+                 | FLOAT_TYPE identifier ENDL { $$ = newNode(FLOAT_VARIABLE_CREATION_NODE, emptyNodeValue, 1, $2); }
+                 | BOOLEAN_TYPE identifier EQUAL BOOLEAN ENDL { $$ = newNode(BOOLEAN_VARIABLE_CREATION_NODE, emptyNodeValue, 2, $2, $4); }
+                 | BOOLEAN_TYPE identifier ENDL { $$ = newNode(BOOLEAN_VARIABLE_CREATION_NODE, emptyNodeValue, 1, $2); }
                  ; 
 
 /* variable_assignment:  */

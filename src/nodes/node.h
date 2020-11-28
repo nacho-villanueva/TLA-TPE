@@ -56,10 +56,10 @@ static const char * NODE_NAMES[] = {
     "CODE_BLOCK_NODE",
     "CODE_LINE_NODE",
     /*variable types*/
-    "STRING_VARIABLE_NODE",
-    "INTEGER_VARIABLE_NODE",
-    "FLOAT_VARIABLE_NODE",
-    "BOOLEAN_VARIABLE_NODE",
+    "STRING_VARIABLE_CREATION_NODE",
+    "INTEGER_VARIABLE_CREATION_NODE",
+    "FLOAT_VARIABLE_CREATION_NODE",
+    "BOOLEAN_VARIABLE_CREATION_NODE",
 };
 
 typedef enum nodeType{
@@ -115,10 +115,10 @@ typedef enum nodeType{
     CODE_LINE_NODE,
 
     /* variable types */
-    STRING_VARIABLE_NODE,
-    INTEGER_VARIABLE_NODE,
-    FLOAT_VARIABLE_NODE,
-    BOOLEAN_VARIABLE_NODE,
+    STRING_VARIABLE_CREATION_NODE,
+    INTEGER_VARIABLE_CREATION_NODE,
+    FLOAT_VARIABLE_CREATION_NODE,
+    BOOLEAN_VARIABLE_CREATION_NODE,
 } NodeType;
 
 typedef union NodeValue {
@@ -154,6 +154,8 @@ Returns -1 on error.
 int parseNode(Node* node, U3D_Context *  context);
 
 Node * getChildNode(Node * node, NodeType type);
+
+const char * getNodeTypeByCode(NodeType type);
 
 /*
 Print node tree to stdout.

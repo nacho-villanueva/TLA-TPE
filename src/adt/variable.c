@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "../utils/logger.h"
 #include "../utils/parser.h"
 #include "variable.h"

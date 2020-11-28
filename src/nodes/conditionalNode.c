@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "conditionalNode.h"
+#include "ifWhileNode.h"
 #include "../utils/logger.h"
 #include "../utils/parser.h"
 
@@ -35,10 +36,8 @@ int parseOrAndConditionalNode(Node * node, U3D_Context *  context) {
 
     if(node->type == AND_NODE) {
         parse(" && ");
-        //TODO: chequear valor de retorno de la 1era parte. SI es false, no analizamos el 2do nodo
     } else if(node->type == OR_NODE) {
         parse(" || ");
-        //TODO: chequear valor de retorno de la 1era parte. SI es true, no analizamos el 2do nodo
     }
 
     // Hay que asegurarnos que el 2do hijo sea algun tipo de condicional especifico
@@ -82,7 +81,9 @@ int parseNumericConditionalNode(Node * node, U3D_Context *  context) {
         }
     }
 
-    ret += parseNode(node -> children[0], context);
+    ret = parseNode(node -> children[0], context);
+    if(ret < 0)
+        return ret;
 
     switch(node->type){
         case LT_NUMERIC_NODE: parse(" < "); break;
@@ -97,7 +98,9 @@ int parseNumericConditionalNode(Node * node, U3D_Context *  context) {
             return -1;
     }
 
-    ret += parseNode(node -> children[1], context);
+    ret = parseNode(node -> children[1], context);
+    if(ret < 0)
+        return ret;
 
     return ret;
 }
@@ -114,6 +117,7 @@ int parseStringConditionalNode(Node * node, U3D_Context *  context) {
         logError(SYNTAX_ERROR, "String constant node expected\n");
         return -1;
     }
+
     ret += parseNode(node -> children[0], context);
 
     if(node->type == EQ_STRING_NODE) {
@@ -144,7 +148,9 @@ int parseBooleanConditionalNode(Node * node, U3D_Context *  context) {
         logError(SYNTAX_ERROR, "Boolean constant node expected\n");
         return -1;
     }
-    ret += parseNode(node -> children[0], context);
+    ret = parseNode(node -> children[0], context);
+    if(ret < 0)
+        return ret;
 
     if(node->type == EQ_BOOLEAN_NODE) {
         parse(" == ");
@@ -157,7 +163,9 @@ int parseBooleanConditionalNode(Node * node, U3D_Context *  context) {
         return -1;
     }
 
-    ret += parseNode(node -> children[1], context);
+    ret = parseNode(node -> children[1], context);
+    if(ret < 0)
+        return ret;
 
     return ret;
 }

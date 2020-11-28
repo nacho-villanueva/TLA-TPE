@@ -3,6 +3,6 @@
 
 #include "node.h"
 
-int parseVariableNode(Node * node, U3D_Context *  context);
+int parseVariableCreationNode(Node * node, U3D_Context *  context);
 
 #endif

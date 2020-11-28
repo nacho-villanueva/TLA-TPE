@@ -32,7 +32,7 @@ Node* newNode(NodeType type, NodeValue value, int childrenCount, ...) {
 }
 
 void addChildrenToNode(Node* node, int newChildrenCount, ...){
-    node->children = realloc(node->children, NODE_SIZE * node->childrenCount + newChildrenCount);
+    node->children = realloc(node->children, NODE_SIZE * (node->childrenCount + newChildrenCount));
     
     va_list valist;
     va_start(valist, newChildrenCount);
@@ -100,17 +100,19 @@ int parseNode(Node* node, U3D_Context * context){
         return 0;
     case STRING_CONSTANT_NODE:
         parse("%s", node->value.string);
+        return 0;
     case CODE_BLOCK_NODE:
         return parseCodeBlockNode(node, context);
     case CODE_LINE_NODE:
         return parseCodeLineNode(node, context);
-    case STRING_VARIABLE_NODE:
-    case INTEGER_VARIABLE_NODE:
-    case FLOAT_VARIABLE_NODE:
-    case BOOLEAN_VARIABLE_NODE:
-        return parseVariableNode(node, context);
+    case STRING_VARIABLE_CREATION_NODE:
+    case INTEGER_VARIABLE_CREATION_NODE:
+    case FLOAT_VARIABLE_CREATION_NODE:
+    case BOOLEAN_VARIABLE_CREATION_NODE:
+        return parseVariableCreationNode(node, context);
     case IDENTIFIER_NODE:
         parse("%s", node->value.string);
+        return 0;
     default:
         logInfo("WARNING: Node parser not assigned (Type: %s)\n", NODE_NAMES[node->type]);
         return -1;
@@ -182,3 +184,6 @@ Node *getChildNode(Node *node, NodeType type) {
     return ret;
 }
 
+const char * getNodeTypeByCode(NodeType type) {
+    return NODE_NAMES[type];
+}
