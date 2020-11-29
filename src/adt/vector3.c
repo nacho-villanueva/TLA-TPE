@@ -34,6 +34,12 @@ Vector3 vector3IntToVector3(Vector3Int vector3Int) {
     return vector3;
 }
 
+Vector3Int vector3ToVector3Int(Vector3 vector3){
+    Vector3Int vector3Int = newVector3Int((int)vector3->x, (int)vector3->y, (int)vector3->z);
+    free(vector3);
+    return vector3Int;
+}
+
 void addVector3(Vector3 vectorA, Vector3 vectorB, Vector3 result){
     result -> x = vectorA -> x + vectorB -> x;
     result -> y = vectorA -> y + vectorB -> y;

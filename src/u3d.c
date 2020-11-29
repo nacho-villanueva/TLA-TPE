@@ -100,7 +100,10 @@ U3D * initU3D(int argc, char * argv[]){
         snprintf(cmd, 2048, "rm -f -r %s/%s/*", cwd, settings -> outputDir);
         logDebug("Output folder already exists. Cleaning up contents.\n", cmd);
         logDebug("SYSTEM COMMAND: %s\n", cmd);
-        system(cmd);
+        int rmret = system(cmd);
+        if(rmret != 0){
+            logWarning("Verify your previous build files are not opened by another program.\n");
+        }
     }
 
     /* ----- OPEN OUTPUT FILE ----- */

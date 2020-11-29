@@ -124,6 +124,7 @@ value: numeric_value { $$ = newNode(VALUE_NODE, emptyNodeValue, 1, $1); }
      | string_value { $$ = newNode(VALUE_NODE, emptyNodeValue, 1, $1); }
      | boolean_value { $$ = newNode(VALUE_NODE, emptyNodeValue, 1, $1); }
      | vector_value { $$ = newNode(VALUE_NODE, emptyNodeValue, 1, $1); }
+     | identifier{ $$ = newNode(VALUE_NODE, emptyNodeValue, 1, $1); }
      ;
 
 

@@ -14,6 +14,11 @@ int print(NodeValue * values){
 void initU3DFunctions(U3D_Context * context){
     addFunctionToTable(newFunction("print", print, 1, PARAMETER_STRING), context);
     addFunctionToTable(newFunction("drawFigure", parseDrawFigure, 1, PARAMETER_FIGURE), context);
+
+    addFunctionToTable(newFunction("translateFigure", parseTranslateFigure, 2, PARAMETER_FIGURE, PARAMETER_VECTOR3), context);
+    addFunctionToTable(newFunction("rotateFigure", parseRotateFigure, 2, PARAMETER_FIGURE, PARAMETER_VECTOR3), context);
+    addFunctionToTable(newFunction("scaleFigure", parseScaleFigure, 2, PARAMETER_FIGURE, PARAMETER_VECTOR3), context);
+    addFunctionToTable(newFunction("addColorFigure", parseAddColorFigure, 2, PARAMETER_FIGURE, PARAMETER_VECTOR3INT), context);
 }
 
 int nodeToParameterValue(const char * funcName, Node * node, ParameterType expectedType, ParameterValue * value, size_t i, U3D_Context * context){
@@ -80,8 +85,8 @@ int nodeToParameterValue(const char * funcName, Node * node, ParameterType expec
             break;
 
         case PARAMETER_FIGURE:
-            castNode(child, STRING_CONSTANT_NODE);
-            if (child->type == STRING_CONSTANT_NODE) {
+            castNode(child, IDENTIFIER_NODE);
+            if (child->type == IDENTIFIER_NODE) {
                 value->figure = getFigureFromTable(child->value.string, context);
                 if (value->figure == NULL){
                     logError(SYNTAX_ERROR, "Unknown figure %s in function: %s; parameter: %d\n",child->value.string,  funcName, i);
@@ -89,7 +94,7 @@ int nodeToParameterValue(const char * funcName, Node * node, ParameterType expec
                 }
             }
             else {
-                logError(SYNTAX_ERROR, "Expected parameter of type Boolean in function: %s; parameter: %d\n", funcName, i);
+                logError(SYNTAX_ERROR, "Expected parameter of type Figure Identifier in function: %s; parameter: %d\n", funcName, i);
                 return -1;
             }
             break;

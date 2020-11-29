@@ -147,7 +147,7 @@ void drawBox(Figure figure){
     parse("translate(%s.fposition.x,%s.fposition.y,%s.fposition.z);\n", figure -> name, figure -> name, figure -> name);
     parse("fill(%s.fcolor.x,%s.fcolor.y,%s.fcolor.z);\n", figure -> name, figure -> name, figure -> name);
     parse("rotateX(radians(%s.frotation.x)); rotateY(radians(%s.frotation.y)); rotateZ(radians(%s.frotation.z));\n", figure -> name, figure -> name, figure -> name);
-    parse("scale(%s.fscale.x,%s.fscale.x,%s.fscale.z);\n", figure -> name, figure -> name, figure -> name);
+    parse("scale(%s.fscale.x,%s.fscale.y,%s.fscale.z);\n", figure -> name, figure -> name, figure -> name);
     parse("box(1);\n");
     parse("popMatrix();\n\n");
 }
@@ -169,24 +169,30 @@ void drawPyramid(Figure figure){
     parse("rotateX(radians(%s.frotation.x)); rotateY(radians(%s.frotation.y)); rotateZ(radians(%s.frotation.z));\n", figure -> name, figure -> name, figure -> name);
     parse("scale(%s.fscale.x,%s.fscale.y,%s.fscale.z);\n", figure -> name, figure -> name, figure -> name);
     parse("beginShape(TRIANGLES);\n"
+          "\tvertex(-0.5, 0.5, -0.5);\n"
+          "\tvertex( 0.5, 0.5, -0.5);\n"
+          "\tvertex( 0, -0.5, 0);\n"
           "\n"
-          "vertex(-1, -1, -1);\n"
-          "vertex( 1, -1, -1);\n"
-          "vertex( 0, 0, 1);\n"
+          "\tvertex( 0.5, 0.5, -0.5);\n"
+          "\tvertex( 0.5, 0.5, 0.5);\n"
+          "\tvertex( 0, -0.5, 0);\n"
           "\n"
-          "vertex( 1, -1, -1);\n"
-          "vertex( 1, 1, -1);\n"
-          "vertex( 0, 0, 1);\n"
+          "\tvertex( 0.5, 0.5, 0.5);\n"
+          "\tvertex(-0.5, 0.5, 0.5);\n"
+          "\tvertex( 0, -0.5, 0);\n"
           "\n"
-          "vertex( 1, 1, -1);\n"
-          "vertex(-1, 1, -1);\n"
-          "vertex( 0, 0, 1);\n"
+          "\tvertex(-0.5, 0.5, 0.5);\n"
+          "\tvertex(-0.5, 0.5, -0.5);\n"
+          "\tvertex( 0, -0.5, 0);\n"
           "\n"
-          "vertex(-1, 1, -1);\n"
-          "vertex(-1, -1, -1);\n"
-          "vertex( 0, 0, 1);\n"
+          "\tvertex(-0.5, 0.5, 0.5);\n"
+          "\tvertex(-0.5, 0.5, -0.5);\n"
+          "\tvertex( 0.5, 0.5, -0.5);\n"
           "\n"
-          "  endShape();\n");
+          "\tvertex(0.5, 0.5, -0.5);\n"
+          "\tvertex(-0.5, 0.5, 0.5);\n"
+          "\tvertex( 0.5, 0.5, 0.5);\n"
+          "endShape();\n");
     parse("popMatrix();\n\n");
 }
 
@@ -240,6 +246,30 @@ void drawFigure(Figure figure){
         default:
             logInfo("ERROR: parseDrawFigure(): Invalid figure type %s.", figureTypeToString(figure->type));
     }
+}
+
+void translateFigure(Figure figure, Vector3 vector3) {
+    parse("%s.fposition.x += %f;\n",figure->name, vector3->x);
+    parse("%s.fposition.y += %f;\n",figure->name, vector3->y);
+    parse("%s.fposition.z += %f;\n\n",figure->name, vector3->z);
+}
+
+void rotateFigure(Figure figure, Vector3 vector3) {
+    parse("%s.frotation.x += %f;\n",figure->name, vector3->x);
+    parse("%s.frotation.y += %f;\n",figure->name, vector3->y);
+    parse("%s.frotation.z += %f;\n\n",figure->name, vector3->z);
+}
+
+void scaleFigure(Figure figure, Vector3 vector3) {
+    parse("%s.fscale.x += %f;\n",figure->name, vector3->x);
+    parse("%s.fscale.y += %f;\n",figure->name, vector3->y);
+    parse("%s.fscale.z += %f;\n\n",figure->name, vector3->z);
+}
+
+void addColorFigure(Figure figure, Vector3Int vector3Int) {
+    parse("%s.fcolor.x += %f;\n",figure->name, vector3Int->x);
+    parse("%s.fcolor.y += %f;\n",figure->name, vector3Int->y);
+    parse("%s.fcolor.z += %f;\n\n",figure->name, vector3Int->z);
 }
 
 void printFigure(Figure figure){

@@ -23,7 +23,7 @@ Vector3 newVector3(float x, float y, float z);
 Vector3Int newVector3Int(int x, int y, int z);
 
 Vector3 vector3IntToVector3(Vector3Int vector3Int);
-Vector3Int vector3ToVector3Int(Vector3 vector3Int);
+Vector3Int vector3ToVector3Int(Vector3 vector3);
 
 void addVector3(Vector3 vectorA, Vector3 vectorB, Vector3 result);
 void multiplyVector3(Vector3 vector, float mul, Vector3 result);

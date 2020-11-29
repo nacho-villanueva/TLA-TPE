@@ -41,6 +41,14 @@ char * getFigureName(Figure figure);
 
 void drawFigure(Figure figure);
 
+void translateFigure(Figure figure, Vector3 vector3);
+
+void rotateFigure(Figure figure, Vector3 vector3);
+
+void scaleFigure(Figure figure, Vector3 vector3);
+
+void addColorFigure(Figure figure, Vector3Int vector3Int);
+
 void parseFigureAttributes(Figure figure);
 
 void printFigure(Figure figure);

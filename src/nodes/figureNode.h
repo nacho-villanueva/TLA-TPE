@@ -9,5 +9,12 @@ void parseFiguresInit(U3D_Context * context);
 
 int parseDrawFigure(ParameterValue * values);
 
+int parseTranslateFigure(ParameterValue * values);
+int parseRotateFigure(ParameterValue * values);
+int parseScaleFigure(ParameterValue * values);
+int parseAddColorFigure(ParameterValue * values);
+
+
+
 
 #endif /* _FIGURENODE_H_ */
