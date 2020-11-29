@@ -3,8 +3,6 @@
 
 #include <stdbool.h>
 
-typedef struct Variable * Variable;
-
 enum VariableType{
     VARIABLE_STRING = 0,
     VARIABLE_INTEGER,
@@ -12,26 +10,20 @@ enum VariableType{
     VARIABLE_BOOLEAN,
 };
 
-union VariableValue {
-    char * string;
-    int integer;
-    float decimal;
-    bool boolean;
-    void * notFound;
+struct Variable{
+    enum VariableType type;
+    char * identifier;
+    struct Variable * nextVariable;
+    bool isConstant;
+    bool isInitialized;
 };
+
+typedef struct Variable * Variable;
 
 void freeVariable(char * identifier);
 
-struct Variable * insertNewVariable(struct Variable ** first_variable, char * identifier, enum VariableType type, union VariableValue value, bool isConstant);
+struct Variable * insertNewVariable(struct Variable ** first_variable, char * identifier, enum VariableType type, bool isConstant, bool isInitialized);
 
-int checkIfIdentifierIsUsed(char * identifier, Variable first);
-
-union VariableValue getVariableValue(char * identifier, Variable first);
-
-int isConstant(char * identifier, struct Variable * first_variable);
-
-int setVariableValue(char * identifier, enum VariableType type, union VariableValue value, Variable first);
-
-enum VariableType getVariableType(char * identifier, struct Variable * first);
+Variable getVariable(char * identifier, Variable first);
 
 #endif 

@@ -3,27 +3,12 @@ END
 
 DRAW
 
-const int a = 2;
-
-const int bbbb = a;
-int dfg = a;
-
-if(a + 2 > 22){
-    int z;
+int a;
+int b;
+float c;
+if(6-1) {
+    int aaaa;
 }
-
-const string hola = "hola";
-
-int jo = 5;
-const int je = jo + 5 * 6;
-const int ji = je + je;
-
-const string ju = hola;
-
-
-float hh = 5.5;
-//int rr = 2 + hh;
-//int jj = hh + 2;
 
 END
 

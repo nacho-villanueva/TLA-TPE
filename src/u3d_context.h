@@ -29,6 +29,6 @@ int addFunctionToTable(Function function, U3D_Context * context);
 
 Function getFunctionFromTable(char * function, U3D_Context * context);
 
-int newVariable(char * identifier, enum VariableType type, union VariableValue value, U3D_Context * context, bool isConstant);
+int newVariable(char * identifier, enum VariableType type, U3D_Context * context, bool isConstant, bool isInitialized);
 
 #endif /* _U3DDEF_H_ */

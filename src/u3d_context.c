@@ -2,6 +2,7 @@
 
 #include "adt/figure.h"
 #include "adt/function.h"
+#include "adt/variable.h"
 
 #include <string.h>
 #include <malloc.h>
@@ -13,8 +14,7 @@ bool isVariableDefined(char * name, U3D_Context * context) {
             return true;
 
     // We check on the linked list of variables as well
-    int ret = checkIfIdentifierIsUsed(name, context->first);
-    if(ret == 1)
+    if(getVariable(name, context->first) != NULL)
         return true;
         
     return false;
@@ -71,7 +71,7 @@ Function getFunctionFromTable(char * name, U3D_Context *context) {
     return NULL;
 }
 
-int newVariable(char * identifier, enum VariableType type, union VariableValue value, U3D_Context * context, bool isConstant) {
+int newVariable(char * identifier, enum VariableType type, U3D_Context * context, bool isConstant, bool isInitialized) {
 
     // TODO: palabras reservadas
     if(strcmp(identifier, "if") == 0 || strcmp(identifier, "float") == 0 || strcmp(identifier, "string") == 0 ||
@@ -87,7 +87,7 @@ int newVariable(char * identifier, enum VariableType type, union VariableValue v
         return -1;
     }
 
-    if(insertNewVariable(&context->first, identifier, type, value, isConstant) == NULL) {
+    if(insertNewVariable(&context->first, identifier, type, isConstant, isInitialized) == NULL) {
         logError(FATAL_ERROR, "Couldn't define variable \"%s\"\n", identifier);
         return -1;
     }

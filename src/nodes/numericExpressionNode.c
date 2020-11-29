@@ -5,6 +5,8 @@
 int parseNumericExpressionNode(Node * node, U3D_Context *  context) {
 
     int ret;
+    Variable a;
+
 
     if(node->childrenCount != 1 && node->childrenCount != 2) {
         logDebug("Expected 1 or 2 children in numeric expression node\n");
@@ -19,11 +21,24 @@ int parseNumericExpressionNode(Node * node, U3D_Context *  context) {
             logDebug("Numeric expression node expected (in numericExpressionNode)\n");
             return -1;
         }
-        if(node->children[i]->type == IDENTIFIER_NODE
-                && getVariableType(node->children[i]->value.string, context->first) != VARIABLE_FLOAT
-                && getVariableType(node->children[i]->value.string, context->first) != VARIABLE_INTEGER) {
-            logError(SYNTAX_ERROR, "Non-numeric variable in numeric expression or variable doesn't exist\n");
-            return -1;
+
+        if(node->children[i]->type == IDENTIFIER_NODE){
+            a = getVariable(node->children[i]->value.string, context->first);
+
+            if(a == NULL){
+                logError(SYNTAX_ERROR, "Variable \"%s\" doesn't exist\n", node->children[i]->value.string);
+                return -1;
+            }
+
+            if(a->type != VARIABLE_FLOAT && a->type != VARIABLE_INTEGER) {
+                logError(SYNTAX_ERROR, "Non-numeric variable in numeric expression\n");
+                return -1;
+            }
+
+            if(! a->isInitialized){
+                logError(SYNTAX_ERROR, "Variable \"%s\" is not initialized\n", node->children[i]->value.string);
+                return -1;
+            }
         }
     }
 

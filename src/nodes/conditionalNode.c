@@ -2,6 +2,9 @@
 #include "../utils/logger.h"
 #include "../utils/parser.h"
 
+static Variable a, b;
+
+
 int parseOrAndConditionalNode(Node * node, U3D_Context *  context) {
     int ret;
 
@@ -93,10 +96,22 @@ int parseNumericConditionalNode(Node * node, U3D_Context *  context) {
             logDebug("Numeric expression node expected in parseNumericConditionalNode\n");
             return -1;
         }
+        
         if(node->children[i]->type == IDENTIFIER_NODE) {
-            int ret2 = getVariableType(node->children[i]->value.string, context->first);
-            if(ret2 != VARIABLE_FLOAT && ret2 != VARIABLE_INTEGER){
-                logError(SYNTAX_ERROR, "Cannot make a numerical comparison if one of the 2 parts is not a number\n");
+            a = getVariable(node->children[i]->value.string, context->first);
+
+            if(a == NULL) {
+                logError(SYNTAX_ERROR, "Variable \"%s\" doesn't exist\n", node->children[i]->value.string);
+                return -1;
+            }
+
+            if(! a->isInitialized) {
+                logError(SYNTAX_ERROR, "Variable \"%s\" is not initialized\n", node->children[i]->value.string);
+                return -1;
+            }
+
+            if(a->type != VARIABLE_FLOAT && a->type != VARIABLE_INTEGER){
+                logError(SYNTAX_ERROR, "Cannot make a numerical comparison if \"%s\" is not a number\n", node->children[i]->value.string);
                 return -1;
             }
         }
@@ -140,8 +155,20 @@ int parseStringConditionalNode(Node * node, U3D_Context *  context) {
                 logError(SYNTAX_ERROR, "Cannot make a string comparison if one of the 2 parts is not a string\n");
                 return -1;
             }
-            if(getVariableType(node -> children[i]->value.string, context->first) != VARIABLE_STRING){
-                logError(SYNTAX_ERROR, "Cannot make a string comparison if one of the 2 parts is not a string\n");
+
+            a = getVariable(node->children[i]->value.string, context->first);
+            if(a == NULL) {
+                logError(SYNTAX_ERROR, "Variable \"%s\" doesn't exist\n", node->children[i]->value.string);
+                return -1;
+            }
+
+            if(! a->isInitialized) {
+                logError(SYNTAX_ERROR, "Variable \"%s\" is not initialized\n", node->children[i]->value.string);
+                return -1;
+            }
+
+            if(a->type != VARIABLE_STRING){
+                logError(SYNTAX_ERROR, "Cannot make a string comparison if \"%s\" is not a string\n", node->children[i]->value.string);
                 return -1;
             }
         }
@@ -196,7 +223,7 @@ int parseBooleanConditionalNode(Node * node, U3D_Context *  context) {
     return ret;
 }
 
-int parseDoubleIdentifierConditionalNode(Node * node, U3D_Context *  context) {
+int parseDoubleIdentifierConditionalNode(Node * node, U3D_Context *  context) { //  x < y
     int ret = 0;
 
     if(node->childrenCount != 2){
@@ -209,23 +236,24 @@ int parseDoubleIdentifierConditionalNode(Node * node, U3D_Context *  context) {
         return -1;
     }
 
-    int firstVariableType = getVariableType(node->children[0]->value.string, context->first);
-    int secondVariableType = getVariableType(node->children[1]->value.string, context->first);
+    a = getVariable(node->children[0]->value.string, context->first);
+    b = getVariable(node->children[1]->value.string, context->first);
 
-    if(firstVariableType == -1){
+    if(a == NULL){
         logError(SYNTAX_ERROR, "Variable \"%s\" doesn't exist\n", node->children[0]->value.string);
         return -1;
     }
-    if(secondVariableType == -1){
+    if(b == NULL){
         logError(SYNTAX_ERROR, "Variable \"%s\" doesn't exist\n", node->children[1]->value.string);
         return -1;
     }
-    if(firstVariableType != secondVariableType){
+
+    if(a->type != b->type){
         logError(SYNTAX_ERROR, "Cannot make logical operations between 2 variables of different type\n");
         return -1;
     }
 
-    if(firstVariableType == VARIABLE_INTEGER || firstVariableType == VARIABLE_FLOAT) {
+    if(a->type == VARIABLE_INTEGER || a->type == VARIABLE_FLOAT) {
 
         ret = parseNode(node -> children[0], context);
         if(ret < 0)
@@ -247,7 +275,7 @@ int parseDoubleIdentifierConditionalNode(Node * node, U3D_Context *  context) {
         if(ret < 0)
             return ret;
     }
-    else if(firstVariableType == VARIABLE_STRING) {
+    else if(a->type == VARIABLE_STRING) {
         if(node->type == NEQ_IDENTIFIER_NODE){
             parse("!");
         }
