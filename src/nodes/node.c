@@ -184,15 +184,16 @@ int castNode(Node * node, NodeType toType){
     switch (toType) {
         case VECTOR3_NODE:
             if(node->type == VECTOR3INT_NODE){
-                // TODO: IMPLEMENT
-                logInfo("IMPORTANT WARNING: IMPLEMENT CAST TO VECTOR3");
+                node->type = VECTOR3_NODE;
+                node->value.vector = vector3IntToVector3(node->value.vectorInt);
                 return 0;
             }
             break;
         case VECTOR3INT_NODE:
             if(node->type == VECTOR3_NODE){
-                // TODO: IMPLEMENT
-                logInfo("IMPORTANT WARNING: IMPLEMENT CAST TO VECTOR3INT");
+                node->type = VECTOR3INT_NODE;
+                node->value.vectorInt = vector3ToVector3Int(node->value.vector);
+                logWarning("Implicit cast of Vector3Int to Vector3\n");
                 return 0;
             }
             break;

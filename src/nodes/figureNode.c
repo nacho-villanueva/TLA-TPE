@@ -87,15 +87,17 @@ void setFigureAttributeFromValueNode(Figure figure, FigureAttributeType type, No
                 setFigureAttribute(figure, type, attrValue);
             break;
         case ATTR_CHILD:
-            vn = getChildNode(valueNode, STRING_CONSTANT_NODE);
+            vn = getChildNode(valueNode, IDENTIFIER_NODE);
             if(vn == NULL) {
-                logError(SYNTAX_ERROR, "Wrong attribute type in Figure: %s. Expected value type: String.\n",
+                logError(SYNTAX_ERROR, "Wrong attribute type in Figure: %s. Expected value type: Identifier.\n",
                          getFigureName(figure));    //TODO: MESSAGE ERROR CAN BE IMPROVED
                 return;
             }
             attrValue.figure = getFigureFromTable(vn -> value.string, context);
             if(attrValue.figure != NULL)
                 setFigureAttribute(figure, type, attrValue);
+            else
+                logWarning("Unknown figure name %s in figure %s. Skipping.\n", vn -> value.string, getFigureName(figure));
             break;
         case ATTR_PATH:
             vn = getChildNode(valueNode, STRING_CONSTANT_NODE);
@@ -140,8 +142,12 @@ Figure generateFigure(Node * node, U3D_Context * context) {
         logError(SYNTAX_ERROR, "No type defined for Figure %s\n", name);
         return NULL;
     }
-    char * typeValue = getChildNode(type, STRING_CONSTANT_NODE)->value.string;
-    FigureType figureType = getFigureType(typeValue);
+    Node * typeValue = getChildNode(type, IDENTIFIER_NODE);
+    if(typeValue == NULL){
+        logError(SYNTAX_ERROR, "Figure %s Type invalid type. Expected an identifier.\n", name);
+        return NULL;
+    }
+    FigureType figureType = getFigureType(typeValue->value.string);
     if(figureType == FIGURE_INVALID){
         logError(SYNTAX_ERROR, "Invalid figure type %s\n", typeValue);
         return NULL;
@@ -158,6 +164,9 @@ Figure generateFigure(Node * node, U3D_Context * context) {
 
 int parseFigureNode(Node * node, U3D_Context * context){
     Figure figure = generateFigure(node, context);
+    if(figure == NULL)
+        return -1;
+
     if(addFigureToTable(figure, context) < 0){
         freeFigure(figure);
         return -1;
@@ -171,4 +180,29 @@ void parseFiguresInit(U3D_Context * context){
     for(size_t i = 0; i < context->figuresCount; i++){
         parseFigureAttributes(context->figuresTable[i]);
     }
+}
+
+int parseDrawFigure(ParameterValue * values) {
+    drawFigure(values[0].figure);
+    return 0;
+}
+
+int parseTranslateFigure(ParameterValue *values) {
+    translateFigure(values[0].figure, values[1].vector);
+    return 0;
+}
+
+int parseRotateFigure(ParameterValue *values) {
+    rotateFigure(values[0].figure, values[1].vector);
+    return 0;
+}
+
+int parseScaleFigure(ParameterValue *values) {
+    scaleFigure(values[0].figure, values[1].vector);
+    return 0;
+}
+
+int parseAddColorFigure(ParameterValue *values) {
+    addColorFigure(values[0].figure, values[1].vectorInt);
+    return 0;
 }

@@ -1,36 +1,89 @@
 // Hello!
 
-figure cube = {
-    type: "box";
-    scale: (200,200,200);
-    position: (400,400,-500);
-    color: (102,102,102);
-    rotation: (45, 45, 45);
+figure roof = {
+	type: pyramid;
+	position: (0, -80,0);
+	scale: (125, 75, 125);
+	color: (255, 195, 161);
 }
 
-figure cube2 = {
-    type: "box";
-    scale: (75,100,120);
-    position: (600,600,-250);
-    color: (102,0,102);
-    rotation: (45, 45, 45);
+figure building = {
+	type: box;
+	position: (0,0,0);
+	scale: (100, 100, 100);
+	color: (237, 235, 218);
 }
 
-figure cube3 = {
-    type: "sphere";
-    scale: (200,200,200);
-    position: (600,200, -250);
-    color: (0,102,102);
-    rotation: (45, 45, 45);
+figure door = {
+	type: box;
+	position: (45,15,25);
+	scale: (20,65,20);
+	color: (94, 59, 38);
 }
 
-figure cube4 = {
-    type: "box";
-    scale: (150,100,150);
-    position: (100,20, -100);
-    color: (102,0,102);
-    rotation: (10, 60, 90);
+figure window = {
+	type: box;
+	position: (0, 0, 45);
+	scale: (50, 50, 10);
+	color: (220, 250, 248);
 }
+
+figure sidewalk = {
+	type: box;
+	position: (150, 52, 10);
+	scale: (200, 10, 40);
+	color: (125, 125, 125);
+}
+
+figure treeTrunk = {
+	type: box;
+	position: (0,0,0);
+	scale: (25, 100, 25);
+	color: (71, 45, 29);
+}
+
+figure treeLeaf = {
+	type: pyramid;
+	position: (0, -50, 0);
+	color: (199, 181, 80);
+	scale: (60, 125, 60);
+}
+
+figure tree = {
+	type: composite;
+	position: (200,0, 100);
+	child: treeTrunk;
+	child: treeLeaf;
+}
+
+figure house = {
+	type: composite;
+	position: (-400, 0, 0);
+	child: roof;
+	child: building;
+	child: door;
+	child: window;
+	child: sidewalk;
+	child: tree;
+}
+
+
+
+figure grass = {
+	type: box;
+	position: (0, 51, 0);
+	scale: (1500.0, 0.1, 1500.0);
+	color: (180, 222, 91);
+}
+
+figure street = {
+	type: box;
+	position: (0, 51, 0);
+	scale: (300.0, 0.2, 1500.0);
+	color: (237, 235, 218);
+}
+
+
 
 SETTINGS
 
@@ -38,7 +91,9 @@ END
 
 DRAW
 
-    print("FUUUUCKKKK YEAH LPM FUNCIONA!");
+	drawFigure(grass);
+	drawFigure(street);
+	drawFigure(house);
 
 END
 
