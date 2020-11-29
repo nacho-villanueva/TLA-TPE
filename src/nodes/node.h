@@ -65,7 +65,7 @@ static const char * NODE_NAMES[] = {
 
     "FUNCTION_IDENTIFIER_NODE",
     "FUNCTION_CALL_NODE",
-    "PARAMETERS_LIST"
+    "PARAMETERS_LIST",
 
     /*variable types*/
     "STRING_VARIABLE_CREATION_NODE",
@@ -142,7 +142,7 @@ typedef enum nodeType{
 
     FUNCTION_IDENTIFIER_NODE,
     FUNCTION_CALL_NODE,
-    PARAMETERS_LIST
+    PARAMETERS_LIST,
 
     /* variable creation types */
     STRING_VARIABLE_CREATION_NODE,  /* string a = "hola"; || string a; */

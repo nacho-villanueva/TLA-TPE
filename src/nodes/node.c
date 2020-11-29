@@ -111,8 +111,6 @@ int parseNode(Node* node, U3D_Context * context){
         return 0;
     case CODE_BLOCK_NODE:
         return parseCodeBlockNode(node, context);
-    case CODE_LINE_NODE:
-        return parseCodeLineNode(node, context);
     case FUNCTION_CALL_NODE:
         return parseFunctionCallNode(node, context);
     case STRING_VARIABLE_CREATION_NODE:
