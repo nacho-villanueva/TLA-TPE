@@ -55,6 +55,10 @@ static const char * NODE_NAMES[] = {
 
     "CODE_BLOCK_NODE",
     "CODE_LINE_NODE",
+
+    "FUNCTION_IDENTIFIER_NODE",
+    "FUNCTION_CALL_NODE",
+    "PARAMETERS_LIST"
 };
 
 typedef enum nodeType{
@@ -108,6 +112,10 @@ typedef enum nodeType{
     
     CODE_BLOCK_NODE,
     CODE_LINE_NODE,
+
+    FUNCTION_IDENTIFIER_NODE,
+    FUNCTION_CALL_NODE,
+    PARAMETERS_LIST
 } NodeType;
 
 typedef union NodeValue {
@@ -145,6 +153,8 @@ Returns -1 on error.
 int parseNode(Node* node, U3D_Context *  context);
 
 Node * getChildNode(Node * node, NodeType type);
+
+int castNode(Node * node, NodeType toType);
 
 /*
 Print node tree to stdout.

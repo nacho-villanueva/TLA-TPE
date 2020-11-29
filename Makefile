@@ -26,9 +26,8 @@ debug: LEX_FLAGS +=
 debug: GCC_FLAGS += -DDEBUG
 debug: all
 
-
 compile:
-	${CC} ${GCC_FLAGS} -o ${GCC_OUT} src/utils/* src/adt/*.c src/nodes/*.c  src/u3d.c src/u3d_context.c lex.yy.c y.tab.c -lm;
+	${CC} ${GCC_FLAGS} -o ${GCC_OUT} src/utils/*.c src/adt/*.c src/nodes/*.c src/*.c src/core/*.c lex.yy.c y.tab.c -lm;
 
 
 clean:
@@ -38,5 +37,4 @@ clean:
 	rm -f ${GCC_OUT}
 	rm -f u3dc.log
 	rm -f -r U3Dout
-
 	
