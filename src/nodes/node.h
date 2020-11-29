@@ -154,6 +154,8 @@ int parseNode(Node* node, U3D_Context *  context);
 
 Node * getChildNode(Node * node, NodeType type);
 
+int castNode(Node * node, NodeType toType);
+
 /*
 Print node tree to stdout.
 */

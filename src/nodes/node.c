@@ -12,6 +12,7 @@
 #include "ifWhileNode.h"
 #include "rootNodes.h"
 #include "figureNode.h"
+#include "functionCallNode.h"
 
 Node* newNode(NodeType type, NodeValue value, int childrenCount, ...) {
     Node* node = malloc(NODE_SIZE);
@@ -99,10 +100,13 @@ int parseNode(Node* node, U3D_Context * context){
         return 0;
     case STRING_CONSTANT_NODE:
         parse("%s", node->value.string);
+        return 0;
     case CODE_BLOCK_NODE:
         return parseCodeBlockNode(node, context);
     case CODE_LINE_NODE:
         return parseCodeLineNode(node, context);
+    case FUNCTION_CALL_NODE:
+        return parseFunctionCallNode(node, context);
     default:
         logInfo("WARNING: Node parser not assigned (Type: %s)\n", NODE_NAMES[node->type]);
         return -1;
@@ -154,6 +158,48 @@ void printTreeRec(Node * node, int step){
                 printTreeRec(node->children[i], step+1);
         }
     }
+}
+
+int castNode(Node * node, NodeType toType){
+    if(node->type == toType)
+        return 0;
+    switch (toType) {
+        case VECTOR3_NODE:
+            if(node->type == VECTOR3INT_NODE){
+                // TODO: IMPLEMENT
+                logInfo("IMPORTANT WARNING: IMPLEMENT CAST TO VECTOR3");
+                return 0;
+            }
+            break;
+        case VECTOR3INT_NODE:
+            if(node->type == VECTOR3_NODE){
+                // TODO: IMPLEMENT
+                logInfo("IMPORTANT WARNING: IMPLEMENT CAST TO VECTOR3INT");
+                return 0;
+            }
+            break;
+        case FLOAT_CONSTANT_NODE:
+            if(node->type == INTEGER_CONSTANT_NODE){
+                node->type = FLOAT_CONSTANT_NODE;
+                node->value.decimal = (float)node->value.integer;
+                return 0;
+            }
+            break;
+        case INTEGER_CONSTANT_NODE:
+            if(node->type == FLOAT_CONSTANT_NODE){
+                node->type = INTEGER_CONSTANT_NODE;
+                node->value.integer = (int)node->value.decimal;
+                return 0;
+            } else if(node->type == BOOLEAN_CONSTANT_NODE){
+                node->type = INTEGER_CONSTANT_NODE;
+                node->value.integer = node->value.boolean ? 1 : 0;
+                return 0;
+            }
+        default:
+            break;
+    }
+
+    return -1;
 }
 
 void printTree(Node * node) {
