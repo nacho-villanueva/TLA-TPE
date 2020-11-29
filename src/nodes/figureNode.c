@@ -1,7 +1,6 @@
 #include <malloc.h>
 #include <strings.h>
 #include <string.h>
-#include "../adt/figure.h"
 #include "figureNode.h"
 #include "../utils/logger.h"
 #include "../utils/parser.h"

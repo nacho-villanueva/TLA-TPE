@@ -16,21 +16,35 @@ set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 add_subdirectory(src)
 
-set(YACC_OUTPUT ${CMAKE_SOURCE_DIR}/y.tab.c)
-set(LEX_OUTPUT ${CMAKE_SOURCE_DIR}/lex.yy.c)
-set(U3DC_OUTPUT ${CMAKE_SOURCE_DIR}/u3dc)
+#FIND_PACKAGE(BISON REQUIRED)
+SET(BisonOutput ${CMAKE_SOURCE_DIR}/y.tab.c)
+IF(BISON_FOUND)
+    ADD_CUSTOM_COMMAND(
+            OUTPUT ${BisonOutput}
+            COMMAND ${BISON_EXECUTABLE}
+            --defines=${CMAKE_SOURCE_DIR}/y.tab.h
+            --output=${BisonOutput}
+            ${CMAKE_SOURCE_DIR}/src/yacc.y
+            COMMENT "Generating Yacc"
+    )
+ENDIF()
 
-
-add_custom_command(OUTPUT ${YACC_OUTPUT} ${CMAKE_SOURCE_DIR}/y.tab.h ${LEX_OUTPUT} ${U3DC_OUTPUT}
-        COMMAND make -C ${CMAKE_SOURCE_DIR} build
-        COMMENT "Building Parsers")
+#FIND_PACKAGE(FLEX REQUIRED)
+SET(FlexOutput ${CMAKE_SOURCE_DIR}/lex.yy.c)
+IF(FLEX_FOUND)
+    ADD_CUSTOM_COMMAND(
+            OUTPUT ${FlexOutput}
+            COMMAND ${FLEX_EXECUTABLE}
+            --outfile=${FlexOutput}
+            ${CMAKE_SOURCE_DIR}/src/grammar.l
+            COMMENT "Generating Lex"
+    )
+ENDIF()
 
 set_source_files_properties(${YACC_OUTPUT}
         PROPERTIES GENERATED TRUE)
 set_source_files_properties(${LEX_OUTPUT}
         PROPERTIES GENERATED TRUE)
 
-add_custom_target(U3DC ${U3DC_OUTPUT})
-
-add_executable(U3D_DUMMY ${YACC_OUTPUT} ${LEX_OUTPUT})
-target_link_libraries(U3D_DUMMY U3DC_LIB)
+add_executable(u3dc ${BisonOutput} ${FlexOutput})
+target_link_libraries(u3dc U3D_Core)

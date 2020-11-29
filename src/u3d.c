@@ -1,4 +1,5 @@
 #include "u3d.h"
+#include "core/U3D_Functions.h"
 #include "configs.h"
 #include "utils/logger.h"
 #include "utils/parser.h"
@@ -134,6 +135,8 @@ int compileU3D(U3D * settings, Node * root){
 
     U3D_Context context;
     memset(&context, 0, sizeof(U3D_Context));
+
+    initU3DFunctions(&context);
 
     if(parseNode(root, &context) < 0){
         return -1;

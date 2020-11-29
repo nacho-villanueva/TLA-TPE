@@ -3,6 +3,7 @@
     #include <stdlib.h>
     #include <stddef.h>
     #include <stdbool.h>
+    #include <strings.h>
 
     #include "src/nodes/node.h"
     #include "src/utils/logger.h"
@@ -42,16 +43,21 @@
 %token<string> STRING
 %token<boolean> BOOLEAN
 %token<character> BRACKET_OPEN BRACKET_CLOSE OPEN CLOSE
-%token COMMA
+%token COMMA DOT
 %token WHILE
 %token IF
 %token AND OR GT LT GE LE EQ NEQ
 
 %type<node> draw
 %type<node> declaration_list definition
+
 %type<node> define_figure
 %type<node> figure_atribute_list
 %type<node> figure_atribute
+
+%type<node> function_identifier function_call
+%type<node> parameters_list
+
 %type<node> value
 %type<node> block_list
 %type<node> block
@@ -66,7 +72,6 @@
 %type<node> while
 %type<node> conditional
 %type<node> identifier
-
 
 
 %left AND
@@ -125,6 +130,8 @@ value: numeric_value { $$ = newNode(VALUE_NODE, emptyNodeValue, 1, $1); }
 vector_value: OPEN FLOAT COMMA FLOAT COMMA FLOAT CLOSE { $$ = newNode(VECTOR3_NODE, (NodeValue)newVector3($2,$4,$6), 0); }
             | OPEN INTEGER COMMA INTEGER COMMA INTEGER CLOSE { $$ = newNode(VECTOR3INT_NODE, (NodeValue)newVector3Int($2,$4,$6), 0); }
 
+// TODO: ALLOW (1, 1.2, 3)
+
 numeric_value: INTEGER {$$ = newNode(INTEGER_CONSTANT_NODE,  (NodeValue)$1, 0); }
              | FLOAT {$$ = newNode(FLOAT_CONSTANT_NODE, (NodeValue)$1, 0); }
              ; 
@@ -140,9 +147,10 @@ code_block: code_block code_line { addChildrenToNode($1, 1, $2); }
            ;
            
 
-code_line: if { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
-           | while { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
-           | numeric_value { $$ = newNode(CODE_LINE_NODE, emptyNodeValue, 1, $1); }
+code_line: if { $$ = $1; }
+           | while { $$ = $1; }
+           | numeric_value { $$ = $1; }
+           | function_call { $$ = $1; }
            ;
 
 
@@ -176,6 +184,22 @@ numeric_expression: numeric_expression PLUS numeric_expression {$$ = newNode(PLU
                     | numeric_expression MODULE numeric_expression {$$ = newNode(MODULE_NODE, emptyNodeValue, 2, $1, $3); }
                     | numeric_value { $$ = $1; }
                     ; 
+
+function_identifier: IDENTIFIER  {$$ = newNode(FUNCTION_IDENTIFIER_NODE, (NodeValue)$1, 0); }
+                   ;
+
+/*function_identifier: function_identifier DOT identifier { addChildrenToNode($1, 1, $3); }
+                   | identifier { $$ = newNode(FUNCTION_IDENTIFIER_NODE, emptyNodeValue, 1, $1); }
+                   ;    
+TODO: ALLOW FUNCTION CALL FROM CHILD                   */
+
+function_call: function_identifier OPEN CLOSE ENDL{ $$ = newNode(FUNCTION_CALL_NODE, emptyNodeValue, 1, $1); }
+             | function_identifier OPEN parameters_list CLOSE ENDL{ $$ = newNode(FUNCTION_CALL_NODE, emptyNodeValue, 2, $1, $3); }
+             ;
+
+parameters_list: parameters_list COMMA value { addChildrenToNode($1, 1, $3); }
+               | value {$$ = newNode(PARAMETERS_LIST, emptyNodeValue, 1, $1); }
+               ;
 
 %%
 
