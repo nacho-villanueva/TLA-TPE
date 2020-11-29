@@ -47,6 +47,7 @@
 %token WHILE
 %token IF
 %token AND OR GT LT GE LE EQ NEQ
+%token CONST
 
 %type<node> draw
 %type<node> declaration_list definition
@@ -74,6 +75,7 @@
 %type<node> identifier
 %type<node> variable_creation
 %type<node> variable_value_update
+%type<node> constant_creation
 
 
 %left AND
@@ -155,11 +157,17 @@ code_line: if { $$ = $1; }
            | variable_creation { $$ = $1; }
            | variable_value_update { $$ = $1; }
            | function_call { $$ = $1; }
+           | constant_creation { $$ = $1; }
            ;
 
 variable_creation: INT_TYPE identifier EQUAL numeric_expression ENDL { $$ = newNode(INTEGER_VARIABLE_CREATION_NODE, emptyNodeValue, 2, $2, $4); }
                  | STRING_TYPE identifier EQUAL string_value ENDL { $$ = newNode(STRING_VARIABLE_CREATION_NODE, emptyNodeValue, 2, $2, $4); }
                  | FLOAT_TYPE identifier EQUAL numeric_expression ENDL { $$ = newNode(FLOAT_VARIABLE_CREATION_NODE, emptyNodeValue, 2, $2, $4); }
+
+                 | INT_TYPE identifier EQUAL identifier ENDL { $$ = newNode(INTEGER_VARIABLE_CREATION_NODE, emptyNodeValue, 2, $2, $4); }
+                 | STRING_TYPE identifier EQUAL identifier ENDL { $$ = newNode(STRING_VARIABLE_CREATION_NODE, emptyNodeValue, 2, $2, $4); }
+                 | FLOAT_TYPE identifier EQUAL identifier ENDL { $$ = newNode(FLOAT_VARIABLE_CREATION_NODE, emptyNodeValue, 2, $2, $4); }
+
                  | INT_TYPE identifier ENDL { $$ = newNode(INTEGER_VARIABLE_CREATION_NODE, emptyNodeValue, 1, $2); }
                  | STRING_TYPE identifier ENDL { $$ = newNode(STRING_VARIABLE_CREATION_NODE, emptyNodeValue, 1, $2); }
                  | FLOAT_TYPE identifier ENDL { $$ = newNode(FLOAT_VARIABLE_CREATION_NODE, emptyNodeValue, 1, $2); }
@@ -172,6 +180,17 @@ variable_value_update: identifier EQUAL numeric_expression ENDL { $$ = newNode(N
                      | identifier EQUAL boolean_value ENDL { $$ = newNode(BOOLEAN_VARIABLE_UPDATE_NODE, emptyNodeValue, 2, $1, $3); }
                      | identifier EQUAL identifier ENDL { $$ = newNode(IDENTIFIER_VARIABLE_UPDATE_NODE, emptyNodeValue, 2, $1, $3); }
                      ;
+
+constant_creation: CONST INT_TYPE identifier EQUAL numeric_expression ENDL { $$ = newNode(INTEGER_CONSTANT_CREATION_NODE, emptyNodeValue, 2, $3, $5); }
+		         | CONST STRING_TYPE identifier EQUAL string_value ENDL { $$ = newNode(STRING_CONSTANT_CREATION_NODE, emptyNodeValue, 2, $3, $5); }
+		         | CONST FLOAT_TYPE identifier EQUAL numeric_expression ENDL { $$ = newNode(FLOAT_CONSTANT_CREATION_NODE, emptyNodeValue, 2, $3, $5); }
+		         | CONST BOOLEAN_TYPE identifier EQUAL boolean_value ENDL { $$ = newNode(BOOLEAN_CONSTANT_CREATION_NODE, emptyNodeValue, 2, $3, $5); }
+                 
+                 | CONST INT_TYPE identifier EQUAL identifier ENDL { $$ = newNode(INTEGER_CONSTANT_CREATION_NODE, emptyNodeValue, 2, $3, $5); }
+		         | CONST STRING_TYPE identifier EQUAL identifier ENDL { $$ = newNode(STRING_CONSTANT_CREATION_NODE, emptyNodeValue, 2, $3, $5); }
+		         | CONST FLOAT_TYPE identifier EQUAL identifier ENDL { $$ = newNode(FLOAT_CONSTANT_CREATION_NODE, emptyNodeValue, 2, $3, $5); }
+		         | CONST BOOLEAN_TYPE identifier EQUAL identifier ENDL { $$ = newNode(BOOLEAN_CONSTANT_CREATION_NODE, emptyNodeValue, 2, $3, $5); }
+                 ;
 
 /* variable_assignment:  */
 

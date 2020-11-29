@@ -37,6 +37,7 @@ boolean_primitive [true|false]
 "}"								return BRACKET_CLOSE;
 ","                             return COMMA;
 "."                             return DOT;
+"const"                         return CONST;
 "int"							return INT_TYPE;
 "float"							return FLOAT_TYPE;
 "string"                        return STRING_TYPE;

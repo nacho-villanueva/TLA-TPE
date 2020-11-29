@@ -3,7 +3,7 @@
 #include "../utils/parser.h"
 
 
-int parseVariableCreationNode(Node * node, U3D_Context *  context) {
+int parseVariableCreationNode(Node * node, U3D_Context *  context, bool isConstant) {
     int ret = 0;
     union VariableValue value;
     int type;
@@ -12,109 +12,176 @@ int parseVariableCreationNode(Node * node, U3D_Context *  context) {
 
     switch (node->type) {
 
+        case INTEGER_CONSTANT_CREATION_NODE:
         case INTEGER_VARIABLE_CREATION_NODE:
             if(node->childrenCount == 2) {
-                type = node->children[1]->type;
-                if(type == PLUS_NODE || type == MINUS_NODE || type == TIMES_NODE || type == DIVIDE_NODE || type == MODULE_NODE) {
+                type = node->children[1]->type; 
+                if(type != IDENTIFIER_NODE) {
+                    if (type == PLUS_NODE || type == MINUS_NODE || type == TIMES_NODE || type == DIVIDE_NODE ||
+                        type == MODULE_NODE) {
+                        value.integer = 0;
+                        ret = newVariable(node->children[0]->value.string, VARIABLE_INTEGER, value, context, isConstant);
+                        if (ret < 0)
+                            return ret;
+                        if(isConstant)
+                            parse("final ");
+                        parse("int %s = ", node->children[0]->value.string);
+                        ret = parseNode(node->children[1], context);
+                        if (ret < 0)
+                            return ret;
+                        parse(";\n");
+                    } else {
+                        value.integer = node->children[1]->value.integer;
+                        ret = newVariable(node->children[0]->value.string, VARIABLE_INTEGER, value, context, isConstant);
+                        if (ret < 0)
+                            return ret;
+                        if(isConstant)
+                            parse("final ");   
+                        parse("int %s = %d;\n", node->children[0]->value.string, node->children[1]->value.integer);
+                    }
+                } else {  // int a = b;
+                    if(checkIfIdentifierIsUsed(node->children[1]->value.string, context->first) == 0) {
+                        logError(SYNTAX_ERROR, "Variable \"%s\" does not exist\n", node->children[1]->value.string);
+                        return -1;
+                    }
+                    if(getVariableType(node->children[1]->value.string, context->first) != VARIABLE_INTEGER) {
+                        logError(SYNTAX_ERROR, "Cannot asign a variable of different type\n");
+                        return -1;
+                    }
                     value.integer = 0;
-                    ret = newVariable(node->children[0]->value.string, VARIABLE_INTEGER, value, context);
-                    if(ret < 0) 
+                    ret = newVariable(node->children[0]->value.string, VARIABLE_INTEGER, value, context, isConstant);
+                    if (ret < 0)
                         return ret;
-                    parse("int %s = ", node->children[0]->value.string);
-                    ret = parseNode(node->children[1], context);
-                    if(ret < 0) 
-                        return ret;
-                    parse(";\n");
-                } else {
-                    value.integer = node->children[1]->value.integer;
-                    ret = newVariable(node->children[0]->value.string, VARIABLE_INTEGER, value, context);
-                    if(ret < 0) 
-                        return ret;
-                    parse("int %s = %d;\n", node->children[0]->value.string, node->children[1]->value.integer);
+                    if(isConstant)
+                        parse("final ");
+                    parse("int %s = %s;\n", node->children[0]->value.string, node->children[1]->value.string);
                 }
             } else {
                 value.integer = 0;
-                ret = newVariable(node->children[0]->value.string, VARIABLE_INTEGER, value, context);
+                ret = newVariable(node->children[0]->value.string, VARIABLE_INTEGER, value, context, isConstant);
                 if(ret < 0) 
                     return ret;
                 parse("int %s;\n", node->children[0]->value.string);
             }
             break;
-            
+        case STRING_CONSTANT_CREATION_NODE:  
         case STRING_VARIABLE_CREATION_NODE:
             if(node->childrenCount == 2) {
-                value.string = node->children[1]->value.string;
-                ret = newVariable(node->children[0]->value.string, VARIABLE_STRING, value, context);
-                if(ret < 0)
-                    return ret;
-                parse("String %s = \"%s\";\n", node->children[0]->value.string, node->children[1]->value.string);
+                if(node->children[1]->type != IDENTIFIER_NODE) {
+                    value.string = node->children[1]->value.string;
+                    ret = newVariable(node->children[0]->value.string, VARIABLE_STRING, value, context, isConstant);
+                    if(ret < 0)
+                        return ret;
+                    if(isConstant)
+                        parse("final ");
+                    parse("String %s = \"%s\";\n", node->children[0]->value.string, node->children[1]->value.string);
+                } else {
+                    if(checkIfIdentifierIsUsed(node->children[1]->value.string, context->first) == 0) {
+                        logError(SYNTAX_ERROR, "Variable \"%s\" does not exist\n", node->children[1]->value.string);
+                        return -1;
+                    }
+                    if(getVariableType(node->children[1]->value.string, context->first) != VARIABLE_STRING) {
+                        logError(SYNTAX_ERROR, "Cannot asign a variable of different type\n");
+                        return -1;
+                    }
+                    value.string = "";
+                    ret = newVariable(node->children[0]->value.string, VARIABLE_STRING, value, context, isConstant);
+                    if (ret < 0)
+                        return ret;
+                    if(isConstant)
+                            parse("final ");
+                    parse("String %s = \"%s\";\n", node->children[0]->value.string, node->children[1]->value.string);
+                }
             } else {
                 value.string = "";
-                ret = newVariable(node->children[0]->value.string, VARIABLE_STRING, value, context);
+                ret = newVariable(node->children[0]->value.string, VARIABLE_STRING, value, context, isConstant);
                 if(ret < 0)
                     return ret;
                 parse("String %s;\n", node->children[0]->value.string);
             }
             break;
-
+        case FLOAT_CONSTANT_CREATION_NODE:  
         case FLOAT_VARIABLE_CREATION_NODE:
             if(node->childrenCount == 2) {
                 type = node->children[1]->type;
-                if(type == PLUS_NODE || type == MINUS_NODE || type == TIMES_NODE || type == DIVIDE_NODE || type == MODULE_NODE) {
-                    value.decimal = 0.0;
-                    ret = newVariable(node->children[0]->value.string, VARIABLE_FLOAT, value, context);
-                    if(ret < 0) 
-                        return ret;
-                    parse("float %s = ", node->children[0]->value.string);
-                    ret = parseNode(node->children[1], context);
-                    if(ret < 0) 
-                        return ret;
-                    parse(";\n");
+                if(type != IDENTIFIER_NODE) {
+                    if(type == PLUS_NODE || type == MINUS_NODE || type == TIMES_NODE || type == DIVIDE_NODE || type == MODULE_NODE) {
+                        value.decimal = 0.0;
+                        ret = newVariable(node->children[0]->value.string, VARIABLE_FLOAT, value, context, isConstant);
+                        if(ret < 0) 
+                            return ret;
+                        if(isConstant)
+                            parse("final ");
+                        parse("float %s = ", node->children[0]->value.string);
+                        ret = parseNode(node->children[1], context);
+                        if(ret < 0) 
+                            return ret;
+                        parse(";\n");
+                    } else {
+                        value.decimal = 0.0;
+                        
+                        ret = newVariable(node->children[0]->value.string, VARIABLE_FLOAT, value, context, isConstant);
+                        if(ret < 0)
+                            return ret;
+                        if(isConstant)
+                            parse("final ");
+                        if(node->children[1]->type == FLOAT_CONSTANT_NODE)
+                            parse("float %s = %f;\n", node->children[0]->value.string, node->children[1]->value.decimal);
+                        else
+                            parse("float %s = %d;\n", node->children[0]->value.string, node->children[1]->value.integer);
+                    }
                 } else {
+                    if(checkIfIdentifierIsUsed(node->children[1]->value.string, context->first) == 0) {
+                        logError(SYNTAX_ERROR, "Variable \"%s\" does not exist\n", node->children[1]->value.string);
+                        return -1;
+                    }
+                    if(getVariableType(node->children[1]->value.string, context->first) != VARIABLE_FLOAT) {
+                        logError(SYNTAX_ERROR, "Cannot asign a variable of different type\n");
+                        return -1;
+                    }
                     value.decimal = 0.0;
-                    
-                    ret = newVariable(node->children[0]->value.string, VARIABLE_FLOAT, value, context);
-                    if(ret < 0)
+                    ret = newVariable(node->children[0]->value.string, VARIABLE_FLOAT, value, context, isConstant);
+                    if (ret < 0)
                         return ret;
-
-                    if(node->children[1]->type == FLOAT_CONSTANT_NODE)
-                        parse("float %s = %f;\n", node->children[0]->value.string, node->children[1]->value.decimal);
-                    else
-                        parse("float %s = %d;\n", node->children[0]->value.string, node->children[1]->value.integer);
-                }
+                    if(isConstant)
+                        parse("final ");
+                    parse("float %s = %s;\n", node->children[0]->value.string, node->children[1]->value.string);
+                }   
             } else {
                 value.decimal = 0.0;
-                ret = newVariable(node->children[0]->value.string, VARIABLE_FLOAT, value, context);
+                ret = newVariable(node->children[0]->value.string, VARIABLE_FLOAT, value, context, isConstant);
                 if(ret < 0)
                     return ret;
                 parse("float %s;\n", node->children[0]->value.string);
             }
             break;
 
+        // TODO: mejorar esto en el caso de que soportemos boolean
+        case BOOLEAN_CONSTANT_CREATION_NODE:  
         case BOOLEAN_VARIABLE_CREATION_NODE:
             if(node->childrenCount == 2) {
                 value.boolean = node->children[1]->value.boolean;
-                ret = newVariable(node->children[0]->value.string, VARIABLE_BOOLEAN, value, context);
+                ret = newVariable(node->children[0]->value.string, VARIABLE_BOOLEAN, value, context, isConstant);
                 if(ret < 0)
                     return ret;
+                if(isConstant)
+                    parse("final ");
                 if(node->children[1]->value.boolean)
                     parse("boolean %s = true;\n", node->children[0]->value.string);
                 else
                     parse("boolean %s = false;\n", node->children[0]->value.string);
             } else {
                 value.boolean = false;
-                ret = newVariable(node->children[0]->value.string, VARIABLE_BOOLEAN, value, context);
+                ret = newVariable(node->children[0]->value.string, VARIABLE_BOOLEAN, value, context, isConstant);
                 if(ret < 0)
                     return ret;
                 parse("boolean %s;\n", node->children[0]->value.string);
             }
-
             break;
-
         default:
-            break;
+            logDebug("Impossible case in parseVariableCreationNode\n");
+            return -1;
     }
-    
     return ret;
 }
 
@@ -135,6 +202,11 @@ int parseVariableUpdateNode(Node * node, U3D_Context *  context) {
         logError(SYNTAX_ERROR, "Variable \"%s\" doesn't exist\n", node->children[0]->value.string);
         return -1;
     } 
+
+    if(isConstant(node->children[0]->value.string, context->first)){
+        logError(SYNTAX_ERROR, "Cannot modify variable \"%s\" because it is a constant\n", node->children[0]->value.string);
+        return -1;
+    }
 
     int type = node->children[1]->type;
     union VariableValue value;
@@ -270,3 +342,81 @@ int parseVariableUpdateNode(Node * node, U3D_Context *  context) {
     logDebug("reached end of parseUpdateVariable\n");
     return -1;
 }
+
+// int parseConstantCreationNode(Node * node, U3D_Context *  context) {
+//     int ret = 0;
+//     union VariableValue value;
+//     int type;
+
+//     logInfo("About to add a new CONSTANT to the list of variables. New CONSTANT: [type=%s]\n", getNodeTypeByCode(node->type));
+
+//     switch (node->type) {
+//         case INTEGER_CONSTANT_CREATION_NODE:
+//             type = node->children[1]->type;
+//             if(type != IDENTIFIER_NODE) {
+//                 if (type == PLUS_NODE || type == MINUS_NODE || type == TIMES_NODE || type == DIVIDE_NODE ||
+//                     type == MODULE_NODE) {
+//                     value.integer = 0;
+//                     ret = newVariable(node->children[0]->value.string, VARIABLE_INTEGER, value, context, true);
+//                     if (ret < 0)
+//                         return ret;
+//                     parse("final int %s = ", node->children[0]->value.string);
+//                     ret = parseNode(node->children[1], context);
+//                     if (ret < 0)
+//                         return ret;
+//                     parse(";\n");
+//                 } else {
+//                     value.integer = node->children[1]->value.integer;
+//                     ret = newVariable(node->children[0]->value.string, VARIABLE_INTEGER, value, context, true);
+//                     if (ret < 0)
+//                         return ret;
+//                     parse("final int %s = %d;\n", node->children[0]->value.string, node->children[1]->value.integer);
+//                 }
+//             } else {
+//                 if(checkIfIdentifierIsUsed(node->children[1]->value.string, context->first) == 0) {
+//                     logError(SYNTAX_ERROR, "Variable \"%s\" does not exist\n", node->children[1]->value.string);
+//                     return -1;
+//                 }
+//                 if(getVariableType(node->children[1]->value.string, context->first) != VARIABLE_INTEGER) {
+//                     logError(SYNTAX_ERROR, "Cannot asign a variable of different type\n");
+//                     return -1;
+//                 }
+//                 value.integer = 0;
+//                 ret = newVariable(node->children[0]->value.string, VARIABLE_INTEGER, value, context, true);
+//                 if (ret < 0)
+//                     return ret;
+//                 parse("final int %s = %s;\n", node->children[0]->value.string, node->children[1]->value.string);
+//             }
+//             break;
+
+
+//         case STRING_CONSTANT_CREATION_NODE:
+//             if(node->children[1]->type != IDENTIFIER_NODE) {
+//                 value.string = node->children[1]->value.string;
+//                 ret = newVariable(node->children[0]->value.string, VARIABLE_STRING, value, context, false);
+//                 if(ret < 0)
+//                     return ret;
+//                 parse("String %s = \"%s\";\n", node->children[0]->value.string, node->children[1]->value.string);
+//             } else {
+//                 if(checkIfIdentifierIsUsed(node->children[1]->value.string, context->first) == 0) {
+//                     logError(SYNTAX_ERROR, "Variable \"%s\" does not exist\n", node->children[1]->value.string);
+//                     return -1;
+//                 }
+//                 if(getVariableType(node->children[1]->value.string, context->first) != VARIABLE_STRING) {
+//                     logError(SYNTAX_ERROR, "Cannot asign a variable of different type\n");
+//                     return -1;
+//                 }
+//                 value.string = "";
+//                 ret = newVariable(node->children[0]->value.string, VARIABLE_STRING, value, context, false);
+//                 if (ret < 0)
+//                     return ret;
+//                 parse("String %s = \"%s\";\n", node->children[0]->value.string, node->children[1]->value.string);
+//             }
+//             break;
+
+
+//         case FLOAT_CONSTANT_CREATION_NODE:
+//         case BOOLEAN_CONSTANT_CREATION_NODE:
+        
+//     }
+// }

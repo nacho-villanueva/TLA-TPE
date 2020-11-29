@@ -22,11 +22,13 @@ union VariableValue {
 
 void freeVariable(char * identifier);
 
-struct Variable * insertNewVariable(struct Variable ** first_variable, char * identifier, enum VariableType type, union VariableValue value);
+struct Variable * insertNewVariable(struct Variable ** first_variable, char * identifier, enum VariableType type, union VariableValue value, bool isConstant);
 
 int checkIfIdentifierIsUsed(char * identifier, Variable first);
 
 union VariableValue getVariableValue(char * identifier, Variable first);
+
+int isConstant(char * identifier, struct Variable * first_variable);
 
 int setVariableValue(char * identifier, enum VariableType type, union VariableValue value, Variable first);
 

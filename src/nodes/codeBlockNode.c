@@ -31,6 +31,11 @@ int parseCodeBlockNode(Node * node, U3D_Context *  context){
                 case STRING_VARIABLE_UPDATE_NODE:
                 case BOOLEAN_VARIABLE_UPDATE_NODE:
                 case IDENTIFIER_VARIABLE_UPDATE_NODE:
+                    /* separator */
+                case INTEGER_CONSTANT_CREATION_NODE:
+                case STRING_CONSTANT_CREATION_NODE:
+                case FLOAT_CONSTANT_CREATION_NODE:
+                case BOOLEAN_CONSTANT_CREATION_NODE:
                     ret = parseNode(node->children[i], context);
                     if(ret < 0)
                         return -1;

@@ -3,26 +3,27 @@ END
 
 DRAW
 
-int x = 1;
-string jajaja = "hola";
-float a = 5.5;
-a = 5;
-int aaa = 7;
-int y = 5.5;
-aaa = y + y + y;
-int aa = 5 + x + aaa;
+const int a = 2;
 
+const int bbbb = a;
+int dfg = a;
 
-//if(jajaja != y + 2) {
-//    int zz;
-//}
-
-if(x < y + 6) {
-    int a7;
+if(a + 2 > 22){
+    int z;
 }
 
-if(5 > 5) {
-    int a12;
-}
+const string hola = "hola";
+
+int jo = 5;
+const int je = jo + 5 * 6;
+const int ji = je + je;
+
+const string ju = hola;
+
+
+float hh = 5.5;
+//int rr = 2 + hh;
+//int jj = hh + 2;
+
 END
 

@@ -71,7 +71,7 @@ Function getFunctionFromTable(char * name, U3D_Context *context) {
     return NULL;
 }
 
-int newVariable(char * identifier, enum VariableType type, union VariableValue value, U3D_Context * context) {
+int newVariable(char * identifier, enum VariableType type, union VariableValue value, U3D_Context * context, bool isConstant) {
 
     // TODO: palabras reservadas
     if(strcmp(identifier, "if") == 0 || strcmp(identifier, "float") == 0 || strcmp(identifier, "string") == 0 ||
@@ -87,7 +87,7 @@ int newVariable(char * identifier, enum VariableType type, union VariableValue v
         return -1;
     }
 
-    if(insertNewVariable(&context->first, identifier, type, value) == NULL) {
+    if(insertNewVariable(&context->first, identifier, type, value, isConstant) == NULL) {
         logError(FATAL_ERROR, "Couldn't define variable \"%s\"\n", identifier);
         return -1;
     }

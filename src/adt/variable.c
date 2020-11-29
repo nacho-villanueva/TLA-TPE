@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include "../utils/logger.h"
 #include "variable.h"
@@ -8,6 +9,7 @@ static union VariableValue getVariableValueRec(struct Variable * first, char * i
 static int setVariableValueRec(struct Variable * first, char * identifier, enum VariableType type, union VariableValue value);
 static int checkIfIdentifierIsUsedRec(struct Variable * first, char * identifier);
 static enum VariableType getVariableTypeRec(struct Variable * first_variable, char * identifier);
+static int isConstantRec(char * identifier, struct Variable * first_variable);
 
 
 struct Variable{
@@ -15,6 +17,7 @@ struct Variable{
     union VariableValue value;
     char * identifier;
     struct Variable * nextVariable;
+    bool isConstant;
 };
 
 int checkIfIdentifierIsUsed(char * identifier, Variable first) {
@@ -31,7 +34,7 @@ static int checkIfIdentifierIsUsedRec(struct Variable * first_variable, char * i
     return checkIfIdentifierIsUsedRec(first_variable->nextVariable, identifier);
 }
 
-struct Variable * insertNewVariable(struct Variable ** first_variable, char * identifier, enum VariableType type, union VariableValue value) {
+struct Variable * insertNewVariable(struct Variable ** first_variable, char * identifier, enum VariableType type, union VariableValue value, bool isConstant) {
 
     if((*first_variable) == NULL) {
         (*first_variable) = calloc(1, sizeof(struct Variable));
@@ -41,6 +44,7 @@ struct Variable * insertNewVariable(struct Variable ** first_variable, char * id
         }
         (*first_variable)->type = type;
         (*first_variable)->value = value;
+        (*first_variable)->isConstant = isConstant;
         (*first_variable)->identifier = malloc(strlen(identifier) + 1);
         if((*first_variable)->identifier == NULL) {
             logError(ERROR, "variable.c: Cannot allocate memory");
@@ -52,11 +56,11 @@ struct Variable * insertNewVariable(struct Variable ** first_variable, char * id
     }
 
     if(first_variable != NULL && (*first_variable)->nextVariable == NULL) {
-        (*first_variable)->nextVariable = insertNewVariable(&(*first_variable)->nextVariable, identifier, type, value);
+        (*first_variable)->nextVariable = insertNewVariable(&(*first_variable)->nextVariable, identifier, type, value, isConstant);
         return (*first_variable)->nextVariable;
     }
 
-    return insertNewVariable(&(*first_variable)->nextVariable, identifier, type, value);
+    return insertNewVariable(&(*first_variable)->nextVariable, identifier, type, value, isConstant);
 }
 
 union VariableValue getVariableValue(char * identifier, struct Variable * first) {
@@ -108,4 +112,22 @@ static int setVariableValueRec(struct Variable * first_variable, char * identifi
     }
         
     return setVariableValueRec(first_variable->nextVariable, identifier, type, value);
+}
+
+int isConstant(char * identifier, struct Variable * first_variable) {
+    return isConstantRec(identifier, first_variable);
+}
+
+static int isConstantRec(char * identifier, struct Variable * first_variable) {
+    if(first_variable == NULL)
+        return 0;
+
+    if(strcmp(first_variable->identifier, identifier) == 0) {
+        if(first_variable->isConstant) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+    return isConstantRec(identifier, first_variable->nextVariable);
 }

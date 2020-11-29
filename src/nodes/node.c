@@ -116,7 +116,12 @@ int parseNode(Node* node, U3D_Context * context){
     case INTEGER_VARIABLE_CREATION_NODE:
     case FLOAT_VARIABLE_CREATION_NODE:
     case BOOLEAN_VARIABLE_CREATION_NODE:
-        return parseVariableCreationNode(node, context);
+        return parseVariableCreationNode(node, context, false);
+    case INTEGER_CONSTANT_CREATION_NODE:
+    case STRING_CONSTANT_CREATION_NODE:
+    case FLOAT_CONSTANT_CREATION_NODE:
+    case BOOLEAN_CONSTANT_CREATION_NODE:
+        return parseVariableCreationNode(node, context, true);
     case NUMERIC_VARIABLE_UPDATE_NODE:
     case STRING_VARIABLE_UPDATE_NODE:
     case BOOLEAN_VARIABLE_UPDATE_NODE:
