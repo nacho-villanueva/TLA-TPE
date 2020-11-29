@@ -4,14 +4,16 @@
 
 #include "../nodes/figureNode.h"
 #include "../utils/logger.h"
+#include "../utils/parser.h"
 
 int print(NodeValue * values){
-    printf("%s\n", values[0].string);
+    parse("System.out.println(%s);\n", values[0].string);
     return 0;
 }
 
 void initU3DFunctions(U3D_Context * context){
     addFunctionToTable(newFunction("print", print, 1, PARAMETER_STRING), context);
+    addFunctionToTable(newFunction("drawFigure", parseDrawFigure, 1, PARAMETER_FIGURE), context);
 }
 
 int nodeToParameterValue(const char * funcName, Node * node, ParameterType expectedType, ParameterValue * value, size_t i, U3D_Context * context){

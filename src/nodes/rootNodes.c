@@ -34,7 +34,7 @@ void addFigureClass(){
     parse(
             "class Figure {\n"
             "\tVector3 fposition = new Vector3();\n"
-            "\tVector3 fscale = new Vector3();\n"
+            "\tVector3 fscale = new Vector3(1,1,1);\n"
             "\tVector3 frotation = new Vector3();\n"
             "\tVector3Int fcolor = new Vector3Int();\n"
             "\tString fpath;\n"
@@ -73,7 +73,7 @@ int parseSettingsNode(Node * node, U3D_Context * context){
         ret += parseNode(node->children[i], context);
     }
 
-    parse("size(800,600, P3D);\nnoStroke();\n\n");
+    parse("size(800,600, P3D);\nnoStroke();\nsmooth(8);\n\n");
 
     parseFiguresInit(context);
 
@@ -84,7 +84,7 @@ int parseSettingsNode(Node * node, U3D_Context * context){
 int parseDrawNode(Node * node, U3D_Context * context){
     parse("\nvoid draw() { \n");
 
-    parse("pointLight(51, 102, -126, 400, 400, -250);\n\n");
+    parse("lights();\n\n");
 
     /*for(size_t i = 0; i < context->figuresCount; i++){
         parseDrawFigure(context->figuresTable[i]);

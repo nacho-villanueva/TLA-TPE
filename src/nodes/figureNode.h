@@ -7,5 +7,7 @@ int parseFigureNode(Node * node, U3D_Context * context);
 
 void parseFiguresInit(U3D_Context * context);
 
+int parseDrawFigure(ParameterValue * values);
+
 
 #endif /* _FIGURENODE_H_ */

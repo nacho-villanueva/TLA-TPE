@@ -39,7 +39,7 @@ void setFigureAttribute(Figure figure, FigureAttributeType attr, FigureAttribute
 
 char * getFigureName(Figure figure);
 
-void parseDrawFigure(Figure figure);
+void drawFigure(Figure figure);
 
 void parseFigureAttributes(Figure figure);
 

@@ -172,3 +172,8 @@ void parseFiguresInit(U3D_Context * context){
         parseFigureAttributes(context->figuresTable[i]);
     }
 }
+
+int parseDrawFigure(ParameterValue * values) {
+    drawFigure(values[0].figure);
+    return 0;
+}

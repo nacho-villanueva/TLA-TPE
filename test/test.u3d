@@ -2,34 +2,17 @@
 
 figure cube = {
     type: "box";
-    scale: (200,200,200);
-    position: (400,400,-500);
+    scale: (50,50,50);
+    position: (400,400,-250);
     color: (102,102,102);
-    rotation: (45, 45, 45);
 }
 
-figure cube2 = {
-    type: "box";
-    scale: (75,100,120);
-    position: (600,600,-250);
-    color: (102,0,102);
-    rotation: (45, 45, 45);
-}
-
-figure cube3 = {
-    type: "sphere";
-    scale: (200,200,200);
-    position: (600,200, -250);
-    color: (0,102,102);
-    rotation: (45, 45, 45);
-}
-
-figure cube4 = {
-    type: "box";
-    scale: (150,100,150);
-    position: (100,20, -100);
-    color: (102,0,102);
-    rotation: (10, 60, 90);
+figure pyr = {
+    type: "pyramid";
+    scale: (25,25,25);
+    position: (400,500,-250);
+    color: (250,0,102);
+    rotation: (90,0,0);
 }
 
 SETTINGS
@@ -38,7 +21,8 @@ END
 
 DRAW
 
-    print("FUUUUCKKKK YEAH LPM FUNCIONA!");
+	drawFigure("cube");
+	drawFigure("pyr");
 
 END
 
