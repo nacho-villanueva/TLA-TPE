@@ -1,14 +1,12 @@
-#include <stdbool.h>
-#include <stdio.h>
 #include "ifWhileNode.h"
 #include "../utils/logger.h"
 #include "../utils/parser.h"
 
 int parseIfWhileNode(Node * node, U3D_Context *  context){
-    int ret = 0;
+    int ret;
     
     if(node->childrenCount != 2){
-        logError(SYNTAX_ERROR, "If node expects 2 children\n");
+        logDebug("If/while node expects 2 children\n");
         return -1;
     }
 
@@ -34,7 +32,7 @@ int parseIfWhileNode(Node * node, U3D_Context *  context){
        node -> children[0] -> type != EQ_IDENTIFIER_NODE &&
        node -> children[0] -> type != NEQ_IDENTIFIER_NODE
        ){
-        logError(SYNTAX_ERROR, "Some type of conditional node expected in if/while\n");
+        logDebug("Some type of conditional node expected in if/while\n");
         return -1;
     }
     
@@ -51,7 +49,7 @@ int parseIfWhileNode(Node * node, U3D_Context *  context){
     parse(") {\n\t");
 
     if(node -> children[1] -> type != CODE_BLOCK_NODE){
-        logError(SYNTAX_ERROR, "Code block node expected\n");
+        logDebug("Code block node expected in parseIfWhileNode\n");
         return -1;
     }
 

@@ -1,10 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include "../utils/logger.h"
-#include "../utils/parser.h"
 #include "variable.h"
-#include "../u3d_context.h"
 
 // Prototypes
 static union VariableValue getVariableValueRec(struct Variable * first, char * identifier);
@@ -19,8 +16,6 @@ struct Variable{
     char * identifier;
     struct Variable * nextVariable;
 };
-
-//struct Variable * first = NULL;
 
 int checkIfIdentifierIsUsed(char * identifier, Variable first) {
     return checkIfIdentifierIsUsedRec(first, identifier);

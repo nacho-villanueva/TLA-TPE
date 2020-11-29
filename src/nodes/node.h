@@ -61,7 +61,6 @@ static const char * NODE_NAMES[] = {
     "IF_NODE",
 
     "CODE_BLOCK_NODE",
-    "CODE_LINE_NODE",
 
     "FUNCTION_IDENTIFIER_NODE",
     "FUNCTION_CALL_NODE",
@@ -127,18 +126,17 @@ typedef enum nodeType{
     NEQ_BOOLEAN_NODE, /* x != y  ||  true != y */
 
     /* double identifier expression names */
-    LT_IDENTIFIER_NODE,
-    GT_IDENTIFIER_NODE,
-    LE_IDENTIFIER_NODE,
-    GE_IDENTIFIER_NODE,
-    EQ_IDENTIFIER_NODE,
-    NEQ_IDENTIFIER_NODE,
+    LT_IDENTIFIER_NODE,  /* x < y */
+    GT_IDENTIFIER_NODE,  /* x > y */
+    LE_IDENTIFIER_NODE,  /* x <= y */
+    GE_IDENTIFIER_NODE,  /* x >= y */
+    EQ_IDENTIFIER_NODE,  /* x == y */
+    NEQ_IDENTIFIER_NODE, /* x != y */
 
     WHILE_NODE,       /* while(A){B} */
     IF_NODE,          /* if(A){B} */
     
     CODE_BLOCK_NODE,
-    CODE_LINE_NODE,
 
     FUNCTION_IDENTIFIER_NODE,
     FUNCTION_CALL_NODE,

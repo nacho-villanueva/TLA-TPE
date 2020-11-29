@@ -1,14 +1,12 @@
-#include <stdio.h>
 #include "conditionalNode.h"
-#include "ifWhileNode.h"
 #include "../utils/logger.h"
 #include "../utils/parser.h"
 
 int parseOrAndConditionalNode(Node * node, U3D_Context *  context) {
-    int ret = 0;
+    int ret;
 
     if(node->childrenCount != 2){
-        logError(SYNTAX_ERROR, "Expected 2 children\n");
+        logDebug("Expected 2 children in parseOrAndConditionalNode\n");
         return -1;
     }
 
@@ -33,12 +31,14 @@ int parseOrAndConditionalNode(Node * node, U3D_Context *  context) {
        node -> children[0] -> type != EQ_IDENTIFIER_NODE &&
        node -> children[0] -> type != NEQ_IDENTIFIER_NODE
        ){
-        logError(SYNTAX_ERROR, "Some type of conditional node expected\n");
+        logDebug("Some type of conditional node expected in parseOrAndConditionalNode (part 1)\n");
         return -1;
     }
 
     
-    ret += parseNode(node -> children[0], context);
+    ret = parseNode(node -> children[0], context);
+    if(ret < 0)
+        return ret;
 
     if(node->type == AND_NODE) {
         parse(" && ");
@@ -67,20 +67,22 @@ int parseOrAndConditionalNode(Node * node, U3D_Context *  context) {
        node -> children[0] -> type != EQ_IDENTIFIER_NODE &&
        node -> children[0] -> type != NEQ_IDENTIFIER_NODE
        ){
-        logError(SYNTAX_ERROR, "Some type of conditional node expected\n");
+        logDebug("Some type of conditional node expected in parseOrAndConditionalNode (part 2)\n");
         return -1;
     }
 
-    ret += parseNode(node -> children[1], context);
+    ret = parseNode(node -> children[1], context);
+    if(ret < 0)
+        return ret;
 
     return ret;
 }
 
 int parseNumericConditionalNode(Node * node, U3D_Context *  context) {
-    int ret = 0;
+    int ret;
 
     if(node->childrenCount != 2){
-        logInfo("Expected 2 children in parseNumericConditionalNode\n");
+        logDebug("Expected 2 children in parseNumericConditionalNode\n");
         return -1;
     }
 
@@ -88,13 +90,13 @@ int parseNumericConditionalNode(Node * node, U3D_Context *  context) {
         if(node->children[i]->type != INTEGER_CONSTANT_NODE && node->children[i]->type != FLOAT_CONSTANT_NODE 
                 && node->children[i]->type != PLUS_NODE && node->children[i]->type != MINUS_NODE && node->children[i]->type != TIMES_NODE 
                 && node->children[i]->type != DIVIDE_NODE && node->children[i]->type != MODULE_NODE && node->children[i]->type != IDENTIFIER_NODE) {
-            logInfo("Numeric expression node expected in parseNumericConditionalNode\n");
+            logDebug("Numeric expression node expected in parseNumericConditionalNode\n");
             return -1;
         }
-        if(node->children[i]->type == IDENTIFIER_NODE){
+        if(node->children[i]->type == IDENTIFIER_NODE) {
             int ret2 = getVariableType(node->children[i]->value.string, context->first);
             if(ret2 != VARIABLE_FLOAT && ret2 != VARIABLE_INTEGER){
-                logInfo("Numeric variable type expected in parseNumericConditionalNode\n");
+                logError(SYNTAX_ERROR, "Cannot make a numerical comparison if one of the 2 parts is not a number\n");
                 return -1;
             }
         }
@@ -113,8 +115,7 @@ int parseNumericConditionalNode(Node * node, U3D_Context *  context) {
         case EQ_NUMERIC_NODE: parse(" == "); break;
         case NEQ_NUMERIC_NODE: parse(" != "); break;
         default: 
-            // TODO: revisar este caso
-            logError(FATAL_ERROR, "Impossible conditionalNode state. Returning -1\n");
+            logDebug("Impossible conditionalNode state in parseNumericConditionalNode\n");
             return -1;
     }
 
@@ -126,21 +127,21 @@ int parseNumericConditionalNode(Node * node, U3D_Context *  context) {
 }
 
 int parseStringConditionalNode(Node * node, U3D_Context *  context) {
-    int ret = 0;
+    int ret;
 
     if(node->childrenCount != 2){
-        logInfo("Expected 2 children in parseStringConditionalNode\n");
+        logDebug("Expected 2 children in parseStringConditionalNode\n");
         return -1;
     }
 
-    for(int i=0; i<node->childrenCount; i++){
+    for(int i = 0; i < node->childrenCount; i++){
         if(node -> children[i] -> type != STRING_CONSTANT_NODE) {
             if(node -> children[i] -> type != IDENTIFIER_NODE) {
-                logInfo("String constant node expected in parseStringConditionalNode\n");
+                logError(SYNTAX_ERROR, "Cannot make a string comparison if one of the 2 parts is not a string\n");
                 return -1;
             }
             if(getVariableType(node -> children[i]->value.string, context->first) != VARIABLE_STRING){
-                logInfo("String variable node expected in parseStringConditionalNode\n");
+                logError(SYNTAX_ERROR, "Cannot make a string comparison if one of the 2 parts is not a string\n");
                 return -1;
             }
         }
@@ -162,18 +163,22 @@ int parseStringConditionalNode(Node * node, U3D_Context *  context) {
     return ret;
 }
 
+//TODO: si terminamos usando boolean, a esta funcion habría que pulirla tanto como pulimos todas las otras de este archivo
 int parseBooleanConditionalNode(Node * node, U3D_Context *  context) {
-    int ret = 0;
+    int ret;
 
-    if(node->childrenCount != 2){
-        logError(SYNTAX_ERROR, "Expected 2 children\n");
+    if(node->childrenCount != 2) {
+        logDebug("Expected 2 children\n");
         return -1;
     }
 
-    if(node -> children[0] -> type != BOOLEAN_CONSTANT_NODE){
-        logError(SYNTAX_ERROR, "Boolean constant node expected\n");
-        return -1;
+    for(int i = 0; i < node->childrenCount; i++) {
+        if(node -> children[i] -> type != BOOLEAN_CONSTANT_NODE){
+            logError(SYNTAX_ERROR, "Cannot make a boolean comparison if one of the 2 parts is not a boolean\n");
+            return -1;
+        }
     }
+
     ret = parseNode(node -> children[0], context);
     if(ret < 0)
         return ret;
@@ -182,11 +187,6 @@ int parseBooleanConditionalNode(Node * node, U3D_Context *  context) {
         parse(" == ");
     } else if(node->type == NEQ_BOOLEAN_NODE) {
         parse(" != ");
-    }
-    
-    if(node -> children[1] -> type != BOOLEAN_CONSTANT_NODE){
-        logError(SYNTAX_ERROR, "Boolean constant node expected\n");
-        return -1;
     }
 
     ret = parseNode(node -> children[1], context);
@@ -200,12 +200,12 @@ int parseDoubleIdentifierConditionalNode(Node * node, U3D_Context *  context) {
     int ret = 0;
 
     if(node->childrenCount != 2){
-        logInfo("Expected 2 children\n");
+        logDebug("Expected 2 children in parseDoubleIdentifierConditionalNode\n");
         return -1;
     }
 
     if(node->children[0]->type != IDENTIFIER_NODE && node->children[1]->type != IDENTIFIER_NODE) {
-        logInfo("Expected 2 identifier nodes in parseDoubleIdentifierConditionalNode\n");
+        logDebug("Expected 2 identifier nodes in parseDoubleIdentifierConditionalNode\n");
         return -1;
     }
 
@@ -239,8 +239,7 @@ int parseDoubleIdentifierConditionalNode(Node * node, U3D_Context *  context) {
             case EQ_IDENTIFIER_NODE: parse(" == "); break;
             case NEQ_IDENTIFIER_NODE: parse(" != "); break;
             default: 
-                // TODO: revisar este caso
-                logError(FATAL_ERROR, "Impossible conditionalNode state. Returning -1\n");
+                logDebug("Impossible conditionalNode state in parseDoubleIdentifierConditionalNode\n");
                 return -1;
         }
 

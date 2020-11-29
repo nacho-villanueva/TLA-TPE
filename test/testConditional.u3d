@@ -1,26 +1,21 @@
 SETTINGS
-
 END
-
 
 DRAW
 
 int x = 1;
-
 string jajaja = "hola";
-
 float a = 5.5;
 a = 5;
-
 int aaa = 7;
-
 int y = 5.5;
-aaa = y + 2;
+aaa = y + y + y;
+int aa = 5 + x + aaa;
 
 
-if(jajaja != y + 2) {
-    int zz;
-}
+//if(jajaja != y + 2) {
+//    int zz;
+//}
 
 if(x < y + 6) {
     int a7;

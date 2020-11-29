@@ -36,7 +36,7 @@ int parseCodeBlockNode(Node * node, U3D_Context *  context){
                         return -1;
                     break;
                 default:
-                    logError(SYNTAX_ERROR, "Impossible children type in CODE_BLOCK_NODE\n");
+                    logDebug("Impossible children type in CODE_BLOCK_NODE\n");
                     return -1;
             }
         }

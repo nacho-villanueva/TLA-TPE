@@ -1,15 +1,13 @@
-#include <stdio.h>
 #include "numericExpressionNode.h"
 #include "../utils/logger.h"
 #include "../utils/parser.h"
 
 int parseNumericExpressionNode(Node * node, U3D_Context *  context) {
 
-    int ret = 0;
-    int firstVariableType = -1;
+    int ret;
 
     if(node->childrenCount != 1 && node->childrenCount != 2) {
-        logInfo("Expected 1 or 2 children in numeric expression node\n");
+        logDebug("Expected 1 or 2 children in numeric expression node\n");
         return -1;
     }
 
@@ -18,7 +16,7 @@ int parseNumericExpressionNode(Node * node, U3D_Context *  context) {
                 && node->children[i]->type != PLUS_NODE && node->children[i]->type != MINUS_NODE && node->children[i]->type != TIMES_NODE 
                 && node->children[i]->type != DIVIDE_NODE && node->children[i]->type != MODULE_NODE
                 && node->children[i]->type != IDENTIFIER_NODE) {
-            logInfo("Numeric expression node expected (in numericExpressionNode)\n");
+            logDebug("Numeric expression node expected (in numericExpressionNode)\n");
             return -1;
         }
         if(node->children[i]->type == IDENTIFIER_NODE
@@ -42,7 +40,7 @@ int parseNumericExpressionNode(Node * node, U3D_Context *  context) {
             case DIVIDE_NODE: parse(" / "); break;
             case MODULE_NODE: parse(" %% "); break;
             default: 
-                logInfo("Impossible numeric expression state. Returning -1\n");
+                logDebug("Impossible numeric expression state in parseNumericExpressionNode\n");
                 return -1;
         }
 

@@ -1,8 +1,6 @@
-#include <stdio.h>
 #include "variableNode.h"
 #include "../utils/logger.h"
 #include "../utils/parser.h"
-#include "../adt/variable.h"
 
 
 int parseVariableCreationNode(Node * node, U3D_Context *  context) {
@@ -121,15 +119,15 @@ int parseVariableCreationNode(Node * node, U3D_Context *  context) {
 }
 
 int parseVariableUpdateNode(Node * node, U3D_Context *  context) {
-    int ret = 0;
+    int ret;
 
     if(node->childrenCount != 2) {
-        logError(FATAL_ERROR, "Update variable node should have 2 children!\n");
+        logDebug("Update variable node should have 2 children in parseVariableUpdateNode\n");
         return -1;
     }
 
     if(node->children[0]->type != IDENTIFIER_NODE) {
-        logError(FATAL_ERROR, "Identifier expected in first child of variable update node\n");
+        logDebug("Identifier expected in first child of variable update node\n");
         return -1;
     }
 
@@ -139,20 +137,23 @@ int parseVariableUpdateNode(Node * node, U3D_Context *  context) {
     } 
 
     int type = node->children[1]->type;
-
     union VariableValue value;
 
-    switch (node->type) {  // x = 5;
-        case NUMERIC_VARIABLE_UPDATE_NODE:
+    switch (node->type) {
+        case NUMERIC_VARIABLE_UPDATE_NODE: // x = 5;
             if(type == FLOAT_CONSTANT_NODE) {
                 parse("%s = %f;\n", node->children[0]->value.string, node->children[1]->value.decimal);
-                if(checkIfIdentifierIsUsed(node->children[0]->value.string, context->first) == 0)
+                if(checkIfIdentifierIsUsed(node->children[0]->value.string, context->first) == 0) {
+                    logError(SYNTAX_ERROR, "Variable \"%s\" does not exist\n", node->children[0]->value.string);
                     return -1;
+                }
                 return 0;
             } else if(type == INTEGER_CONSTANT_NODE) {
                 parse("%s = %d;\n", node->children[0]->value.string, node->children[1]->value.integer);
-                if(checkIfIdentifierIsUsed(node->children[0]->value.string, context->first) == 0)
+                if(checkIfIdentifierIsUsed(node->children[0]->value.string, context->first) == 0) {
+                    logError(SYNTAX_ERROR, "Variable \"%s\" does not exist\n", node->children[0]->value.string);
                     return -1;
+                }
                 return 0;            
             } else if (type == PLUS_NODE || type == MINUS_NODE || type == TIMES_NODE || type == DIVIDE_NODE || type == MODULE_NODE) {
                 parse("%s = ", node->children[0]->value.string);
@@ -162,22 +163,35 @@ int parseVariableUpdateNode(Node * node, U3D_Context *  context) {
                 parse(";\n");
                 return 0;            
             } else{
-                logInfo("impossible child of NUMERIC_VARIABLE_UPDATE_NODE\n");
+                logDebug("impossible child of NUMERIC_VARIABLE_UPDATE_NODE\n");
                 return -1;
             }
             
         case STRING_VARIABLE_UPDATE_NODE:  // a = "hola";
             if(node->children[1]->type != STRING_CONSTANT_NODE) {
-                logError(FATAL_ERROR, "impossible child of STRING_VARIABLE_UPDATE_NODE\n");
+                logDebug("impossible child of STRING_VARIABLE_UPDATE_NODE\n");
+                return -1;
+            }
+            if(checkIfIdentifierIsUsed(node->children[0]->value.string, context->first) == 0) {
+                logError(SYNTAX_ERROR, "Variable \"%s\" does not exist\n", node->children[0]->value.string);
                 return -1;
             }
             parse("%s = \"%s\";\n", node->children[0]->value.string, node->children[1]->value.string);
             value.string = node->children[1]->value.string;
-            return setVariableValue(node->children[0]->value.string, VARIABLE_STRING, value, context->first);    
+            ret = setVariableValue(node->children[0]->value.string, VARIABLE_STRING, value, context->first);
+            if(ret < 0) {
+                logError(SYNTAX_ERROR, "Wrong type update on variable \"%s\"\n", node->children[0]->value.string);
+                return ret;
+            }
+            break;
 
         case BOOLEAN_VARIABLE_UPDATE_NODE:  // a = true;
             if(node->children[1]->type != BOOLEAN_CONSTANT_NODE) {
-                logError(FATAL_ERROR, "impossible child of BOOLEAN_VARIABLE_UPDATE_NODE\n");
+                logDebug("impossible child of BOOLEAN_VARIABLE_UPDATE_NODE\n");
+                return -1;
+            }
+            if(checkIfIdentifierIsUsed(node->children[0]->value.string, context->first) == 0) {
+                logError(SYNTAX_ERROR, "Variable \"%s\" does not exist\n", node->children[0]->value.string);
                 return -1;
             }
 
@@ -187,12 +201,24 @@ int parseVariableUpdateNode(Node * node, U3D_Context *  context) {
                 parse("%s = false;\n", node->children[0]->value.string);
 
             value.boolean = node->children[1]->value.boolean;
-            return setVariableValue(node->children[0]->value.string, VARIABLE_BOOLEAN, value, context->first);    
+            ret = setVariableValue(node->children[0]->value.string, VARIABLE_BOOLEAN, value, context->first);
+            if(ret < 0) {
+                logError(SYNTAX_ERROR, "Wrong type update on variable \"%s\"\n", node->children[0]->value.string);
+                return ret;
+            }
+            break;
 
         case IDENTIFIER_VARIABLE_UPDATE_NODE: // a = b;
-            if(node->children[1]->type != IDENTIFIER_NODE) {
-                logError(FATAL_ERROR, "impossible child of IDENTIFIER_VARIABLE_UPDATE_NODE\n");
-                return -1;
+
+            for(int i = 0; i < node->childrenCount; i++) {
+                if(node->children[i]->type != IDENTIFIER_NODE) {
+                    logDebug("impossible child of IDENTIFIER_VARIABLE_UPDATE_NODE\n");
+                    return -1;
+                }
+                if(checkIfIdentifierIsUsed(node->children[i]->value.string, context->first) == 0) {
+                    logError(SYNTAX_ERROR, "variable \"%s\" does not exist\n", node->children[i]->value.string);
+                    return -1;
+                }
             }
 
             enum VariableType ta = getVariableType(node->children[0]->value.string, context->first);
@@ -233,7 +259,7 @@ int parseVariableUpdateNode(Node * node, U3D_Context *  context) {
                         return -1;
                     }
                 default:
-                    logError(FATAL_ERROR, "variable type does not exist\n");
+                    logDebug("variable type does not exist\n");
                     return -1;
             }
 
@@ -241,6 +267,6 @@ int parseVariableUpdateNode(Node * node, U3D_Context *  context) {
             break;
     }
     
-    logError(FATAL_ERROR, "reached end of parseUpdateVariable\n");
+    logDebug("reached end of parseUpdateVariable\n");
     return -1;
 }
