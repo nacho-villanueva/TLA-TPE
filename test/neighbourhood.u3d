@@ -146,6 +146,7 @@ figure car = {
 	child : carWheelLB;
 }
 
+int carZposition = -1000;
 
 SETTINGS
 
@@ -160,7 +161,7 @@ DRAW
 	setFigurePosition(house, (-400, 0, 250));
 	setFigureRotation(house, (0, 0, 0));
 	int i = 0;
-	float rot = 0;
+	int rot = 0;
 	while(i < 5){
 		drawFigure(house);
 		translateFigure(house, 0, 0, -250);
@@ -181,8 +182,13 @@ DRAW
 		i = i + 1;
 	}
 
+	carZposition = carZposition + 4;
 	translateFigure(car, 0, 0, 4);
 	drawFigure(car);
+	if(carZposition > 1000){
+	 	setFigurePosition(car, (0, 20, -1000));
+	 	carZposition = -1000;
+	}
 
 END
 
