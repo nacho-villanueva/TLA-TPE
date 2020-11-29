@@ -80,6 +80,13 @@ int parseNode(Node* node, U3D_Context * context){
     case EQ_BOOLEAN_NODE:
     case NEQ_BOOLEAN_NODE:
         return parseBooleanConditionalNode(node, context);
+    case LT_IDENTIFIER_NODE:
+    case GT_IDENTIFIER_NODE:
+    case LE_IDENTIFIER_NODE:
+    case GE_IDENTIFIER_NODE:
+    case EQ_IDENTIFIER_NODE:
+    case NEQ_IDENTIFIER_NODE:
+        return parseDoubleIdentifierConditionalNode(node, context);
     case PLUS_NODE:
     case MINUS_NODE:
     case TIMES_NODE:

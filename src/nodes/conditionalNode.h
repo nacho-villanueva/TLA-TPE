@@ -13,4 +13,6 @@ int parseBooleanConditionalNode(Node * node, U3D_Context *  context);
 
 int parseConditionalNode(Node * node, U3D_Context *  context);
 
+int parseDoubleIdentifierConditionalNode(Node * node, U3D_Context *  context);
+
 #endif

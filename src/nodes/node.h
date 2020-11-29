@@ -49,7 +49,14 @@ static const char * NODE_NAMES[] = {
      /* boolean expression names */
     "EQ_BOOLEAN_NODE",
     "NEQ_BOOLEAN_NODE",
-
+    /* double identifier expression names */
+    "LT_IDENTIFIER_NODE",
+    "GT_IDENTIFIER_NODE",
+    "LE_IDENTIFIER_NODE",
+    "GE_IDENTIFIER_NODE",
+    "EQ_IDENTIFIER_NODE",
+    "NEQ_IDENTIFIER_NODE",
+    
     "WHILE_NODE",
     "IF_NODE",
 
@@ -113,6 +120,14 @@ typedef enum nodeType{
     /* boolean expression names */
     EQ_BOOLEAN_NODE,  /* x == y  ||  true == y */
     NEQ_BOOLEAN_NODE, /* x != y  ||  true != y */
+
+    /* double identifier expression names */
+    LT_IDENTIFIER_NODE,
+    GT_IDENTIFIER_NODE,
+    LE_IDENTIFIER_NODE,
+    GE_IDENTIFIER_NODE,
+    EQ_IDENTIFIER_NODE,
+    NEQ_IDENTIFIER_NODE,
 
     WHILE_NODE,       /* while(A){B} */
     IF_NODE,          /* if(A){B} */

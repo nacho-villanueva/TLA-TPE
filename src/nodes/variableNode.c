@@ -6,46 +6,111 @@
 
 
 int parseVariableCreationNode(Node * node, U3D_Context *  context) {
-    int ret;
+    int ret = 0;
     union VariableValue value;
+    int type;
 
     logInfo("About to add a new variable to the list of variables. New variable: [type=%s]\n", getNodeTypeByCode(node->type));
 
     switch (node->type) {
 
         case INTEGER_VARIABLE_CREATION_NODE:
-            value.integer = node->children[1]->value.integer;
-            ret = newVariable(node->children[0]->value.string, VARIABLE_INTEGER, value, context);
-            if(ret == -1) 
-                return ret;
-            parse("int %s = %d;", node->children[0]->value.string, node->children[1]->value.integer);
+            if(node->childrenCount == 2) {
+                type = node->children[1]->type;
+                if(type == PLUS_NODE || type == MINUS_NODE || type == TIMES_NODE || type == DIVIDE_NODE || type == MODULE_NODE) {
+                    value.integer = 0;
+                    ret = newVariable(node->children[0]->value.string, VARIABLE_INTEGER, value, context);
+                    if(ret < 0) 
+                        return ret;
+                    parse("int %s = ", node->children[0]->value.string);
+                    ret = parseNode(node->children[1], context);
+                    if(ret < 0) 
+                        return ret;
+                    parse(";\n");
+                } else {
+                    value.integer = node->children[1]->value.integer;
+                    ret = newVariable(node->children[0]->value.string, VARIABLE_INTEGER, value, context);
+                    if(ret < 0) 
+                        return ret;
+                    parse("int %s = %d;\n", node->children[0]->value.string, node->children[1]->value.integer);
+                }
+            } else {
+                value.integer = 0;
+                ret = newVariable(node->children[0]->value.string, VARIABLE_INTEGER, value, context);
+                if(ret < 0) 
+                    return ret;
+                parse("int %s;\n", node->children[0]->value.string);
+            }
             break;
             
         case STRING_VARIABLE_CREATION_NODE:
-            value.string = node->children[1]->value.string;
-            ret = newVariable(node->children[0]->value.string, VARIABLE_STRING, value, context);
-            if(ret == -1)
-                return ret;
-            parse("String %s = \"%s\";", node->children[0]->value.string, node->children[1]->value.string);
+            if(node->childrenCount == 2) {
+                value.string = node->children[1]->value.string;
+                ret = newVariable(node->children[0]->value.string, VARIABLE_STRING, value, context);
+                if(ret < 0)
+                    return ret;
+                parse("String %s = \"%s\";\n", node->children[0]->value.string, node->children[1]->value.string);
+            } else {
+                value.string = "";
+                ret = newVariable(node->children[0]->value.string, VARIABLE_STRING, value, context);
+                if(ret < 0)
+                    return ret;
+                parse("String %s;\n", node->children[0]->value.string);
+            }
             break;
 
         case FLOAT_VARIABLE_CREATION_NODE:
-            value.decimal = node->children[1]->value.decimal;
-            ret = newVariable(node->children[0]->value.string, VARIABLE_FLOAT, value, context);
-            if(ret == -1)
-                return ret;
-            parse("float %s = %f;", node->children[0]->value.string, node->children[1]->value.decimal);
+            if(node->childrenCount == 2) {
+                type = node->children[1]->type;
+                if(type == PLUS_NODE || type == MINUS_NODE || type == TIMES_NODE || type == DIVIDE_NODE || type == MODULE_NODE) {
+                    value.decimal = 0.0;
+                    ret = newVariable(node->children[0]->value.string, VARIABLE_FLOAT, value, context);
+                    if(ret < 0) 
+                        return ret;
+                    parse("float %s = ", node->children[0]->value.string);
+                    ret = parseNode(node->children[1], context);
+                    if(ret < 0) 
+                        return ret;
+                    parse(";\n");
+                } else {
+                    value.decimal = 0.0;
+                    
+                    ret = newVariable(node->children[0]->value.string, VARIABLE_FLOAT, value, context);
+                    if(ret < 0)
+                        return ret;
+
+                    if(node->children[1]->type == FLOAT_CONSTANT_NODE)
+                        parse("float %s = %f;\n", node->children[0]->value.string, node->children[1]->value.decimal);
+                    else
+                        parse("float %s = %d;\n", node->children[0]->value.string, node->children[1]->value.integer);
+                }
+            } else {
+                value.decimal = 0.0;
+                ret = newVariable(node->children[0]->value.string, VARIABLE_FLOAT, value, context);
+                if(ret < 0)
+                    return ret;
+                parse("float %s;\n", node->children[0]->value.string);
+            }
             break;
 
         case BOOLEAN_VARIABLE_CREATION_NODE:
-            value.boolean = node->children[1]->value.boolean;
-            ret = newVariable(node->children[0]->value.string, VARIABLE_BOOLEAN, value, context);
-            if(ret == -1)
-                return ret;
-            if(node->children[1]->value.boolean)
-                parse("boolean %s = true;", node->children[0]->value.string);
-            else
-                parse("boolean %s = false;", node->children[0]->value.string);
+            if(node->childrenCount == 2) {
+                value.boolean = node->children[1]->value.boolean;
+                ret = newVariable(node->children[0]->value.string, VARIABLE_BOOLEAN, value, context);
+                if(ret < 0)
+                    return ret;
+                if(node->children[1]->value.boolean)
+                    parse("boolean %s = true;\n", node->children[0]->value.string);
+                else
+                    parse("boolean %s = false;\n", node->children[0]->value.string);
+            } else {
+                value.boolean = false;
+                ret = newVariable(node->children[0]->value.string, VARIABLE_BOOLEAN, value, context);
+                if(ret < 0)
+                    return ret;
+                parse("boolean %s;\n", node->children[0]->value.string);
+            }
+
             break;
 
         default:
@@ -73,20 +138,31 @@ int parseVariableUpdateNode(Node * node, U3D_Context *  context) {
         return -1;
     } 
 
+    int type = node->children[1]->type;
+
     union VariableValue value;
 
-    switch (node->type) {
+    switch (node->type) {  // x = 5;
         case NUMERIC_VARIABLE_UPDATE_NODE:
-            if(node->children[1]->type == FLOAT_CONSTANT_NODE) {
+            if(type == FLOAT_CONSTANT_NODE) {
                 parse("%s = %f;\n", node->children[0]->value.string, node->children[1]->value.decimal);
-                value.decimal = node->children[1]->value.decimal;
-                return setVariableValue(node->children[0]->value.string, VARIABLE_FLOAT, value, context->first);
-            } else if(node->children[1]->type == INTEGER_CONSTANT_NODE) {
+                if(checkIfIdentifierIsUsed(node->children[0]->value.string, context->first) == 0)
+                    return -1;
+                return 0;
+            } else if(type == INTEGER_CONSTANT_NODE) {
                 parse("%s = %d;\n", node->children[0]->value.string, node->children[1]->value.integer);
-                value.integer = node->children[1]->value.integer;
-                return setVariableValue(node->children[0]->value.string, VARIABLE_INTEGER, value, context->first);
-            } else {
-                logError(FATAL_ERROR, "impossible child of NUMERIC_VARIABLE_UPDATE_NODE\n");
+                if(checkIfIdentifierIsUsed(node->children[0]->value.string, context->first) == 0)
+                    return -1;
+                return 0;            
+            } else if (type == PLUS_NODE || type == MINUS_NODE || type == TIMES_NODE || type == DIVIDE_NODE || type == MODULE_NODE) {
+                parse("%s = ", node->children[0]->value.string);
+                ret = parseNode(node->children[1], context);
+                if(ret < 0)
+                    return -1;
+                parse(";\n");
+                return 0;            
+            } else{
+                logInfo("impossible child of NUMERIC_VARIABLE_UPDATE_NODE\n");
                 return -1;
             }
             
@@ -160,8 +236,6 @@ int parseVariableUpdateNode(Node * node, U3D_Context *  context) {
                     logError(FATAL_ERROR, "variable type does not exist\n");
                     return -1;
             }
-            
-            break;
 
         default:
             break;

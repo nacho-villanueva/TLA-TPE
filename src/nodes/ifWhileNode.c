@@ -1,9 +1,8 @@
 #include <stdbool.h>
+#include <stdio.h>
 #include "ifWhileNode.h"
 #include "../utils/logger.h"
 #include "../utils/parser.h"
-
-static bool unreachable_code_detected = false;
 
 int parseIfWhileNode(Node * node, U3D_Context *  context){
     int ret = 0;
@@ -27,9 +26,15 @@ int parseIfWhileNode(Node * node, U3D_Context *  context){
        node -> children[0] -> type != NEQ_BOOLEAN_NODE &&
        node -> children[0] -> type != BOOLEAN_CONSTANT_NODE &&
        node -> children[0] -> type != INTEGER_CONSTANT_NODE &&
-       node -> children[0] -> type != FLOAT_CONSTANT_NODE
+       node -> children[0] -> type != FLOAT_CONSTANT_NODE &&
+       node -> children[0] -> type != LT_IDENTIFIER_NODE &&
+       node -> children[0] -> type != GT_IDENTIFIER_NODE &&
+       node -> children[0] -> type != LE_IDENTIFIER_NODE &&
+       node -> children[0] -> type != GE_IDENTIFIER_NODE &&
+       node -> children[0] -> type != EQ_IDENTIFIER_NODE &&
+       node -> children[0] -> type != NEQ_IDENTIFIER_NODE
        ){
-        logError(SYNTAX_ERROR, "Some type of conditional node expected\n");
+        logError(SYNTAX_ERROR, "Some type of conditional node expected in if/while\n");
         return -1;
     }
     
@@ -40,10 +45,6 @@ int parseIfWhileNode(Node * node, U3D_Context *  context){
     }
 
     ret = parseNode(node->children[0], context);
-    if(unreachable_code_detected) {
-        logError(SYNTAX_ERROR, "Unreachable code detected\n");
-        return -1;
-    }
     if(ret < 0)
         return ret;
 
@@ -61,8 +62,4 @@ int parseIfWhileNode(Node * node, U3D_Context *  context){
     parse("}\n");
 
     return ret;
-}
-
-void set_unreachable_code_detected() {
-    unreachable_code_detected = true;
 }

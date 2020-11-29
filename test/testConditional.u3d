@@ -3,19 +3,31 @@ SETTINGS
 END
 
 
-// FALTA PROBAR EL CASO:     while(10-7 < 1){4}
-
 DRAW
-int x = 2;
-int x = 2;
-//x = y;
-string z = "jejeje";
-z = "chau";
+
+int x = 1;
+
+string jajaja = "hola";
+
+float a = 5.5;
+a = 5;
+
+int aaa = 7;
+
+int y = 5.5;
+aaa = y + 2;
 
 
+if(jajaja != y + 2) {
+    int zz;
+}
 
-if( 6+1 < 5 && 6!=5 || "hola" == "chau" && 6*5 > 1+2+3) {
-    float jaja = 2.2;
+if(x < y + 6) {
+    int a7;
+}
+
+if(5 > 5) {
+    int a12;
 }
 END
 
