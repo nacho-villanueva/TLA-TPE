@@ -67,8 +67,6 @@ figure house = {
 	child: tree;
 }
 
-
-
 figure grass = {
 	type: box;
 	position: (0, 51, 0);
@@ -90,7 +88,8 @@ SETTINGS
 END
 
 DRAW
-
+	int asd = 123;
+	string asdasd = "asdasd";
 	drawFigure(grass);
 	drawFigure(street);
 	drawFigure(house);

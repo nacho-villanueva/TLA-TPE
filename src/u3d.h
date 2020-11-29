@@ -13,7 +13,7 @@ U3D * initU3D();
 
 int compileU3D(U3D * settings, Node * root);
 
-void closeU3D(U3D * settings);
+void closeU3D(U3D * settings, Node * root);
 
 FILE * getU3DInputFile(U3D * settings);
 

@@ -41,7 +41,7 @@ Figure getFigureFromTable(char *name, U3D_Context *context) {
 int addFigureToTable(Figure figure, U3D_Context *context) {
     if(!isVariableDefined(getFigureName(figure), context)) {
         context->figuresCount++;
-        context->figuresTable = reallocarray(context->figuresTable, context->figuresCount, sizeof(Figure));
+        context->figuresTable = realloc(context->figuresTable, context->figuresCount * sizeof(Figure));
         context->figuresTable[context->figuresCount - 1] = figure;
         return 0;
     }
@@ -53,7 +53,7 @@ int addFigureToTable(Figure figure, U3D_Context *context) {
 int addFunctionToTable(Function function, U3D_Context *context) {
     if(!isFunctionDefined(getFunctionName(function), context)) {
         context->functionCount++;
-        context->functionTable = reallocarray(context->functionTable, context->functionCount, sizeof(Function));
+        context->functionTable = realloc(context->functionTable, context->functionCount * sizeof(Function));
         context->functionTable[context->functionCount - 1] = function;
         return 0;
     }

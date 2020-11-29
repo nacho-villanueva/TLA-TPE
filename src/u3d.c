@@ -30,13 +30,13 @@ U3D * initU3D(int argc, char * argv[]){
 
     if(argc < 2) {
         logError(ERROR, "Invalid arguments amount.\n");
-        closeU3D(settings);
+       closeU3D(settings, NULL);;
         return NULL;
     }
 
     if(settings == NULL){
         logError(ERROR, "u3d_settings: Cannot allocate memory.\n");
-        closeU3D(settings);
+       closeU3D(settings, NULL);;
         return NULL;
     }
 
@@ -49,13 +49,13 @@ U3D * initU3D(int argc, char * argv[]){
     }
 
     char processingPath[MAX_PATH_SIZE];
-    int len = snprintf(processingPath, MAX_PATH_SIZE-1, "%s/%s", u3dre_path, PROCESSING_JAVA);
+    size_t len = snprintf(processingPath, MAX_PATH_SIZE-1, "%s/%s", u3dre_path, PROCESSING_JAVA);
     if(len > MAX_PATH_SIZE-1)
         logDebug("WARNING: Insufficient buffer size for U3DRE path.\n", U3DRE_ENV_VAR);
 
     if(access(processingPath, F_OK ) == -1){
         logError(FATAL_ERROR, "U3D Runtime Enviroment not found.\n");
-        closeU3D(settings);
+       closeU3D(settings, NULL);;
         return NULL;
     }
 
@@ -66,7 +66,7 @@ U3D * initU3D(int argc, char * argv[]){
     settings -> inputFile = fopen(inputFile, "r");
 	if (!settings -> inputFile) { 
 		logError(FATAL_ERROR, "No such input file: %s.\n", inputFile);
-        closeU3D(settings);
+       closeU3D(settings, NULL);;
 		return NULL; 
 	} 
 
@@ -76,7 +76,7 @@ U3D * initU3D(int argc, char * argv[]){
         len = strlen(outputDir);
         if(len >= MAX_PATH_SIZE - 5){
             logError(ERROR, "Output file excedes buffer limit\n");
-            closeU3D(settings);
+           closeU3D(settings, NULL);;
             return NULL;
         }
         strcpy(settings -> outputDir, outputDir);
@@ -90,7 +90,7 @@ U3D * initU3D(int argc, char * argv[]){
     if (stat(settings -> outputDir, &st) == -1) {
         if(mkdir(settings -> outputDir, 0700) < 0){
             logError(ERROR, "Could not create output directory: %s\n", settings -> outputDir);
-            closeU3D(settings);
+            closeU3D(settings, NULL);
             return NULL;
         }
     } else {
@@ -112,7 +112,7 @@ U3D * initU3D(int argc, char * argv[]){
         size_t n = snprintf(settings -> outputFile, MAX_PATH_SIZE-1, "%s/%s.pde", settings->outputDir, outputFile);
         if(n > MAX_PATH_SIZE){
             logError(ERROR, "Output file excedes buffer limit\n");
-            closeU3D(settings);
+            closeU3D(settings, NULL);
             return NULL;
         }
     } else {
@@ -120,7 +120,7 @@ U3D * initU3D(int argc, char * argv[]){
     }
 
     if(initParser(settings -> outputFile) < 0){
-        closeU3D(settings);
+        closeU3D(settings, NULL);
         return NULL;
     }
 
@@ -132,7 +132,24 @@ U3D * initU3D(int argc, char * argv[]){
     return settings;
 }
 
+void freeAll(U3D_Context * context) {
+    if(context->figuresTable != NULL) {
+        for (size_t i = 0; i < context->figuresCount; i++) {
+            freeFigure(context->figuresTable[i]);
+        }
+        free(context->figuresTable);
+    }
+    if(context->functionTable != NULL) {
+        for (size_t i = 0; i < context->functionCount; i++) {
+            freeFunction(context->functionTable[i]);
+        }
+        free(context->functionTable);
+    }
+}
+
 int compileU3D(U3D * settings, Node * root){
+
+    int ret = 0;
 
     logDebug(" ---- Parsing Nodes ----\n");
 
@@ -141,11 +158,9 @@ int compileU3D(U3D * settings, Node * root){
 
     initU3DFunctions(&context);
 
-    if(parseNode(root, &context) < 0){
-        return -1;
-    }
+    ret = parseNode(root, &context);
 
-    if(!settings->compileToSource) {
+    if(ret == 0 && !settings->compileToSource) {
         logDebug(" ---- Compiling Processing Code ----\n");
 
         char cmd[CMD_BUFFER_SIZE];
@@ -171,15 +186,23 @@ int compileU3D(U3D * settings, Node * root){
         system(cmd);
     }
 
+    //TODO: Free all Variables
+    //TODO: Free all Functions
+
+    freeAll(&context);
+
     return 0;   // TODO: manage errors
 }
 
 
-void closeU3D(U3D * settings) {
+void closeU3D(U3D * settings, Node * root) {
     if(settings != NULL){
         if(settings -> inputFile)
             fclose(settings->inputFile);
         free(settings);
+    }
+    if(root != NULL){
+        freeNode(root);
     }
 }
 

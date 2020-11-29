@@ -31,6 +31,7 @@ static const char * NODE_NAMES[] = {
     "FLOAT_VARIABLE_CREATION_NODE",
     "BOOLEAN_CONSTANT_CREATION_NODE",
 
+    "VECTOR_NODE",
     "VECTOR3_NODE",
     "VECTOR3INT_NODE",
 
@@ -111,6 +112,7 @@ typedef enum nodeType{
     FLOAT_CONSTANT_CREATION_NODE,
     BOOLEAN_CONSTANT_CREATION_NODE,
 
+    VECTOR_NODE,
     VECTOR3_NODE,           /* (1.0, 2.0, 3.0) */
     VECTOR3INT_NODE,        /* (1, 2, 3) */
 
@@ -205,6 +207,8 @@ Node * getChildNode(Node * node, NodeType type);
 int castNode(Node * node, NodeType toType);
 
 const char * getNodeTypeByCode(NodeType type);
+
+void freeNode(Node * node);
 
 /*
 Print node tree to stdout.

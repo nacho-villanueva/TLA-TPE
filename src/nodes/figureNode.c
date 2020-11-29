@@ -60,24 +60,21 @@ void setFigureAttributeFromValueNode(Figure figure, FigureAttributeType type, No
         case ATTR_SCALE:
         case ATTR_POSITION:
         case ATTR_ROTATION:
-            vn = getChildNode(valueNode, VECTOR3_NODE);
-            if(vn == NULL) {
-                vn = getChildNode(valueNode, VECTOR3INT_NODE);
-                if(vn == NULL) {
-                    logError(SYNTAX_ERROR, "Wrong attribute type in Figure: %s. Expected value type: Vector3.\n",
-                             getFigureName(figure));    //TODO: MESSAGE ERROR CAN BE IMPROVED
-                    return;
-                }
-                vn->type = VECTOR3_NODE;
-                vn->value.vector = vector3IntToVector3(vn->value.vectorInt);
+            vn = valueNode->children[0];
+            castNode(vn, VECTOR3_NODE);
+            if(vn == NULL || vn->type != VECTOR3_NODE) {
+                logError(SYNTAX_ERROR, "Wrong attribute type in Figure: %s. Expected value type: Vector3.\n",
+                         getFigureName(figure));    //TODO: MESSAGE ERROR CAN BE IMPROVED
+                return;
             }
             attrValue.vector = vn->value.vector;
             if(attrValue.vector != NULL)
                 setFigureAttribute(figure, type, attrValue);
             break;
         case ATTR_COLOR:
-            vn = getChildNode(valueNode, VECTOR3INT_NODE);
-            if(vn == NULL) {
+            vn = valueNode->children[0];
+            castNode(vn, VECTOR3INT_NODE);
+            if(vn == NULL || vn->type != VECTOR3INT_NODE) {
                 logError(SYNTAX_ERROR, "Wrong attribute type in Figure: %s. Expected value type: Vector3Int.\n",
                          getFigureName(figure));    //TODO: MESSAGE ERROR CAN BE IMPROVED
                 return;
@@ -153,7 +150,7 @@ Figure generateFigure(Node * node, U3D_Context * context) {
         return NULL;
     }
 
-    logDebug("Generating figure: %s (Type: %s)\n", name, typeValue);
+    logDebug("Generating figure: %s (Type: %s)\n", name, typeValue->value.string);
     Figure figure = newFigure(name, figureType);
     setAllAttributes(node, figure, context);
 

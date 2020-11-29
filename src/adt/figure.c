@@ -49,7 +49,12 @@ char * getFigurePath(Figure figure){
 }
 
 void freeFigure(Figure figure){
-    logInfo("WARNING: freeFigure() not implemented.\n");
+    if(figure != NULL){
+        if(figure->attributes_count > 0 && figure->attributes != NULL){
+            free(figure->attributes);
+        }
+        free(figure);
+    }
 }
 
 char *getFigureName(Figure figure) {

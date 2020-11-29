@@ -15,24 +15,26 @@
 
 
 Node* newNode(NodeType type, NodeValue value, int childrenCount, ...) {
-    Node* node = malloc(NODE_SIZE);
+    Node* node = calloc(1, NODE_SIZE);
     logDebug("Creating node %p (NodeType: %s)\n", node, NODE_NAMES[type]);
     node->type = type;
     node->value = value;
-    node->childrenCount=childrenCount;
-    node->children = malloc(NODE_SIZE * childrenCount);
+    node->childrenCount = childrenCount;
+    if(childrenCount > 0) {
+        node->children = calloc(childrenCount, sizeof(Node*));
 
-    va_list valist;
-    va_start(valist, childrenCount);
-    for (int i = 0; i < childrenCount; i++)
-        node->children[i] = va_arg(valist, Node*);
-    va_end(valist);
+        va_list valist;
+        va_start(valist, childrenCount);
+        for (int i = 0; i < childrenCount; i++)
+            node->children[i] = va_arg(valist, Node*);
+        va_end(valist);
+    }
 
     return node;
 }
 
 void addChildrenToNode(Node* node, int newChildrenCount, ...){
-    node->children = realloc(node->children, NODE_SIZE * (node->childrenCount + newChildrenCount));
+    node->children = realloc(node->children, sizeof(Node*) * (node->childrenCount + newChildrenCount));
     
     va_list valist;
     va_start(valist, newChildrenCount);
@@ -188,6 +190,22 @@ int castNode(Node * node, NodeType toType){
         return 0;
     switch (toType) {
         case VECTOR3_NODE:
+            if(node->type == VECTOR_NODE){
+                if(node->childrenCount == 3){
+                    float coords[3];
+                    for(int i = 0; i < 3; i++){
+                        if(node->children[i]->type == FLOAT_CONSTANT_NODE){
+                            coords[i] = node->children[0]->value.decimal;
+                        } else if (node->children[i]->type == INTEGER_CONSTANT_NODE){
+                            coords[i] = (float)node->children[i]->value.integer;
+                        } else {
+                            logInfo("WARNING: Impossible state reached: castNode() VECTOR3_NODE\n");
+                        }
+                    }
+                    node->value.vector = newVector3(coords[0], coords[1], coords[2]);
+                    node->type = VECTOR3_NODE;
+                }
+            }
             if(node->type == VECTOR3INT_NODE){
                 node->type = VECTOR3_NODE;
                 node->value.vector = vector3IntToVector3(node->value.vectorInt);
@@ -195,6 +213,23 @@ int castNode(Node * node, NodeType toType){
             }
             break;
         case VECTOR3INT_NODE:
+            if(node->type == VECTOR_NODE){
+                if(node->childrenCount == 3){
+                    int coords[3];
+                    for(int i = 0; i < 3; i++){
+                        if(node->children[i]->type == FLOAT_CONSTANT_NODE){
+                            coords[i] = (int)node->children[0]->value.decimal;
+                        } else if (node->children[i]->type == INTEGER_CONSTANT_NODE){
+                            coords[i] = node->children[i]->value.integer;
+                        }else {
+                            logInfo("WARNING: Impossible state reached: castNode() VECTOR3INT_NODE\n");
+                        }
+                    }
+
+                    node->value.vectorInt = newVector3Int(coords[0], coords[1], coords[2]);
+                    node->type = VECTOR3INT_NODE;
+                }
+            }
             if(node->type == VECTOR3_NODE){
                 node->type = VECTOR3INT_NODE;
                 node->value.vectorInt = vector3ToVector3Int(node->value.vector);
@@ -246,4 +281,39 @@ Node *getChildNode(Node *node, NodeType type) {
 
 const char * getNodeTypeByCode(NodeType type) {
     return NODE_NAMES[type];
+}
+
+void freeNode(Node * node) {
+    if(node != NULL){
+        if(node->children != NULL) {
+            for (int i = 0; i < node->childrenCount; i++) {
+                freeNode(node->children[i]);
+            }
+            free(node->children);
+        }
+
+        switch (node->type) {
+            case STRING_CONSTANT_NODE:
+            case FIGURE_NODE:
+            case FUNCTION_IDENTIFIER_NODE:
+            case IDENTIFIER_NODE:
+                if(node->value.string != NULL){
+                    free(node->value.string);
+                }
+                break;
+            case VECTOR3_NODE:
+                if(node->value.vector != NULL){
+                    free(node->value.vector);
+                }
+                break;
+            case VECTOR3INT_NODE:
+                if(node->value.vectorInt != NULL)
+                    free(node->value.vectorInt);
+                break;
+            default:
+                break;
+        }
+
+        free(node);
+    }
 }

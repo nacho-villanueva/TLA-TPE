@@ -132,8 +132,7 @@ value: numeric_value { $$ = newNode(VALUE_NODE, emptyNodeValue, 1, $1); }
      ;
 
 
-vector_value: OPEN FLOAT COMMA FLOAT COMMA FLOAT CLOSE { $$ = newNode(VECTOR3_NODE, (NodeValue)newVector3($2,$4,$6), 0); }
-            | OPEN INTEGER COMMA INTEGER COMMA INTEGER CLOSE { $$ = newNode(VECTOR3INT_NODE, (NodeValue)newVector3Int($2,$4,$6), 0); };
+vector_value: OPEN numeric_value COMMA numeric_value COMMA numeric_value CLOSE { $$ = newNode(VECTOR_NODE, emptyNodeValue, 3, $2, $4, $6); }
 
 // TODO: ALLOW (1, 1.2, 3)
 
@@ -317,5 +316,5 @@ int main(int argc, char * argv[]) {
 
     printTree(root);
 
-    closeU3D(u3d);
+    closeU3D(u3d, root);
 } 

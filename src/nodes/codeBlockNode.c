@@ -22,6 +22,8 @@ int parseCodeBlockNode(Node * node, U3D_Context *  context){
                     parse("%f",node->children[i]->value.decimal);
                     return 0;
 
+                case FUNCTION_CALL_NODE:
+                    /* separator */
                 case INTEGER_VARIABLE_CREATION_NODE:
                 case STRING_VARIABLE_CREATION_NODE:
                 case FLOAT_VARIABLE_CREATION_NODE:
@@ -41,7 +43,7 @@ int parseCodeBlockNode(Node * node, U3D_Context *  context){
                         return -1;
                     break;
                 default:
-                    logDebug("Impossible children type in CODE_BLOCK_NODE\n");
+                    logDebug("Impossible children type: %s in CODE_BLOCK_NODE\n", NODE_NAMES[node->children[i]->type]);
                     return -1;
             }
         }
