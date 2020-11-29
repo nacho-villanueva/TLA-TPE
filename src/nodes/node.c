@@ -1,5 +1,4 @@
 #include "node.h"
-#include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include "../utils/logger.h"
@@ -7,32 +6,35 @@
 
 #include "conditionalNode.h"
 #include "codeBlockNode.h"
-#include "codeLineNode.h"
 #include "numericExpressionNode.h"
 #include "ifWhileNode.h"
+#include "variableNode.h"
 #include "rootNodes.h"
 #include "figureNode.h"
 #include "functionCallNode.h"
 
+
 Node* newNode(NodeType type, NodeValue value, int childrenCount, ...) {
-    Node* node = malloc(NODE_SIZE);
+    Node* node = calloc(1, NODE_SIZE);
     logDebug("Creating node %p (NodeType: %s)\n", node, NODE_NAMES[type]);
     node->type = type;
     node->value = value;
-    node->childrenCount=childrenCount;
-    node->children = malloc(NODE_SIZE * childrenCount);
+    node->childrenCount = childrenCount;
+    if(childrenCount > 0) {
+        node->children = calloc(childrenCount, sizeof(Node*));
 
-    va_list valist;
-    va_start(valist, childrenCount);
-    for (int i = 0; i < childrenCount; i++)
-        node->children[i] = va_arg(valist, Node*);
-    va_end(valist);
+        va_list valist;
+        va_start(valist, childrenCount);
+        for (int i = 0; i < childrenCount; i++)
+            node->children[i] = va_arg(valist, Node*);
+        va_end(valist);
+    }
 
     return node;
 }
 
 void addChildrenToNode(Node* node, int newChildrenCount, ...){
-    node->children = realloc(node->children, NODE_SIZE * node->childrenCount + newChildrenCount);
+    node->children = realloc(node->children, sizeof(Node*) * (node->childrenCount + newChildrenCount));
     
     va_list valist;
     va_start(valist, newChildrenCount);
@@ -80,6 +82,13 @@ int parseNode(Node* node, U3D_Context * context){
     case EQ_BOOLEAN_NODE:
     case NEQ_BOOLEAN_NODE:
         return parseBooleanConditionalNode(node, context);
+    case LT_IDENTIFIER_NODE:
+    case GT_IDENTIFIER_NODE:
+    case LE_IDENTIFIER_NODE:
+    case GE_IDENTIFIER_NODE:
+    case EQ_IDENTIFIER_NODE:
+    case NEQ_IDENTIFIER_NODE:
+        return parseDoubleIdentifierConditionalNode(node, context);
     case PLUS_NODE:
     case MINUS_NODE:
     case TIMES_NODE:
@@ -99,14 +108,30 @@ int parseNode(Node* node, U3D_Context * context){
         parse("%f", node->value.decimal);
         return 0;
     case STRING_CONSTANT_NODE:
-        parse("%s", node->value.string);
+        parse("\"%s\"", node->value.string);
         return 0;
     case CODE_BLOCK_NODE:
         return parseCodeBlockNode(node, context);
-    case CODE_LINE_NODE:
-        return parseCodeLineNode(node, context);
     case FUNCTION_CALL_NODE:
         return parseFunctionCallNode(node, context);
+    case STRING_VARIABLE_CREATION_NODE:
+    case INTEGER_VARIABLE_CREATION_NODE:
+    case FLOAT_VARIABLE_CREATION_NODE:
+    case BOOLEAN_VARIABLE_CREATION_NODE:
+        return parseVariableCreationNode(node, context, false);
+    case INTEGER_CONSTANT_CREATION_NODE:
+    case STRING_CONSTANT_CREATION_NODE:
+    case FLOAT_CONSTANT_CREATION_NODE:
+    case BOOLEAN_CONSTANT_CREATION_NODE:
+        return parseVariableCreationNode(node, context, true);
+    case NUMERIC_VARIABLE_UPDATE_NODE:
+    case STRING_VARIABLE_UPDATE_NODE:
+    case BOOLEAN_VARIABLE_UPDATE_NODE:
+    case IDENTIFIER_VARIABLE_UPDATE_NODE:
+        return parseVariableUpdateNode(node, context);
+    case IDENTIFIER_NODE:
+        parse("%s", node->value.string);
+        return 0;
     default:
         logInfo("WARNING: Node parser not assigned (Type: %s)\n", NODE_NAMES[node->type]);
         return -1;
@@ -165,16 +190,50 @@ int castNode(Node * node, NodeType toType){
         return 0;
     switch (toType) {
         case VECTOR3_NODE:
+            if(node->type == VECTOR_NODE){
+                if(node->childrenCount == 3){
+                    float coords[3];
+                    for(int i = 0; i < 3; i++){
+                        if(node->children[i]->type == FLOAT_CONSTANT_NODE){
+                            coords[i] = node->children[0]->value.decimal;
+                        } else if (node->children[i]->type == INTEGER_CONSTANT_NODE){
+                            coords[i] = (float)node->children[i]->value.integer;
+                        } else {
+                            logInfo("WARNING: Impossible state reached: castNode() VECTOR3_NODE\n");
+                        }
+                    }
+                    node->value.vector = newVector3(coords[0], coords[1], coords[2]);
+                    node->type = VECTOR3_NODE;
+                }
+            }
             if(node->type == VECTOR3INT_NODE){
-                // TODO: IMPLEMENT
-                logInfo("IMPORTANT WARNING: IMPLEMENT CAST TO VECTOR3");
+                node->type = VECTOR3_NODE;
+                node->value.vector = vector3IntToVector3(node->value.vectorInt);
                 return 0;
             }
             break;
         case VECTOR3INT_NODE:
+            if(node->type == VECTOR_NODE){
+                if(node->childrenCount == 3){
+                    int coords[3];
+                    for(int i = 0; i < 3; i++){
+                        if(node->children[i]->type == FLOAT_CONSTANT_NODE){
+                            coords[i] = (int)node->children[0]->value.decimal;
+                        } else if (node->children[i]->type == INTEGER_CONSTANT_NODE){
+                            coords[i] = node->children[i]->value.integer;
+                        }else {
+                            logInfo("WARNING: Impossible state reached: castNode() VECTOR3INT_NODE\n");
+                        }
+                    }
+
+                    node->value.vectorInt = newVector3Int(coords[0], coords[1], coords[2]);
+                    node->type = VECTOR3INT_NODE;
+                }
+            }
             if(node->type == VECTOR3_NODE){
-                // TODO: IMPLEMENT
-                logInfo("IMPORTANT WARNING: IMPLEMENT CAST TO VECTOR3INT");
+                node->type = VECTOR3INT_NODE;
+                node->value.vectorInt = vector3ToVector3Int(node->value.vector);
+                logWarning("Implicit cast of Vector3Int to Vector3\n");
                 return 0;
             }
             break;
@@ -220,3 +279,41 @@ Node *getChildNode(Node *node, NodeType type) {
     return ret;
 }
 
+const char * getNodeTypeByCode(NodeType type) {
+    return NODE_NAMES[type];
+}
+
+void freeNode(Node * node) {
+    if(node != NULL){
+        if(node->children != NULL) {
+            for (int i = 0; i < node->childrenCount; i++) {
+                freeNode(node->children[i]);
+            }
+            free(node->children);
+        }
+
+        switch (node->type) {
+            case STRING_CONSTANT_NODE:
+            case FIGURE_NODE:
+            case FUNCTION_IDENTIFIER_NODE:
+            case IDENTIFIER_NODE:
+                if(node->value.string != NULL){
+                    free(node->value.string);
+                }
+                break;
+            case VECTOR3_NODE:
+                if(node->value.vector != NULL){
+                    free(node->value.vector);
+                }
+                break;
+            case VECTOR3INT_NODE:
+                if(node->value.vectorInt != NULL)
+                    free(node->value.vectorInt);
+                break;
+            default:
+                break;
+        }
+
+        free(node);
+    }
+}

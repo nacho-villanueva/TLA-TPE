@@ -17,13 +17,6 @@ struct figureCDT
     FigureAttribute * attributes;
 };
 
-void drawBox(Figure figure);
-void drawSphere(Figure figure);
-void drawPyramid(Figure figure);
-void drawComposite(Figure figure);
-void drawCustom(Figure figure);
-
-
 Figure newFigure(char * name, FigureType type){
     Figure figure = malloc(sizeof(struct figureCDT) );
     if(figure == NULL){
@@ -46,101 +39,26 @@ void setFigureAttribute(Figure figure, FigureAttributeType attr, FigureAttribute
     figure -> attributes[figure -> attributes_count-1].value = val;  
 }
 
-void parseFigure(Figure figure){
-    switch (figure -> type)
-    {
-    case FIGURE_BOX:
-        drawBox(figure);
-        break;
-    case FIGURE_SPHERE:
-        drawSphere(figure);
-        break;
-    case FIGURE_PYRAMID:
-        drawPyramid(figure);
-        break;
-    case FIGURE_COMPOSITE:
-        drawComposite(figure);
-        break;
-    case FIGURE_CUSTOM:
-        drawCustom(figure);
-        break;
-    default:
-        break;
-    }
-}
-
-Vector3 getFigurePosition(Figure figure){
+char * getFigurePath(Figure figure){
     for(size_t i = 0; i < figure->attributes_count; i++){
-        if(figure -> attributes[i].type == ATTR_POSITION){
-            return figure -> attributes[i].value.vector;
-        }
-    }
-    return NULL;
-}
-
-Vector3 getFigureScale(Figure figure){
-    for(size_t i = 0; i < figure->attributes_count; i++){
-        if(figure -> attributes[i].type == ATTR_SCALE){
-            return figure -> attributes[i].value.vector;
-        }
-    }
-    return NULL;
-}
-
-Vector3 getFigureRotation(Figure figure){
-    for(size_t i = 0; i < figure->attributes_count; i++){
-        if(figure -> attributes[i].type == ATTR_ROTATION){
-            return figure -> attributes[i].value.vector;
-        }
-    }
-    return NULL;
-}
-
-Vector3 getFigureColor(Figure figure){
-    for(size_t i = 0; i < figure->attributes_count; i++){
-        if(figure -> attributes[i].type == ATTR_COLOR){
-            return figure -> attributes[i].value.vector;
+        if(figure->attributes[i].type == ATTR_PATH){
+            return  figure->attributes[i].value.path;
         }
     }
     return NULL;
 }
 
 void freeFigure(Figure figure){
-    logInfo("WARNING: freeFigure() not implemented.\n");
+    if(figure != NULL){
+        if(figure->attributes_count > 0 && figure->attributes != NULL){
+            free(figure->attributes);
+        }
+        free(figure);
+    }
 }
 
 char *getFigureName(Figure figure) {
     return figure->name;
-}
-
-void drawBox(Figure figure){
-    Vector3 pos = getFigurePosition(figure);
-    Vector3 rot = getFigurePosition(figure);
-    Vector3 scale = getFigurePosition(figure);
-    Vector3 color = getFigureColor(figure);
-    parse("\n-- Box: %s--\n", figure -> name);
-    parse("pushMatrix();\n");
-    parse("translate(%f,%f,%f);\n", pos->x, pos->y, pos->z);
-    parse("fill(%f,%f,%f);\n", color->x, color->y, color->z);
-    parse("rotate(%f,%f,%f);\n", rot->x, rot->y, rot->z);
-    parse("box(%f,%f,%f);\n", scale->x, scale->y, scale->z);
-    parse("popMatrix();\n");
-}
-
-void drawSphere(Figure figure){
-
-}
-
-void drawPyramid(Figure figure){
-
-}
-
-void drawComposite(Figure figure){
-
-}
-
-void drawCustom(Figure figure){
-
 }
 
 const char* figureTypeToString(FigureType type){
@@ -195,6 +113,168 @@ void printAttribute(FigureAttribute attribute){
             logInfo("Attr: Invalid Attr\n");
             return;
     }
+}
+
+void parseAttribute(Figure figure, FigureAttribute attr){
+    switch (attr.type) {
+        case ATTR_SCALE:
+            parse("%s.fscale = new Vector3(%f,%f,%f);\n", figure->name, attr.value.vector->x, attr.value.vector->y, attr.value.vector->z);
+            break;
+        case ATTR_POSITION:
+            parse("%s.fposition = new Vector3(%f,%f,%f);\n", figure->name, attr.value.vector->x, attr.value.vector->y, attr.value.vector->z);
+            break;
+        case ATTR_ROTATION:
+            parse("%s.frotation = new Vector3(%f,%f,%f);\n", figure->name, attr.value.vector->x, attr.value.vector->y, attr.value.vector->z);
+            break;
+        case ATTR_COLOR:
+            parse("%s.fcolor = new Vector3Int(%d,%d,%d);\n", figure->name, attr.value.vectorInt->x, attr.value.vectorInt->y, attr.value.vectorInt->z);
+            break;
+        case ATTR_CHILD:
+            parse("%s.fchildren.add(%s);\n",figure->name, attr.value.figure->name);
+            break;
+        case ATTR_PATH:
+            parse("%s.fpath = \"%s\";\n",figure->name, attr.value.path);
+            break;
+        case ATTR_INVALID:
+            break;
+    }
+}
+
+void parseFigureAttributes(Figure figure) {
+    for(size_t i = 0; i < figure->attributes_count; i++){
+        parseAttribute(figure, figure->attributes[i]);
+    }
+    parse("\n");
+}
+
+void drawBox(Figure figure){
+    parse("pushMatrix();\n");
+    parse("translate(%s.fposition.x,%s.fposition.y,%s.fposition.z);\n", figure -> name, figure -> name, figure -> name);
+    parse("fill(%s.fcolor.x,%s.fcolor.y,%s.fcolor.z);\n", figure -> name, figure -> name, figure -> name);
+    parse("rotateX(radians(%s.frotation.x)); rotateY(radians(%s.frotation.y)); rotateZ(radians(%s.frotation.z));\n", figure -> name, figure -> name, figure -> name);
+    parse("scale(%s.fscale.x,%s.fscale.y,%s.fscale.z);\n", figure -> name, figure -> name, figure -> name);
+    parse("box(1);\n");
+    parse("popMatrix();\n\n");
+}
+
+void drawSphere(Figure figure){
+    parse("pushMatrix();\n");
+    parse("translate(%s.fposition.x,%s.fposition.y,%s.fposition.z);\n", figure -> name, figure -> name, figure -> name);
+    parse("fill(%s.fcolor.x,%s.fcolor.y,%s.fcolor.z);\n", figure -> name, figure -> name, figure -> name);
+    parse("rotateX(radians(%s.frotation.x)); rotateY(radians(%s.frotation.y)); rotateZ(radians(%s.frotation.z));\n", figure -> name, figure -> name, figure -> name);
+    parse("scale(%s.fscale.x,%s.fscale.y,%s.fscale.z);\n", figure -> name, figure -> name, figure -> name);
+    parse("sphere(1);\n");
+    parse("popMatrix();\n\n");
+}
+
+void drawPyramid(Figure figure){
+    parse("pushMatrix();\n");
+    parse("translate(%s.fposition.x,%s.fposition.y,%s.fposition.z);\n", figure -> name, figure -> name, figure -> name);
+    parse("fill(%s.fcolor.x,%s.fcolor.y,%s.fcolor.z);\n", figure -> name, figure -> name, figure -> name);
+    parse("rotateX(radians(%s.frotation.x)); rotateY(radians(%s.frotation.y)); rotateZ(radians(%s.frotation.z));\n", figure -> name, figure -> name, figure -> name);
+    parse("scale(%s.fscale.x,%s.fscale.y,%s.fscale.z);\n", figure -> name, figure -> name, figure -> name);
+    parse("beginShape(TRIANGLES);\n"
+          "\tvertex(-0.5, 0.5, -0.5);\n"
+          "\tvertex( 0.5, 0.5, -0.5);\n"
+          "\tvertex( 0, -0.5, 0);\n"
+          "\n"
+          "\tvertex( 0.5, 0.5, -0.5);\n"
+          "\tvertex( 0.5, 0.5, 0.5);\n"
+          "\tvertex( 0, -0.5, 0);\n"
+          "\n"
+          "\tvertex( 0.5, 0.5, 0.5);\n"
+          "\tvertex(-0.5, 0.5, 0.5);\n"
+          "\tvertex( 0, -0.5, 0);\n"
+          "\n"
+          "\tvertex(-0.5, 0.5, 0.5);\n"
+          "\tvertex(-0.5, 0.5, -0.5);\n"
+          "\tvertex( 0, -0.5, 0);\n"
+          "\n"
+          "\tvertex(-0.5, 0.5, 0.5);\n"
+          "\tvertex(-0.5, 0.5, -0.5);\n"
+          "\tvertex( 0.5, 0.5, -0.5);\n"
+          "\n"
+          "\tvertex(0.5, 0.5, -0.5);\n"
+          "\tvertex(-0.5, 0.5, 0.5);\n"
+          "\tvertex( 0.5, 0.5, 0.5);\n"
+          "endShape();\n");
+    parse("popMatrix();\n\n");
+}
+
+void drawComposite(Figure figure){
+    parse("pushMatrix();\n");
+    parse("translate(%s.fposition.x,%s.fposition.y,%s.fposition.z);\n", figure -> name, figure -> name, figure -> name);
+    parse("rotateX(radians(%s.frotation.x)); rotateY(radians(%s.frotation.y)); rotateZ(radians(%s.frotation.z));\n", figure -> name, figure -> name, figure -> name);
+    parse("scale(%s.fscale.x,%s.fscale.y,%s.fscale.z);\n", figure -> name, figure -> name, figure -> name);
+    for(size_t i = 0; i < figure->attributes_count; i++){
+        if(figure->attributes[i].type == ATTR_CHILD){
+            drawFigure(figure->attributes[i].value.figure);
+        }
+    }
+    parse("popMatrix();\n\n");
+}
+
+void drawCustom(Figure figure){
+    char * path = getFigurePath(figure);
+    if(path != NULL) {
+        /*parse("pushMatrix();\n");
+        parse("translate(%s.fposition.x,%s.fposition.y,%s.fposition.z);\n", figure->name, figure->name, figure->name);
+        parse("rotateX(radians(%s.frotation.x)); rotateY(radians(%s.frotation.y)); rotateZ(radians(%s.frotation.z));\n",
+              figure->name, figure->name, figure->name);
+        parse("scale(%s.fscale.x,%s.fscale.y,%s.fscale.z);\n", figure->name, figure->name, figure->name);
+        parse("loadShape(\"%s\");\n", path);
+        parse("popMatrix();\n\n");*/
+        parse("// Custom Shape not implemented\n\n");
+    } else{
+        logWarning("Custom figure %s does not contain a path. Skipping draw.\n");
+    }
+}
+
+void drawFigure(Figure figure){
+    switch (figure->type)
+    {
+        case FIGURE_BOX:
+            drawBox(figure);
+            break;
+        case FIGURE_SPHERE:
+            drawSphere(figure);
+            break;
+        case FIGURE_PYRAMID:
+            drawPyramid(figure);
+            break;
+        case FIGURE_COMPOSITE:
+            drawComposite(figure);
+            break;
+        case FIGURE_CUSTOM:
+            drawCustom(figure);
+            break;
+        default:
+            logInfo("ERROR: parseDrawFigure(): Invalid figure type %s.", figureTypeToString(figure->type));
+    }
+}
+
+void translateFigure(Figure figure, Vector3 vector3) {
+    parse("%s.fposition.x += %f;\n",figure->name, vector3->x);
+    parse("%s.fposition.y += %f;\n",figure->name, vector3->y);
+    parse("%s.fposition.z += %f;\n\n",figure->name, vector3->z);
+}
+
+void rotateFigure(Figure figure, Vector3 vector3) {
+    parse("%s.frotation.x += %f;\n",figure->name, vector3->x);
+    parse("%s.frotation.y += %f;\n",figure->name, vector3->y);
+    parse("%s.frotation.z += %f;\n\n",figure->name, vector3->z);
+}
+
+void scaleFigure(Figure figure, Vector3 vector3) {
+    parse("%s.fscale.x += %f;\n",figure->name, vector3->x);
+    parse("%s.fscale.y += %f;\n",figure->name, vector3->y);
+    parse("%s.fscale.z += %f;\n\n",figure->name, vector3->z);
+}
+
+void addColorFigure(Figure figure, Vector3Int vector3Int) {
+    parse("%s.fcolor.x += %f;\n",figure->name, vector3Int->x);
+    parse("%s.fcolor.y += %f;\n",figure->name, vector3Int->y);
+    parse("%s.fcolor.z += %f;\n\n",figure->name, vector3Int->z);
 }
 
 void printFigure(Figure figure){

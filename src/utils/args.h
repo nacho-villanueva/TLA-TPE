@@ -9,5 +9,7 @@ char * getInputFile(int argc, char * argv[]);
 
 bool getCompilationType(int argc, char * argv[]);
 
+const char * getCompilationPlatform(int argc, char **argv);
+
 
 #endif /* _ARGS_H_ */

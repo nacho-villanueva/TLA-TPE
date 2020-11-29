@@ -30,7 +30,8 @@ char * getFunctionName(Function function){
 }
 
 void freeFunction(Function function){
-    free(function);
+    if(function != NULL)
+        free(function);
 }
 
 size_t getParameterCount(Function function) {
