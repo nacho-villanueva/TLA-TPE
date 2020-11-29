@@ -179,27 +179,148 @@ void parseFiguresInit(U3D_Context * context){
     }
 }
 
-int parseDrawFigure(ParameterValue * values) {
+int parseDrawFigure(size_t paramCount, ParameterValue * values, ParameterType * types) {
+    if(paramCount != 1)
+        return -1;
+    if(types[0] != PARAMETER_FIGURE)
+        return -1;
+
     drawFigure(values[0].figure);
     return 0;
 }
 
-int parseTranslateFigure(ParameterValue *values) {
-    translateFigure(values[0].figure, values[1].vector);
-    return 0;
+int parseTranslateFigure(size_t paramCount, ParameterValue * values, ParameterType * types) {
+    if(paramCount == 2) {
+        char * figureName = getFigureName(values[0].figure);
+        parse("%s.fposition.x += %f;\n", figureName, values[1].vector->x);
+        parse("%s.fposition.y += %f;\n", figureName, values[1].vector->y);
+        parse("%s.fposition.z += %f;\n\n", figureName, values[1].vector->z);
+        return 0;
+    } else if(paramCount == 4){
+        char * figureName = getFigureName(values[0].figure);
+
+        parse("%s.fposition.x += ", figureName);
+        if(types[1] == PARAMETER_VARIABLE)
+            parse("%s;\n", values[1].string);
+        else
+            parse("%f;\n", values[1].floating);
+
+        parse("%s.fposition.y += ", figureName);
+        if(types[2] == PARAMETER_VARIABLE)
+            parse("%s;\n", values[2].string);
+        else
+            parse("%f;\n", values[2].floating);
+
+        parse("%s.fposition.z += ", figureName);
+        if(types[3] == PARAMETER_VARIABLE)
+            parse("%s;\n\n", values[3].string);
+        else
+            parse("%f;\n\n", values[3].floating);
+
+        return 0;
+    }
+
+    return -1;
 }
 
-int parseRotateFigure(ParameterValue *values) {
-    rotateFigure(values[0].figure, values[1].vector);
-    return 0;
+int parseRotateFigure(size_t paramCount, ParameterValue * values, ParameterType * types) {
+    if(paramCount == 2) {
+        char * figureName = getFigureName(values[0].figure);
+        parse("%s.frotation.x += %f;\n", figureName, values[1].vector->x);
+        parse("%s.frotation.y += %f;\n", figureName, values[1].vector->y);
+        parse("%s.frotation.z += %f;\n\n", figureName, values[1].vector->z);
+        return 0;
+    } else if(paramCount == 4){
+        char * figureName = getFigureName(values[0].figure);
+
+        parse("%s.frotation.x += ", figureName);
+        if(types[1] == PARAMETER_VARIABLE)
+            parse("%s;\n", values[1].string);
+        else
+            parse("%f;\n", values[1].floating);
+
+        parse("%s.frotation.y += ", figureName);
+        if(types[2] == PARAMETER_VARIABLE)
+            parse("%s;\n", values[2].string);
+        else
+            parse("%f;\n", values[2].floating);
+
+        parse("%s.frotation.z += ", figureName);
+        if(types[3] == PARAMETER_VARIABLE)
+            parse("%s;\n\n", values[3].string);
+        else
+            parse("%f;\n\n", values[3].floating);
+
+        return 0;
+    }
+
+    return -1;
 }
 
-int parseScaleFigure(ParameterValue *values) {
-    scaleFigure(values[0].figure, values[1].vector);
-    return 0;
+int parseScaleFigure(size_t paramCount, ParameterValue * values, ParameterType * types) {
+    if(paramCount == 2) {
+        char * figureName = getFigureName(values[0].figure);
+        parse("%s.fscale.x += %f;\n", figureName, values[1].vector->x);
+        parse("%s.fscale.y += %f;\n", figureName, values[1].vector->y);
+        parse("%s.fscale.z += %f;\n\n", figureName, values[1].vector->z);
+        return 0;
+    } else if(paramCount == 4){
+        char * figureName = getFigureName(values[0].figure);
+
+        parse("%s.fscale.x += ", figureName);
+        if(types[1] == PARAMETER_VARIABLE)
+            parse("%s;\n", values[1].string);
+        else
+            parse("%f;\n", values[1].floating);
+
+        parse("%s.fscale.y += ", figureName);
+        if(types[2] == PARAMETER_VARIABLE)
+            parse("%s;\n", values[2].string);
+        else
+            parse("%f;\n", values[2].floating);
+
+        parse("%s.fscale.z += ", figureName);
+        if(types[3] == PARAMETER_VARIABLE)
+            parse("%s;\n\n", values[3].string);
+        else
+            parse("%f;\n\n", values[3].floating);
+
+        return 0;
+    }
+
+    return -1;
 }
 
-int parseAddColorFigure(ParameterValue *values) {
-    addColorFigure(values[0].figure, values[1].vectorInt);
-    return 0;
+int parseAddColorFigure(size_t paramCount, ParameterValue * values, ParameterType * types) {
+    if(paramCount == 2) {
+        char * figureName = getFigureName(values[0].figure);
+        parse("%s.fcolor.x += %d;\n", figureName, values[1].vectorInt->x);
+        parse("%s.fcolor.y += %d;\n", figureName, values[1].vectorInt->y);
+        parse("%s.fcolor.z += %d;\n\n", figureName, values[1].vectorInt->z);
+        return 0;
+    } else if(paramCount == 4){
+        char * figureName = getFigureName(values[0].figure);
+
+        parse("%s.fcolor.x += ", figureName);
+        if(types[1] == PARAMETER_VARIABLE)
+            parse("%s;\n", values[1].string);
+        else
+            parse("%d;\n", values[1].floating);
+
+        parse("%s.fcolor.y += ", figureName);
+        if(types[2] == PARAMETER_VARIABLE)
+            parse("%s;\n", values[2].string);
+        else
+            parse("%d;\n", values[2].floating);
+
+        parse("%s.fcolor.z += ", figureName);
+        if(types[3] == PARAMETER_VARIABLE)
+            parse("%s;\n\n", values[3].string);
+        else
+            parse("%d;\n\n", values[3].floating);
+
+        return 0;
+    }
+
+    return -1;
 }

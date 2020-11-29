@@ -254,9 +254,7 @@ void drawFigure(Figure figure){
 }
 
 void translateFigure(Figure figure, Vector3 vector3) {
-    parse("%s.fposition.x += %f;\n",figure->name, vector3->x);
-    parse("%s.fposition.y += %f;\n",figure->name, vector3->y);
-    parse("%s.fposition.z += %f;\n\n",figure->name, vector3->z);
+
 }
 
 void rotateFigure(Figure figure, Vector3 vector3) {

@@ -7,12 +7,11 @@ int parseFigureNode(Node * node, U3D_Context * context);
 
 void parseFiguresInit(U3D_Context * context);
 
-int parseDrawFigure(ParameterValue * values);
-
-int parseTranslateFigure(ParameterValue * values);
-int parseRotateFigure(ParameterValue * values);
-int parseScaleFigure(ParameterValue * values);
-int parseAddColorFigure(ParameterValue * values);
+int parseDrawFigure(size_t paramCount, ParameterValue * values, ParameterType * types);
+int parseTranslateFigure(size_t paramCount, ParameterValue * values, ParameterType * types);
+int parseRotateFigure(size_t paramCount, ParameterValue * values, ParameterType * types);
+int parseScaleFigure(size_t paramCount, ParameterValue * values, ParameterType * types);
+int parseAddColorFigure(size_t paramCount, ParameterValue * values, ParameterType * types);
 
 
 

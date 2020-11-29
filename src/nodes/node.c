@@ -195,7 +195,7 @@ int castNode(Node * node, NodeType toType){
                     float coords[3];
                     for(int i = 0; i < 3; i++){
                         if(node->children[i]->type == FLOAT_CONSTANT_NODE){
-                            coords[i] = node->children[0]->value.decimal;
+                            coords[i] = node->children[i]->value.decimal;
                         } else if (node->children[i]->type == INTEGER_CONSTANT_NODE){
                             coords[i] = (float)node->children[i]->value.integer;
                         } else {
@@ -218,7 +218,7 @@ int castNode(Node * node, NodeType toType){
                     int coords[3];
                     for(int i = 0; i < 3; i++){
                         if(node->children[i]->type == FLOAT_CONSTANT_NODE){
-                            coords[i] = (int)node->children[0]->value.decimal;
+                            coords[i] = (int)node->children[i]->value.decimal;
                         } else if (node->children[i]->type == INTEGER_CONSTANT_NODE){
                             coords[i] = node->children[i]->value.integer;
                         }else {

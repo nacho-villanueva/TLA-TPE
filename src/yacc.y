@@ -110,7 +110,10 @@ declaration_list: declaration_list definition { addChildrenToNode($1, 1, $2); }
                | definition { $$ = newNode(DEFINITIONS_NODE, emptyNodeValue, 1, $1); }
                ;
 
-definition: define_figure { $$ = $1; };
+definition: define_figure { $$ = $1; }
+          | variable_creation
+          | constant_creation
+          ;
 
 define_figure: FIGURE_TYPE IDENTIFIER EQUAL BRACKET_OPEN figure_atribute_list BRACKET_CLOSE {$$ = newNode(FIGURE_NODE, (NodeValue)$2, 1, $5); }
 	         ;
@@ -133,8 +136,6 @@ value: numeric_value { $$ = newNode(VALUE_NODE, emptyNodeValue, 1, $1); }
 
 
 vector_value: OPEN numeric_value COMMA numeric_value COMMA numeric_value CLOSE { $$ = newNode(VECTOR_NODE, emptyNodeValue, 3, $2, $4, $6); }
-
-// TODO: ALLOW (1, 1.2, 3)
 
 numeric_value: INTEGER {$$ = newNode(INTEGER_CONSTANT_NODE,  (NodeValue)$1, 0); }
              | FLOAT {$$ = newNode(FLOAT_CONSTANT_NODE, (NodeValue)$1, 0); }
