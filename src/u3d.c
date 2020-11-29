@@ -145,6 +145,15 @@ void freeAll(U3D_Context * context) {
         }
         free(context->functionTable);
     }
+
+    Variable first_variable = context->first;
+    Variable aux;
+    while(first_variable != NULL) {
+        aux = first_variable->nextVariable;
+        free(first_variable->identifier);
+        free(first_variable);
+        first_variable = aux;
+    }
 }
 
 int compileU3D(U3D * settings, Node * root){
