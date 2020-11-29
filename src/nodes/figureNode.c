@@ -179,27 +179,188 @@ void parseFiguresInit(U3D_Context * context){
     }
 }
 
-int parseDrawFigure(ParameterValue * values) {
+int parseDrawFigure(size_t paramCount, ParameterValue * values, ParameterType * types) {
+    if(paramCount != 1)
+        return -1;
+    if(types[0] != PARAMETER_FIGURE)
+        return -1;
+
     drawFigure(values[0].figure);
     return 0;
 }
 
-int parseTranslateFigure(ParameterValue *values) {
-    translateFigure(values[0].figure, values[1].vector);
-    return 0;
+int parseModifyFigurePosition(size_t paramCount, ParameterValue * values, ParameterType * types, bool shouldSet){
+    char * set = shouldSet ? "" : "+";
+    if(paramCount == 2) {
+        char * figureName = getFigureName(values[0].figure);
+        parse("%s.fposition.x %s= %f;\n", figureName, set, values[1].vector->x);
+        parse("%s.fposition.y %s= %f;\n", figureName, set, values[1].vector->y);
+        parse("%s.fposition.z %s= %f;\n\n", figureName, set, values[1].vector->z);
+        return 0;
+    } else if(paramCount == 4){
+        char * figureName = getFigureName(values[0].figure);
+
+        parse("%s.fposition.x %s= ", figureName, set);
+        if(types[1] == PARAMETER_VARIABLE)
+            parse("%s;\n", values[1].string);
+        else
+            parse("%f;\n", values[1].floating);
+
+        parse("%s.fposition.y %s= ", figureName, set);
+        if(types[2] == PARAMETER_VARIABLE)
+            parse("%s;\n", values[2].string);
+        else
+            parse("%f;\n", values[2].floating);
+
+        parse("%s.fposition.z %s= ", figureName,set);
+        if(types[3] == PARAMETER_VARIABLE)
+            parse("%s;\n\n", values[3].string);
+        else
+            parse("%f;\n\n", values[3].floating);
+
+        return 0;
+    }
+
+    return -1;
 }
 
-int parseRotateFigure(ParameterValue *values) {
-    rotateFigure(values[0].figure, values[1].vector);
-    return 0;
+int parseModifyFigureRotation(size_t paramCount, ParameterValue * values, ParameterType * types, bool shouldSet){
+    char * set = shouldSet ? "" : "+";
+    if(paramCount == 2) {
+        char * figureName = getFigureName(values[0].figure);
+        parse("%s.frotation.x %s= %f;\n", figureName, set, values[1].vector->x);
+        parse("%s.frotation.y %s= %f;\n", figureName, set, values[1].vector->y);
+        parse("%s.frotation.z %s= %f;\n\n", figureName, set, values[1].vector->z);
+        return 0;
+    } else if(paramCount == 4){
+        char * figureName = getFigureName(values[0].figure);
+
+        parse("%s.frotation.x %s= ", figureName, set);
+        if(types[1] == PARAMETER_VARIABLE)
+            parse("%s;\n", values[1].string);
+        else
+            parse("%f;\n", values[1].floating);
+
+        parse("%s.frotation.y %s= ", figureName, set);
+        if(types[2] == PARAMETER_VARIABLE)
+            parse("%s;\n", values[2].string);
+        else
+            parse("%f;\n", values[2].floating);
+
+        parse("%s.frotation.z %s= ", figureName, set);
+        if(types[3] == PARAMETER_VARIABLE)
+            parse("%s;\n\n", values[3].string);
+        else
+            parse("%f;\n\n", values[3].floating);
+
+        return 0;
+    }
+
+    return -1;
 }
 
-int parseScaleFigure(ParameterValue *values) {
-    scaleFigure(values[0].figure, values[1].vector);
-    return 0;
+int parseModifyFigureScale(size_t paramCount, ParameterValue * values, ParameterType * types, bool shouldSet){
+    char * set = shouldSet ? "" : "+";
+    if(paramCount == 2) {
+        char * figureName = getFigureName(values[0].figure);
+        parse("%s.fscale.x %s= %f;\n", figureName, set, values[1].vector->x);
+        parse("%s.fscale.y %s= %f;\n", figureName, set, values[1].vector->y);
+        parse("%s.fscale.z %s= %f;\n\n", figureName, set, values[1].vector->z);
+        return 0;
+    } else if(paramCount == 4){
+        char * figureName = getFigureName(values[0].figure);
+
+        parse("%s.fscale.x %s= ", figureName, set);
+        if(types[1] == PARAMETER_VARIABLE)
+            parse("%s;\n", values[1].string);
+        else
+            parse("%f;\n", values[1].floating);
+
+        parse("%s.fscale.y %s= ", figureName, set);
+        if(types[2] == PARAMETER_VARIABLE)
+            parse("%s;\n", values[2].string);
+        else
+            parse("%f;\n", values[2].floating);
+
+        parse("%s.fscale.z %s= ", figureName, set);
+        if(types[3] == PARAMETER_VARIABLE)
+            parse("%s;\n\n", values[3].string);
+        else
+            parse("%f;\n\n", values[3].floating);
+
+        return 0;
+    }
+
+    return -1;
 }
 
-int parseAddColorFigure(ParameterValue *values) {
-    addColorFigure(values[0].figure, values[1].vectorInt);
-    return 0;
+int parseModifyFigureColor(size_t paramCount, ParameterValue * values, ParameterType * types, bool shouldSet){
+    char * set = shouldSet ? "" : "+";
+    if(paramCount == 2) {
+        char * figureName = getFigureName(values[0].figure);
+        parse("%s.fcolor.x %s= %d;\n", figureName, set, values[1].vectorInt->x);
+        parse("%s.fcolor.y %s= %d;\n", figureName, set, values[1].vectorInt->y);
+        parse("%s.fcolor.z %s= %d;\n\n", figureName, set, values[1].vectorInt->z);
+        return 0;
+    } else if(paramCount == 4){
+        char * figureName = getFigureName(values[0].figure);
+
+        parse("%s.fcolor.x %s= ", figureName, set);
+        if(types[1] == PARAMETER_VARIABLE)
+            parse("%s;\n", values[1].string);
+        else
+            parse("%d;\n", values[1].floating);
+
+        parse("%s.fcolor.y %s= ", figureName, set);
+        if(types[2] == PARAMETER_VARIABLE)
+            parse("%s;\n", values[2].string);
+        else
+            parse("%d;\n", values[2].floating);
+
+        parse("%s.fcolor.z %s= ", figureName, set);
+        if(types[3] == PARAMETER_VARIABLE)
+            parse("%s;\n\n", values[3].string);
+        else
+            parse("%d;\n\n", values[3].floating);
+
+        return 0;
+    }
+
+    return -1;
 }
+
+
+
+int parseTranslateFigure(size_t paramCount, ParameterValue * values, ParameterType * types) {
+    return parseModifyFigurePosition(paramCount, values, types, false);
+}
+
+int parseRotateFigure(size_t paramCount, ParameterValue * values, ParameterType * types) {
+    return parseModifyFigureRotation(paramCount, values, types, false);
+}
+
+int parseScaleFigure(size_t paramCount, ParameterValue * values, ParameterType * types) {
+    return parseModifyFigureScale(paramCount, values, types, false);
+}
+
+int parseAddColorFigure(size_t paramCount, ParameterValue * values, ParameterType * types) {
+    return parseModifyFigureColor(paramCount, values, types, false);
+}
+
+int parseSetFigurePosition(size_t paramCount, ParameterValue * values, ParameterType * types){
+    return parseModifyFigurePosition(paramCount, values, types, true);
+}
+
+int parseSetFigureRotation(size_t paramCount, ParameterValue * values, ParameterType * types){
+    return parseModifyFigureRotation(paramCount, values, types, true);
+}
+
+int parseSetFigureScale(size_t paramCount, ParameterValue * values, ParameterType * types){
+    return parseModifyFigureScale(paramCount, values, types, true);
+}
+
+int parseSetFigureColor(size_t paramCount, ParameterValue * values, ParameterType * types){
+    return parseModifyFigureColor(paramCount, values, types, true);
+}
+
+

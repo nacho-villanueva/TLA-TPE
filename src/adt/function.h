@@ -7,6 +7,8 @@
 
 typedef struct functionCDT * Function;
 
+typedef struct functionOverloadCDT * FunctionOverload;
+
 typedef enum{
     PARAMETER_STRING,
     PARAMETER_INT,
@@ -14,7 +16,8 @@ typedef enum{
     PARAMETER_VECTOR3,
     PARAMETER_VECTOR3INT,
     PARAMETER_BOOLEAN,
-    PARAMETER_FIGURE
+    PARAMETER_FIGURE,
+    PARAMETER_VARIABLE
 } ParameterType;
 
 typedef union {
@@ -27,15 +30,21 @@ typedef union {
     Figure figure;
 } ParameterValue;
 
-Function newFunction(char * name, void (*function_ptr), size_t paramCount, ...);
+Function newFunction(char * name);
+
+void addFunctionOverload(Function function, int (*pFunction)(size_t, ParameterValue[], ParameterType[]), size_t paramCount, ...);
 
 char * getFunctionName(Function function);
 
-size_t getParameterCount(Function function);
+size_t getFunctionOverloadCount(Function function);
 
-ParameterType * getExpectedParameters(Function function);
+FunctionOverload * getFunctionOverloads(Function function);
 
-int executeFunction(Function function, ParameterValue * parameterValueArray) ;
+size_t getParameterCount(FunctionOverload overload);
+
+ParameterType * getExpectedParameters(FunctionOverload overload);
+
+int executeFunction(FunctionOverload overload, size_t paramCount, ParameterValue * parameterValueArray, ParameterType * type) ;
 
 void freeFunction(Function function);
 

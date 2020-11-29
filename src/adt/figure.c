@@ -130,7 +130,6 @@ void parseAttribute(Figure figure, FigureAttribute attr){
             parse("%s.fcolor = new Vector3Int(%d,%d,%d);\n", figure->name, attr.value.vectorInt->x, attr.value.vectorInt->y, attr.value.vectorInt->z);
             break;
         case ATTR_CHILD:
-            parse("%s.fchildren.add(%s);\n",figure->name, attr.value.figure->name);
             break;
         case ATTR_PATH:
             parse("%s.fpath = \"%s\";\n",figure->name, attr.value.path);
@@ -254,9 +253,7 @@ void drawFigure(Figure figure){
 }
 
 void translateFigure(Figure figure, Vector3 vector3) {
-    parse("%s.fposition.x += %f;\n",figure->name, vector3->x);
-    parse("%s.fposition.y += %f;\n",figure->name, vector3->y);
-    parse("%s.fposition.z += %f;\n\n",figure->name, vector3->z);
+
 }
 
 void rotateFigure(Figure figure, Vector3 vector3) {

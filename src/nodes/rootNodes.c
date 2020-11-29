@@ -48,6 +48,8 @@ int parseRootNode(Node * node, U3D_Context *  context){
     addVector3Class();
     addFigureClass();
 
+    parse("Vector3Int _backgroundColor = new Vector3Int(201,201,201);\n\n");
+
     // Parse in order and only parses each block once, despite multiple declarations
     if(parseBlock(node, context, DEFINITIONS_NODE) < 0)
         return -1;
@@ -61,6 +63,7 @@ int parseRootNode(Node * node, U3D_Context *  context){
 
 int parseDefinitionsNode(Node * node, U3D_Context *  context){
     int ret = 0;
+
     for(int i = 0; i < node->childrenCount; i++){
         ret += parseNode(node->children[i], context);
     }
@@ -68,32 +71,33 @@ int parseDefinitionsNode(Node * node, U3D_Context *  context){
 }
 
 int parseSettingsNode(Node * node, U3D_Context * context){
-    parse("\nvoid setup() { \n");
+    parse("\nvoid settings() { \n");
+    parse("size(1280,720,P3D);\n");
+    parse("smooth(8);\n");
 
-    int ret = 0;
     for(int i = 0; i < node->childrenCount; i++){
-        ret = parseNode(node->children[i], context);
-        if(ret < 0)
-            return ret;
+        if(parseNode(node->children[i], context) < 0)
+            return -1;
     }
 
-    parse("size(1280, 720, P3D);\nnoStroke();\nsmooth(8);\n\n");
+    parse("\n}\n");
+
+
+    parse("\nvoid setup() { \n");
+    parse("noStroke();\n\n");
 
     parseFiguresInit(context);
 
     parse("\n}\n");
-    return ret;
+
+    return 0;
 }
 
 int parseDrawNode(Node * node, U3D_Context * context){
     parse("\nvoid draw() { \n");
-    parse("background(201);\n");
+    parse("background(_backgroundColor.x, _backgroundColor.y, _backgroundColor.z);\n");
     parse("lights();\n");
     parse("translate(width/2, height/2);\n\n");
-
-    /*for(size_t i = 0; i < context->figuresCount; i++){
-        parseDrawFigure(context->figuresTable[i]);
-    } // DRAW ALL FIGURES IN TABLE */
 
     int ret = 0;
     for(int i = 0; i < node->childrenCount; i++){

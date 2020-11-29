@@ -138,8 +138,6 @@ value: numeric_value { $$ = newNode(VALUE_NODE, emptyNodeValue, 1, $1); }
 
 vector_value: OPEN numeric_value COMMA numeric_value COMMA numeric_value CLOSE { $$ = newNode(VECTOR_NODE, emptyNodeValue, 3, $2, $4, $6); }
 
-// TODO: ALLOW (1, 1.2, 3)
-
 numeric_value: INTEGER {$$ = newNode(INTEGER_CONSTANT_NODE,  (NodeValue)$1, 0); }
              | FLOAT {$$ = newNode(FLOAT_CONSTANT_NODE, (NodeValue)$1, 0); }
              ; 

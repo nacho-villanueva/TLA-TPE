@@ -10,13 +10,13 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_BUILD_TYPE Debug)
 
 # Show all warning messages
-set(CMAKE_C_FLAGS "-Wall -Wextra -g -std=c11 -fsanitize=address -D_POSIX_C_SOURCE=200112L -fno-omit-frame-pointer -Wno-unused-parameter -Wno-unused-variable")
+set(CMAKE_C_FLAGS "-Wall -Wno-unused-variable -g -lm -std=c11 -fsanitize=address -D_POSIX_C_SOURCE=200809L -Wextra -fno-omit-frame-pointer -Wno-unused-parameter -Wno-unused-variable")
 
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 add_subdirectory(src)
 
-#FIND_PACKAGE(BISON REQUIRED)
+FIND_PACKAGE(BISON REQUIRED)
 SET(BisonOutput ${CMAKE_SOURCE_DIR}/y.tab.c)
 IF(BISON_FOUND)
     ADD_CUSTOM_COMMAND(
@@ -29,7 +29,7 @@ IF(BISON_FOUND)
     )
 ENDIF()
 
-#FIND_PACKAGE(FLEX REQUIRED)
+FIND_PACKAGE(FLEX REQUIRED)
 SET(FlexOutput ${CMAKE_SOURCE_DIR}/lex.yy.c)
 IF(FLEX_FOUND)
     ADD_CUSTOM_COMMAND(

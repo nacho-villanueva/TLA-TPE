@@ -1,4 +1,4 @@
-#ifndef _VARIABLE_H_
+ #ifndef _VARIABLE_H_
 #define _VARIABLE_H_
 
 #include <stdbool.h>
