@@ -3,6 +3,17 @@
 
 #include <stdbool.h>
 
+static const char * reserved_words[] = {
+    "if",
+    "float",
+    "string",
+    "figure",
+    "boolean",
+    "function",
+    "while",
+    "int"
+};
+
 enum VariableType{
     VARIABLE_STRING = 0,
     VARIABLE_INTEGER,

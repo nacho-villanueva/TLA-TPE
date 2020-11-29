@@ -73,12 +73,11 @@ Function getFunctionFromTable(char * name, U3D_Context *context) {
 
 int newVariable(char * identifier, enum VariableType type, U3D_Context * context, bool isConstant, bool isInitialized) {
 
-    // TODO: palabras reservadas
-    if(strcmp(identifier, "if") == 0 || strcmp(identifier, "float") == 0 || strcmp(identifier, "string") == 0 ||
-       strcmp(identifier, "figure") == 0 || strcmp(identifier, "boolean") == 0 || strcmp(identifier, "function") == 0 ||
-       strcmp(identifier, "while") == 0 || strcmp(identifier, "int") == 0) {
-        logError(SYNTAX_ERROR, "\"%s\" is a reserved word\n", identifier);
-        return -1;
+    for(unsigned i = 0; i < sizeof(reserved_words)/sizeof(reserved_words[0]) ; i++) {
+        if(strcmp(reserved_words[i], identifier) == 0) {
+            logError(SYNTAX_ERROR, "\"%s\" is a reserved word\n", identifier);
+            return -1; 
+        }
     }
 
     // Hay que chequear que el nombre no exista ya
