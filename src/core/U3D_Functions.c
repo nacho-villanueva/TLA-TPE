@@ -47,6 +47,7 @@ void initU3DFunctions(U3D_Context * context){
 
 int nodeToParameterValue(const char * funcName, Node * node, ParameterType expectedType, ParameterValue * value, ParameterType * type, size_t i, U3D_Context * context, bool shouldLog){
     Node * child = node -> children[0];
+    enum VariableType vartype;
     switch (expectedType) {
         case PARAMETER_STRING:
             castNode(child, STRING_CONSTANT_NODE);
@@ -87,7 +88,8 @@ int nodeToParameterValue(const char * funcName, Node * node, ParameterType expec
             }
             else if (child->type == IDENTIFIER_NODE) {
                 if (checkIfIdentifierIsUsed(child->value.string, context->first)) {
-                    if (getVariableType(child->value.string, context->first) == VARIABLE_INTEGER) {
+                    vartype = getVariableType(child->value.string, context->first);
+                    if (vartype == VARIABLE_FLOAT || vartype == VARIABLE_INTEGER) {
                         value->string = child->value.string;
                         *type = PARAMETER_VARIABLE;
                     } else {
@@ -114,7 +116,8 @@ int nodeToParameterValue(const char * funcName, Node * node, ParameterType expec
             }
             else if (child->type == IDENTIFIER_NODE) {
                 if (checkIfIdentifierIsUsed(child->value.string, context->first)) {
-                    if (getVariableType(child->value.string, context->first) == VARIABLE_FLOAT) {
+                    vartype = getVariableType(child->value.string, context->first);
+                    if (vartype == VARIABLE_FLOAT || vartype == VARIABLE_INTEGER) {
                         value->string = child->value.string;
                         *type = PARAMETER_VARIABLE;
                     } else {
