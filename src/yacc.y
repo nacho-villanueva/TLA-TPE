@@ -99,6 +99,7 @@ block_list: block_list block { addChildrenToNode(root, 1, $2); }
       ;
 
 block: SETTINGS_BLOCK END_BLOCK { $$ = newNode(SETTINGS_NODE, emptyNodeValue, 0); }
+     | SETTINGS_BLOCK function_call END_BLOCK { $$ = newNode(SETTINGS_NODE, emptyNodeValue, 1, $2); }
      | draw { $$ = $1; }
      ;
 
@@ -110,7 +111,10 @@ declaration_list: declaration_list definition { addChildrenToNode($1, 1, $2); }
                | definition { $$ = newNode(DEFINITIONS_NODE, emptyNodeValue, 1, $1); }
                ;
 
-definition: define_figure { $$ = $1; };
+definition: define_figure { $$ = $1; }
+          | variable_creation { $$ = $1; }
+          | constant_creation { $$ = $1; }
+          ;
 
 define_figure: FIGURE_TYPE IDENTIFIER EQUAL BRACKET_OPEN figure_atribute_list BRACKET_CLOSE {$$ = newNode(FIGURE_NODE, (NodeValue)$2, 1, $5); }
 	         ;

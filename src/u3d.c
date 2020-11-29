@@ -195,7 +195,6 @@ int compileU3D(U3D * settings, Node * root){
         system(cmd);
     }
 
-    //TODO: Free all Variables
     //TODO: Free all Functions
 
     freeAll(&context);
