@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "../adt/variable.h"
 #include "../nodes/figureNode.h"
 #include "../utils/logger.h"
 #include "../utils/parser.h"
@@ -110,7 +111,7 @@ void initU3DFunctions(U3D_Context * context){
 
 int nodeToParameterValue(const char * funcName, Node * node, ParameterType expectedType, ParameterValue * value, ParameterType * type, size_t i, U3D_Context * context, bool shouldLog){
     Node * child = node -> children[0];
-    enum VariableType vartype;
+    Variable var;
     switch (expectedType) {
         case PARAMETER_STRING:
             castNode(child, STRING_CONSTANT_NODE);
@@ -119,8 +120,9 @@ int nodeToParameterValue(const char * funcName, Node * node, ParameterType expec
                 *type = PARAMETER_STRING;
             }
             else if (child->type == IDENTIFIER_NODE){
-                if(checkIfIdentifierIsUsed(child->value.string, context->first)){
-                    if(getVariableType(child->value.string, context->first) == VARIABLE_STRING){
+                var = getVariable(child->value.string, context->first);
+                if(var != NULL){
+                    if(var->type == VARIABLE_STRING){
                         value->string = child->value.string;
                         *type = PARAMETER_VARIABLE;
                     } else{
@@ -150,9 +152,9 @@ int nodeToParameterValue(const char * funcName, Node * node, ParameterType expec
                 *type = PARAMETER_INT;
             }
             else if (child->type == IDENTIFIER_NODE) {
-                if (checkIfIdentifierIsUsed(child->value.string, context->first)) {
-                    vartype = getVariableType(child->value.string, context->first);
-                    if (vartype == VARIABLE_FLOAT || vartype == VARIABLE_INTEGER) {
+                var = getVariable(child->value.string, context->first);
+                if(var != NULL){
+                    if(var->type == VARIABLE_FLOAT || var->type == VARIABLE_INTEGER) {
                         value->string = child->value.string;
                         *type = PARAMETER_VARIABLE;
                     } else {
@@ -178,9 +180,9 @@ int nodeToParameterValue(const char * funcName, Node * node, ParameterType expec
                 *type = PARAMETER_FLOAT;
             }
             else if (child->type == IDENTIFIER_NODE) {
-                if (checkIfIdentifierIsUsed(child->value.string, context->first)) {
-                    vartype = getVariableType(child->value.string, context->first);
-                    if (vartype == VARIABLE_FLOAT || vartype == VARIABLE_INTEGER) {
+                var = getVariable(child->value.string, context->first);
+                if(var != NULL){
+                    if(var->type == VARIABLE_FLOAT || var->type == VARIABLE_INTEGER) {
                         value->string = child->value.string;
                         *type = PARAMETER_VARIABLE;
                     } else {
@@ -234,8 +236,9 @@ int nodeToParameterValue(const char * funcName, Node * node, ParameterType expec
                 *type = PARAMETER_BOOLEAN;
             }
             else if (child->type == IDENTIFIER_NODE) {
-                if (checkIfIdentifierIsUsed(child->value.string, context->first)) {
-                    if (getVariableType(child->value.string, context->first) == VARIABLE_BOOLEAN) {
+                var = getVariable(child->value.string, context->first);
+                if(var != NULL){
+                    if(var->type == VARIABLE_BOOLEAN) {
                         value->string = child->value.string;
                         *type = PARAMETER_VARIABLE;
                     } else {
