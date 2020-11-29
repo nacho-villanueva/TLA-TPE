@@ -17,13 +17,6 @@ struct figureCDT
     FigureAttribute * attributes;
 };
 
-void drawBox(Figure figure);
-void drawSphere(Figure figure);
-void drawPyramid(Figure figure);
-void drawComposite(Figure figure);
-void drawCustom(Figure figure);
-
-
 Figure newFigure(char * name, FigureType type){
     Figure figure = malloc(sizeof(struct figureCDT) );
     if(figure == NULL){
@@ -44,29 +37,6 @@ void setFigureAttribute(Figure figure, FigureAttributeType attr, FigureAttribute
     figure -> attributes = realloc(figure -> attributes, figure -> attributes_count * sizeof(FigureAttribute));
     figure -> attributes[figure -> attributes_count-1].type = attr;  
     figure -> attributes[figure -> attributes_count-1].value = val;  
-}
-
-void parseFigure(Figure figure){
-    switch (figure -> type)
-    {
-    case FIGURE_BOX:
-        drawBox(figure);
-        break;
-    case FIGURE_SPHERE:
-        drawSphere(figure);
-        break;
-    case FIGURE_PYRAMID:
-        drawPyramid(figure);
-        break;
-    case FIGURE_COMPOSITE:
-        drawComposite(figure);
-        break;
-    case FIGURE_CUSTOM:
-        drawCustom(figure);
-        break;
-    default:
-        break;
-    }
 }
 
 Vector3 getFigurePosition(Figure figure){
@@ -111,36 +81,6 @@ void freeFigure(Figure figure){
 
 char *getFigureName(Figure figure) {
     return figure->name;
-}
-
-void drawBox(Figure figure){
-    Vector3 pos = getFigurePosition(figure);
-    Vector3 rot = getFigurePosition(figure);
-    Vector3 scale = getFigurePosition(figure);
-    Vector3 color = getFigureColor(figure);
-    parse("\n-- Box: %s--\n", figure -> name);
-    parse("pushMatrix();\n");
-    parse("translate(%f,%f,%f);\n", pos->x, pos->y, pos->z);
-    parse("fill(%f,%f,%f);\n", color->x, color->y, color->z);
-    parse("rotate(%f,%f,%f);\n", rot->x, rot->y, rot->z);
-    parse("box(%f,%f,%f);\n", scale->x, scale->y, scale->z);
-    parse("popMatrix();\n");
-}
-
-void drawSphere(Figure figure){
-
-}
-
-void drawPyramid(Figure figure){
-
-}
-
-void drawComposite(Figure figure){
-
-}
-
-void drawCustom(Figure figure){
-
 }
 
 const char* figureTypeToString(FigureType type){
@@ -194,6 +134,95 @@ void printAttribute(FigureAttribute attribute){
         case ATTR_INVALID:
             logInfo("Attr: Invalid Attr\n");
             return;
+    }
+}
+
+void parseAttribute(Figure figure, FigureAttribute attr){
+    switch (attr.type) {
+        case ATTR_SCALE:
+            parse("%s.fscale = new Vector3(%f,%f,%f);\n", figure->name, attr.value.vector->x, attr.value.vector->y, attr.value.vector->z);
+            break;
+        case ATTR_POSITION:
+            parse("%s.fposition = new Vector3(%f,%f,%f);\n", figure->name, attr.value.vector->x, attr.value.vector->y, attr.value.vector->z);
+            break;
+        case ATTR_ROTATION:
+            parse("%s.frotation = new Vector3(%f,%f,%f);\n", figure->name, attr.value.vector->x, attr.value.vector->y, attr.value.vector->z);
+            break;
+        case ATTR_COLOR:
+            parse("%s.fcolor = new Vector3Int(%d,%d,%d);\n", figure->name, attr.value.vectorInt->x, attr.value.vectorInt->y, attr.value.vectorInt->z);
+            break;
+        case ATTR_CHILD:
+            parse("%s.fchildren.add(%s);\n",figure->name, attr.value.figure->name);
+            break;
+        case ATTR_PATH:
+            parse("%s.fpath = \"%s\";\n",figure->name, attr.value.path);
+            break;
+        case ATTR_INVALID:
+            break;
+    }
+}
+
+void parseFigureAttributes(Figure figure) {
+    for(size_t i = 0; i < figure->attributes_count; i++){
+        parseAttribute(figure, figure->attributes[i]);
+    }
+    parse("\n");
+}
+
+void drawBox(Figure figure){
+    parse("pushMatrix();\n");
+    parse("translate(%s.fposition.x,%s.fposition.y,%s.fposition.z);\n", figure -> name, figure -> name, figure -> name);
+    parse("fill(%s.fcolor.x,%s.fcolor.y,%s.fcolor.z);\n", figure -> name, figure -> name, figure -> name);
+    parse("rotateX(radians(%s.frotation.x)); rotateY(radians(%s.frotation.y)); rotateZ(radians(%s.frotation.x));\n", figure -> name, figure -> name, figure -> name);
+    parse("scale(%s.fscale.x,%s.fscale.x,%s.fscale.x);\n", figure -> name, figure -> name, figure -> name);
+    parse("box(1);\n");
+    parse("popMatrix();\n\n");
+}
+
+void drawSphere(Figure figure){
+    parse("pushMatrix();\n");
+    parse("translate(%s.fposition.x,%s.fposition.y,%s.fposition.z);\n", figure -> name, figure -> name, figure -> name);
+    parse("fill(%s.fcolor.x,%s.fcolor.y,%s.fcolor.z);\n", figure -> name, figure -> name, figure -> name);
+    parse("rotateX(radians(%s.frotation.x)); rotateY(radians(%s.frotation.y)); rotateZ(radians(%s.frotation.x));\n", figure -> name, figure -> name, figure -> name);
+    parse("scale(%s.fscale.x,%s.fscale.x,%s.fscale.x);\n", figure -> name, figure -> name, figure -> name);
+    parse("sphere(1);\n");
+    parse("popMatrix();\n\n");
+}
+
+void drawPyramid(Figure figure){
+    parse("// Pyramid not implemented\n");
+}
+
+void drawComposite(Figure figure){
+    parse("// Composite not implemented\n");
+
+}
+
+void drawCustom(Figure figure){
+    parse("// Custom not implemented\n");
+
+}
+
+void parseDrawFigure(Figure figure){
+    switch (figure -> type)
+    {
+        case FIGURE_BOX:
+            drawBox(figure);
+            break;
+        case FIGURE_SPHERE:
+            drawSphere(figure);
+            break;
+        case FIGURE_PYRAMID:
+            drawPyramid(figure);
+            break;
+        case FIGURE_COMPOSITE:
+            drawComposite(figure);
+            break;
+        case FIGURE_CUSTOM:
+            drawCustom(figure);
+            break;
+        default:
+            break;
     }
 }
 

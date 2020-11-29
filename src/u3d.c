@@ -18,6 +18,7 @@ struct u3d_settings {
     char outputFile[MAX_PATH_SIZE];
     char outputDir[MAX_PATH_SIZE];
     bool compileToSource;
+    const char * compilationPlatform;
 };
 
 U3D * initU3D(int argc, char * argv[]){
@@ -120,6 +121,7 @@ U3D * initU3D(int argc, char * argv[]){
     }
 
     settings->compileToSource = getCompilationType(argc, argv);
+    settings->compilationPlatform = getCompilationPlatform(argc, argv);
 
     logDebug(" ---- YACC ----\n");
 
@@ -145,8 +147,8 @@ int compileU3D(U3D * settings, Node * root){
         getcwd(cwd, MAX_PATH_SIZE);
 
         // Compile Processing File
-        snprintf(cmd, CMD_BUFFER_SIZE, "%s/%s --sketch=%s/%s --output=%s/%s/%s --force --export", settings->u3dre_path,
-                 PROCESSING_JAVA, cwd, settings->outputDir, cwd, settings->outputDir, "bin");
+        snprintf(cmd, CMD_BUFFER_SIZE, "%s/%s --sketch=%s/%s --output=%s/%s/%s --platform=%s --force --export", settings->u3dre_path,
+                 PROCESSING_JAVA, cwd, settings->outputDir, cwd, settings->outputDir, "bin", settings->compilationPlatform);
         logDebug("Running Processing compiler:\n");
         logDebug("SYSTEM COMMAND: %s\n", cmd);
         system(cmd);

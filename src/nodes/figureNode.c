@@ -4,24 +4,7 @@
 #include "../adt/figure.h"
 #include "figureNode.h"
 #include "../utils/logger.h"
-
-Node * getFigureAttributeValueNode(Node * node, char * attr){
-    Node * attrList = getChildNode(node, FIGURE_ATTRIBUTE_LIST_NODE);
-    if(attrList != NULL){
-        for(int i = 0; i < attrList->childrenCount; i++){
-            Node * identifier = getChildNode(attrList->children[i], IDENTIFIER_NODE);
-            if(identifier != NULL && strcasecmp(identifier->value.string, attr) == 0){
-                return getChildNode(attrList->children[i], VALUE_NODE);
-            }
-        }
-    } else{
-        logInfo( "WARNING: getFigureAttributeValueNode: Figure attribute list expected. Returning null.\n");
-        return NULL;
-    }
-
-    logInfo("WARNING: getFigureAttributeValueNode(): Impossible scenario\n");
-    return NULL;
-}
+#include "../utils/parser.h"
 
 FigureType getFigureType(char * type){
     if(strcasecmp(type, "box") == 0)
@@ -51,6 +34,24 @@ FigureAttributeType getFigureAttributeType(char * type){
     if(strcasecmp(type, "path") == 0)
         return ATTR_PATH;
     return ATTR_INVALID;
+}
+
+Node * getFigureAttributeValueNode(Node * node, char * attr){
+    Node * attrList = getChildNode(node, FIGURE_ATTRIBUTE_LIST_NODE);
+    if(attrList != NULL){
+        for(int i = 0; i < attrList->childrenCount; i++){
+            Node * identifier = getChildNode(attrList->children[i], IDENTIFIER_NODE);
+            if(identifier != NULL && strcasecmp(identifier->value.string, attr) == 0){
+                return getChildNode(attrList->children[i], VALUE_NODE);
+            }
+        }
+    } else{
+        logInfo( "WARNING: getFigureAttributeValueNode: Figure attribute list expected. Returning null.\n");
+        return NULL;
+    }
+
+    logInfo("WARNING: getFigureAttributeValueNode(): Impossible scenario\n");
+    return NULL;
 }
 
 void setFigureAttributeFromValueNode(Figure figure, FigureAttributeType type, Node * valueNode, U3D_Context * context){ // Ya ni intento por buen nombres...
@@ -140,7 +141,7 @@ Figure generateFigure(Node * node, U3D_Context * context) {
         logError(SYNTAX_ERROR, "No type defined for Figure %s\n", name);
         return NULL;
     }
-    char * typeValue = getChildNode(getFigureAttributeValueNode(node, "type"), STRING_CONSTANT_NODE)->value.string;
+    char * typeValue = getChildNode(type, STRING_CONSTANT_NODE)->value.string;
     FigureType figureType = getFigureType(typeValue);
     if(figureType == FIGURE_INVALID){
         logError(SYNTAX_ERROR, "Invalid figure type %s\n", typeValue);
@@ -162,5 +163,13 @@ int parseFigureNode(Node * node, U3D_Context * context){
         freeFigure(figure);
         return -1;
     }
+
+    parse("Figure %s = new Figure();\n", getFigureName(figure));
     return 0;
+}
+
+void parseFiguresInit(U3D_Context * context){
+    for(size_t i = 0; i < context->figuresCount; i++){
+        parseFigureAttributes(context->figuresTable[i]);
+    }
 }

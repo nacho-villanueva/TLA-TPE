@@ -1,15 +1,35 @@
 // Hello!
 
 figure cube = {
-    type: "sphere";
-    scale: (1.0,2.0,3.0);
-    position: (20,35,15);
-    color: (255,255,255);
+    type: "box";
+    scale: (200,200,200);
+    position: (400,400,-500);
+    color: (102,102,102);
+    rotation: (45, 45, 45);
 }
 
-figure comp = {
-	type: "composite";
-	child: "cube";
+figure cube2 = {
+    type: "box";
+    scale: (75,100,120);
+    position: (600,600,-250);
+    color: (102,0,102);
+    rotation: (45, 45, 45);
+}
+
+figure cube3 = {
+    type: "sphere";
+    scale: (200,200,200);
+    position: (600,200, -250);
+    color: (0,102,102);
+    rotation: (45, 45, 45);
+}
+
+figure cube4 = {
+    type: "box";
+    scale: (150,100,150);
+    position: (100,20, -100);
+    color: (102,0,102);
+    rotation: (10, 60, 90);
 }
 
 SETTINGS
