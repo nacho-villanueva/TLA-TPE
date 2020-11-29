@@ -49,7 +49,14 @@ static const char * NODE_NAMES[] = {
      /* boolean expression names */
     "EQ_BOOLEAN_NODE",
     "NEQ_BOOLEAN_NODE",
-
+    /* double identifier expression names */
+    "LT_IDENTIFIER_NODE",
+    "GT_IDENTIFIER_NODE",
+    "LE_IDENTIFIER_NODE",
+    "GE_IDENTIFIER_NODE",
+    "EQ_IDENTIFIER_NODE",
+    "NEQ_IDENTIFIER_NODE",
+    
     "WHILE_NODE",
     "IF_NODE",
 
@@ -59,6 +66,18 @@ static const char * NODE_NAMES[] = {
     "FUNCTION_IDENTIFIER_NODE",
     "FUNCTION_CALL_NODE",
     "PARAMETERS_LIST"
+
+    /*variable types*/
+    "STRING_VARIABLE_CREATION_NODE",
+    "INTEGER_VARIABLE_CREATION_NODE",
+    "FLOAT_VARIABLE_CREATION_NODE",
+    "BOOLEAN_VARIABLE_CREATION_NODE",
+
+    /* variable update types */
+    "NUMERIC_VARIABLE_UPDATE_NODE",
+    "STRING_VARIABLE_UDATE_NODE",
+    "BOOLEAN_VARIABLE_UPDATE_NODE",
+    "IDENTIFIER_VARIABLE_UPDATE_NODE"
 };
 
 typedef enum nodeType{
@@ -107,6 +126,14 @@ typedef enum nodeType{
     EQ_BOOLEAN_NODE,  /* x == y  ||  true == y */
     NEQ_BOOLEAN_NODE, /* x != y  ||  true != y */
 
+    /* double identifier expression names */
+    LT_IDENTIFIER_NODE,
+    GT_IDENTIFIER_NODE,
+    LE_IDENTIFIER_NODE,
+    GE_IDENTIFIER_NODE,
+    EQ_IDENTIFIER_NODE,
+    NEQ_IDENTIFIER_NODE,
+
     WHILE_NODE,       /* while(A){B} */
     IF_NODE,          /* if(A){B} */
     
@@ -116,20 +143,31 @@ typedef enum nodeType{
     FUNCTION_IDENTIFIER_NODE,
     FUNCTION_CALL_NODE,
     PARAMETERS_LIST
+
+    /* variable creation types */
+    STRING_VARIABLE_CREATION_NODE,  /* string a = "hola"; || string a; */
+    INTEGER_VARIABLE_CREATION_NODE, /* int a = 4;         || int a; */
+    FLOAT_VARIABLE_CREATION_NODE,   /* float a = 4.5;     || float a; */
+    BOOLEAN_VARIABLE_CREATION_NODE, /* boolean a = trueM  || boolean a; */
+
+    /* variable update types */
+    NUMERIC_VARIABLE_UPDATE_NODE,    /* a = 5  ||   a = 5.5 */
+    STRING_VARIABLE_UPDATE_NODE,     /* a = "hola" */
+    BOOLEAN_VARIABLE_UPDATE_NODE,    /* a = true */
+    IDENTIFIER_VARIABLE_UPDATE_NODE, /* a = b */
+
 } NodeType;
 
 typedef union NodeValue {
     int integer;
     float decimal;
-    //double decimal;
     char * string;
     bool boolean;
     Vector3 vector;
     Vector3Int vectorInt;
 } NodeValue;
 
-typedef struct Node
-{
+typedef struct Node{
     NodeType type;
     NodeValue value;
     int childrenCount;
@@ -155,6 +193,8 @@ int parseNode(Node* node, U3D_Context *  context);
 Node * getChildNode(Node * node, NodeType type);
 
 int castNode(Node * node, NodeType toType);
+
+const char * getNodeTypeByCode(NodeType type);
 
 /*
 Print node tree to stdout.

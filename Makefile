@@ -6,7 +6,7 @@ LEX_FLAGS =
 
 CC = gcc
 GCC_OUT = u3dc
-GCC_FLAGS = -Iutils/ -Wall -Wno-unused-variable -g
+GCC_FLAGS = -Iutils/ -Wall -Wno-unused-variable -g -lm -std=c11 -fsanitize=address -D_POSIX_C_SOURCE=200809L -Wextra -fno-omit-frame-pointer -Wno-unused-parameter -Wno-unused-variable
 
 all: build compile 
 	

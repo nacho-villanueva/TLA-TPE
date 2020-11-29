@@ -8,11 +8,15 @@
 #include "utils/logger.h"
 
 bool isVariableDefined(char * name, U3D_Context * context) {
-    for (size_t i = 0; i < context->figuresCount; ++i) {
+    for (size_t i = 0; i < context->figuresCount; ++i)
         if(strcmp(getFigureName(context->figuresTable[i]), name) == 0)
             return true;
-    }
 
+    // We check on the linked list of variables as well
+    int ret = checkIfIdentifierIsUsed(name, context->first);
+    if(ret == 1)
+        return true;
+        
     return false;
 }
 
@@ -42,7 +46,7 @@ int addFigureToTable(Figure figure, U3D_Context *context) {
         return 0;
     }
 
-    logError(ERROR, "Variable %s redefinition.\n", getFigureName(figure));
+    logError(ERROR, "Variable \"%s\" redefinition.\n", getFigureName(figure));
     return -1;
 }
 

@@ -39,6 +39,7 @@ boolean_primitive [true|false]
 "."                             return DOT;
 "int"							return INT_TYPE;
 "float"							return FLOAT_TYPE;
+"string"                        return STRING_TYPE;
 "figure"						return FIGURE_TYPE;
 "boolean"                       return BOOLEAN_TYPE;
 "while"                         return WHILE;

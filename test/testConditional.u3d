@@ -3,9 +3,31 @@ SETTINGS
 END
 
 
-// FALTA PROBAR EL CASO:     while(10-7 < 1){4}
-
 DRAW
-while(5.5 * 5 < 6/9.0){4}
+
+int x = 1;
+
+string jajaja = "hola";
+
+float a = 5.5;
+a = 5;
+
+int aaa = 7;
+
+int y = 5.5;
+aaa = y + 2;
+
+
+if(jajaja != y + 2) {
+    int zz;
+}
+
+if(x < y + 6) {
+    int a7;
+}
+
+if(5 > 5) {
+    int a12;
+}
 END
 
