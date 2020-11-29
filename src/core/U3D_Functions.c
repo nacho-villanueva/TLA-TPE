@@ -14,6 +14,34 @@ int print(size_t paramCount, ParameterValue * values, ParameterType * types){
     return 0;
 }
 
+int setWindowSize(size_t paramCount, ParameterValue * values, ParameterType * types){
+    parse("size(%d,%d, P3D);\n");
+    return 0;
+}
+
+int setBackgroundColor(size_t paramCount, ParameterValue * values, ParameterType * types) {
+    if(paramCount == 2) {
+        parse("_backgroundColor.x = %d;\n", values[0].vectorInt->x);
+        parse("_backgroundColor.y = %d;\n", values[0].vectorInt->y);
+        parse("_backgroundColor.z = %d;\n\n", values[0].vectorInt->z);
+    } else{
+        if(types[0] == PARAMETER_INT)
+            parse("_backgroundColor.x = %d;\n", values[0].integer);
+        else
+            parse("_backgroundColor.x = %s;\n", values[0].string);
+        if(types[1] == PARAMETER_INT)
+            parse("_backgroundColor.y = %d;\n", values[1].integer);
+        else
+            parse("_backgroundColor.x = %s;\n", values[1].string);
+        if(types[2] == PARAMETER_INT)
+            parse("_backgroundColor.z = %d;\n\n", values[2].integer);
+        else
+            parse("_backgroundColor.x = %s;\n", values[1].string);
+    }
+    return 0;
+}
+
+
 void initU3DFunctions(U3D_Context * context){
 
     Function func = newFunction("print");
@@ -43,6 +71,41 @@ void initU3DFunctions(U3D_Context * context){
     addFunctionToTable(func, context);
     addFunctionOverload(func,parseAddColorFigure, 2, PARAMETER_FIGURE, PARAMETER_VECTOR3INT);
     addFunctionOverload(func,parseAddColorFigure, 4, PARAMETER_FIGURE, PARAMETER_INT, PARAMETER_INT, PARAMETER_INT);
+
+    func = newFunction("setFigurePosition");
+    addFunctionToTable(func, context);
+    addFunctionOverload(func, parseSetFigurePosition, 2, PARAMETER_FIGURE, PARAMETER_VECTOR3);
+    addFunctionOverload(func, parseSetFigurePosition, 4, PARAMETER_FIGURE, PARAMETER_FLOAT, PARAMETER_FLOAT, PARAMETER_FLOAT);
+
+    func = newFunction("setFigureRotation");
+    addFunctionToTable(func, context);
+    addFunctionOverload(func, parseSetFigureRotation, 2, PARAMETER_FIGURE, PARAMETER_VECTOR3);
+    addFunctionOverload(func, parseSetFigureRotation, 4, PARAMETER_FIGURE, PARAMETER_FLOAT, PARAMETER_FLOAT, PARAMETER_FLOAT);
+
+    func = newFunction("setFigureScale");
+    addFunctionToTable(func, context);
+    addFunctionOverload(func, parseSetFigureScale, 2, PARAMETER_FIGURE, PARAMETER_VECTOR3);
+    addFunctionOverload(func, parseSetFigureScale, 4, PARAMETER_FIGURE, PARAMETER_FLOAT, PARAMETER_FLOAT, PARAMETER_FLOAT);
+
+    func = newFunction("setFigureColor");
+    addFunctionToTable(func, context);
+    addFunctionOverload(func,parseSetFigureColor, 2, PARAMETER_FIGURE, PARAMETER_VECTOR3INT);
+    addFunctionOverload(func,parseSetFigureColor, 4, PARAMETER_FIGURE, PARAMETER_INT, PARAMETER_INT, PARAMETER_INT);
+
+    func = newFunction("setWindowSize");
+    addFunctionToTable(func, context);
+    addFunctionOverload(func, setWindowSize, 2, PARAMETER_INT, PARAMETER_INT);
+
+    func = newFunction("setBackground");
+    addFunctionToTable(func, context);
+    addFunctionOverload(func, setBackgroundColor, 1, PARAMETER_VECTOR3INT);
+    addFunctionOverload(func, setBackgroundColor, 3, PARAMETER_INT, PARAMETER_INT, PARAMETER_INT);
+
+    /*func = newFunction("controlFigure");
+    addFunctionToTable(func, context);
+    addFunctionOverload(func, controlFigure, 7, PARAMETER_FIGURE,
+                        PARAMETER_STRING, PARAMETER_STRING, PARAMETER_STRING, PARAMETER_STRING, PARAMETER_STRING, PARAMETER_STRING);
+                        TODO: IMPLEMENT FUNCTION*/
 }
 
 int nodeToParameterValue(const char * funcName, Node * node, ParameterType expectedType, ParameterValue * value, ParameterType * type, size_t i, U3D_Context * context, bool shouldLog){

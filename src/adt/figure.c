@@ -130,7 +130,6 @@ void parseAttribute(Figure figure, FigureAttribute attr){
             parse("%s.fcolor = new Vector3Int(%d,%d,%d);\n", figure->name, attr.value.vectorInt->x, attr.value.vectorInt->y, attr.value.vectorInt->z);
             break;
         case ATTR_CHILD:
-            parse("%s.fchildren.add(%s);\n",figure->name, attr.value.figure->name);
             break;
         case ATTR_PATH:
             parse("%s.fpath = \"%s\";\n",figure->name, attr.value.path);
