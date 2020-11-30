@@ -33,11 +33,6 @@ int setLights(size_t paramCount, ParameterValue * values, ParameterType * types)
     return 0;
 }
 
-int setNoStroke(size_t paramCount, ParameterValue * values, ParameterType * types){
-    parse("noStroke();\n");
-    return 0;
-}
-
 int setBackgroundColor(size_t paramCount, ParameterValue * values, ParameterType * types) {
     if(paramCount == 2) {
         parse("_backgroundColor.x = %d;\n", values[0].vectorInt->x);
@@ -127,10 +122,6 @@ void initU3DFunctions(U3D_Context * context){
     func = newFunction("lights");
     addFunctionToTable(func, context);
     addFunctionOverload(func, setLights, 1, PARAMETER_INT);
-
-    func = newFunction("noStroke");
-    addFunctionToTable(func, context);
-    addFunctionOverload(func, setNoStroke, 0);
 
 
     /*func = newFunction("controlFigure");

@@ -34,7 +34,7 @@ void addFigureClass(){
     parse(
             "class Figure {\n"
             "\tVector3 fposition = new Vector3();\n"
-            "\tVector3 fscale = new Vector3(50,50,50);\n"
+            "\tVector3 fscale = new Vector3(1,1,1);\n"
             "\tVector3 frotation = new Vector3();\n"
             "\tVector3Int fcolor = new Vector3Int();\n"
             "\tString fpath;\n"
@@ -106,6 +106,7 @@ int parseSettingsListNode(Node * node, U3D_Context * context){
 int parseDrawNode(Node * node, U3D_Context * context){
     parse("\nvoid draw() { \n");
     parse("background(_backgroundColor.x, _backgroundColor.y, _backgroundColor.z);\n");
+    parse("noStroke();\n");
     parse("if(_LightsOn) lights();\n");
     parse("translate(width/2, height/2);\n\n");
 
