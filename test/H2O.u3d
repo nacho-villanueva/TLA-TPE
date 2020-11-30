@@ -1,0 +1,51 @@
+figure H1 = {
+	type: sphere;
+	scale: (75, 75, 75);
+	position: (100, 0, 0);
+	color: (255, 255, 255);
+}
+
+figure H2 = {
+	type: sphere;
+	scale: (75, 75, 75);
+	position: (0, 100, 0);
+	color: (255, 255, 255);
+}
+
+figure oxy = {
+	type: sphere;
+	scale: (100, 100, 100);
+	position: (0, 0, 0);
+	color: (230, 100, 100);
+}
+
+figure H1Pivot = {
+	type: composite;
+	child: H1;
+}
+
+figure H2Pivot = {
+	type: composite;
+	child: H2;
+}
+
+figure H2O = {
+	type: composite;
+	child: H2Pivot;
+	child: H1Pivot;
+	child: oxy;
+}
+
+SETTINGS
+
+END
+
+DRAW
+
+
+	rotateFigure(H2Pivot, 10, 2, 5);
+	rotateFigure(H1Pivot, 5, 10, 3);
+	drawFigure(H2O);
+
+
+END

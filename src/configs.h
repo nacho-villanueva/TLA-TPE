@@ -1,0 +1,12 @@
+#ifndef _CONFIGS_H_
+#define _CONFIGS_H_
+
+#define MAX_PATH_SIZE 256
+#define DEFAULT_OUTPUT_DIR "U3Dout"
+#define DEFAULT_OUTPUT_FILE DEFAULT_OUTPUT_DIR "/" DEFAULT_OUTPUT_DIR ".pde"
+
+#define CMD_BUFFER_SIZE 2048
+
+
+
+#endif /* _CONFIGS_H_ */
