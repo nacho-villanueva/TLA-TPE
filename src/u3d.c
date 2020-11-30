@@ -103,6 +103,7 @@ U3D * initU3D(int argc, char * argv[]){
         int rmret = system(cmd);
         if(rmret != 0){
             logWarning("Verify your previous build files are not opened by another program.\n");
+            logWarning("Stop execution is recommended. Re run once all file/directories are closed.\n");
         }
     }
 
@@ -167,9 +168,11 @@ int compileU3D(U3D * settings, Node * root){
 
     initU3DFunctions(&context);
 
+    printf("Parsing U3D file\n");
     ret = parseNode(root, &context);
 
     if(ret == 0 && !settings->compileToSource) {
+        printf("Compiling processing file\n");
         logDebug(" ---- Compiling Processing Code ----\n");
 
         char cmd[CMD_BUFFER_SIZE];
@@ -195,11 +198,9 @@ int compileU3D(U3D * settings, Node * root){
         system(cmd);
     }
 
-    //TODO: Free all Functions
-
     freeAll(&context);
 
-    return 0;   // TODO: manage errors
+    return 0;
 }
 
 

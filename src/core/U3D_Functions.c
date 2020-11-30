@@ -122,13 +122,6 @@ void initU3DFunctions(U3D_Context * context){
     func = newFunction("lights");
     addFunctionToTable(func, context);
     addFunctionOverload(func, setLights, 1, PARAMETER_INT);
-
-
-    /*func = newFunction("controlFigure");
-    addFunctionToTable(func, context);
-    addFunctionOverload(func, controlFigure, 7, PARAMETER_FIGURE,
-                        PARAMETER_STRING, PARAMETER_STRING, PARAMETER_STRING, PARAMETER_STRING, PARAMETER_STRING, PARAMETER_STRING);
-                        TODO: IMPLEMENT FUNCTION*/
 }
 
 int nodeToParameterValue(const char * funcName, Node * node, ParameterType expectedType, ParameterValue * value, ParameterType * type, size_t i, U3D_Context * context, bool shouldLog){

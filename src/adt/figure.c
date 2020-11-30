@@ -24,7 +24,7 @@ Figure newFigure(char * name, FigureType type){
         return NULL;
     }
 
-    figure -> name = name;      //TODO: Should strcpy?
+    figure -> name = name;
     figure -> type = type;
     figure -> attributes_count = 0;
     figure -> attributes = NULL;
