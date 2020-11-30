@@ -76,6 +76,7 @@
 %type<node> variable_creation
 %type<node> variable_value_update
 %type<node> constant_creation
+%type<node> settings settings_list
 
 
 %left AND
@@ -98,10 +99,18 @@ block_list: block_list block { addChildrenToNode(root, 1, $2); }
       | block { addChildrenToNode(root, 1, $1); }
       ;
 
-block: SETTINGS_BLOCK END_BLOCK { $$ = newNode(SETTINGS_NODE, emptyNodeValue, 0); }
-     | SETTINGS_BLOCK function_call END_BLOCK { $$ = newNode(SETTINGS_NODE, emptyNodeValue, 1, $2); }
+block: settings { $$ = $1; }
      | draw { $$ = $1; }
      ;
+
+settings: SETTINGS_BLOCK END_BLOCK { $$ = newNode(SETTINGS_NODE, emptyNodeValue, 0); }
+        | SETTINGS_BLOCK settings_list END_BLOCK { $$ = newNode(SETTINGS_NODE, emptyNodeValue, 1, $2); }
+        ;
+
+settings_list: settings_list function_call { addChildrenToNode($1, 1, $2); }
+             | function_call {$$ = newNode(SETTINGS_LIST_NODE, emptyNodeValue, 1, $1); }
+             ;
+
 
 draw: DRAW_BLOCK END_BLOCK { $$ = newNode(DRAW_NODE, emptyNodeValue, 0); }
     | DRAW_BLOCK code_block END_BLOCK { $$ = newNode(DRAW_NODE, emptyNodeValue, 1, $2); };
@@ -151,7 +160,6 @@ boolean_value: BOOLEAN { $$ = newNode(BOOLEAN_CONSTANT_NODE, (NodeValue)$1, 0); 
 code_block: code_block code_line { addChildrenToNode($1, 1, $2); }
            | code_line {$$ = newNode(CODE_BLOCK_NODE, emptyNodeValue, 1, $1); }
            ;
-           
 
 code_line: if { $$ = $1; }
            | while { $$ = $1; }

@@ -16,7 +16,25 @@ int print(size_t paramCount, ParameterValue * values, ParameterType * types){
 }
 
 int setWindowSize(size_t paramCount, ParameterValue * values, ParameterType * types){
-    parse("size(%d,%d, P3D);\n");
+    parse("size(%d,%d, P3D);\n", values[0].integer, values[1].integer);
+    return 0;
+}
+
+int setColorModeToHSB(size_t paramCount, ParameterValue * values, ParameterType * types){
+    parse("_ColorModeHSB = true;\n");
+    return 0;
+}
+
+int setLights(size_t paramCount, ParameterValue * values, ParameterType * types){
+    if(types[0] == PARAMETER_INT)
+        parse("_LightsOn = %s;\n", values[0].integer == 0? "false" : "true");
+    else
+        parse("_LightsOn = true;\n");
+    return 0;
+}
+
+int setNoStroke(size_t paramCount, ParameterValue * values, ParameterType * types){
+    parse("noStroke();\n");
     return 0;
 }
 
@@ -101,6 +119,19 @@ void initU3DFunctions(U3D_Context * context){
     addFunctionToTable(func, context);
     addFunctionOverload(func, setBackgroundColor, 1, PARAMETER_VECTOR3INT);
     addFunctionOverload(func, setBackgroundColor, 3, PARAMETER_INT, PARAMETER_INT, PARAMETER_INT);
+
+    func = newFunction("setColorModeToHSB");
+    addFunctionToTable(func, context);
+    addFunctionOverload(func, setColorModeToHSB, 0);
+
+    func = newFunction("lights");
+    addFunctionToTable(func, context);
+    addFunctionOverload(func, setLights, 1, PARAMETER_INT);
+
+    func = newFunction("noStroke");
+    addFunctionToTable(func, context);
+    addFunctionOverload(func, setNoStroke, 0);
+
 
     /*func = newFunction("controlFigure");
     addFunctionToTable(func, context);

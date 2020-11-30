@@ -1,0 +1,75 @@
+figure danceFloorA = {
+	type: box;
+	color: (180, 75, 75);
+	position: (-100, 25, 400);
+	scale: (175,10,200);
+}
+figure danceFloorB = {
+	type: box;
+	color: (180, 75, 75);
+	position: (100, 25, 400);
+	scale: (175,10,200);
+}
+figure dancerB = {
+	type: sphere;
+	position: (100, -40, 400);
+	color: (0, 0, 100);
+	scale: (25,25,25);
+}
+figure dancerA = {
+	type: sphere;
+	position: (-100, -10, 400);
+	color: (0, 0, 100);
+	scale: (25,25,25);
+}
+
+int danceFloorAHue = 0;
+int danceFloorBHue = 180;
+
+int dancerAY = -10;
+int dancerAVel = -1;
+int dancerBY = -40;
+int dancerBVel = 2;
+
+SETTINGS
+	lights(1);
+	setColorModeToHSB();
+	setBackground(10,10,10);
+END
+
+DRAW
+	noStroke();
+
+	danceFloorAHue = danceFloorAHue + 1;
+	danceFloorAHue = danceFloorAHue % 360;
+	danceFloorBHue = danceFloorBHue + 1;
+	danceFloorBHue = danceFloorBHue % 360;
+
+	setFigureColor(danceFloorA, danceFloorAHue, 75, 75);
+	setFigureColor(danceFloorB, danceFloorBHue, 75, 75);
+	drawFigure(danceFloorA);
+	drawFigure(danceFloorB);
+
+
+	translateFigure(dancerA, 0, dancerAVel, 0);
+	translateFigure(dancerB, 0, dancerBVel, 0);
+	drawFigure(dancerA);
+	drawFigure(dancerB);
+
+	dancerAY = dancerAY + dancerAVel;
+	dancerBY = dancerBY + dancerBVel;
+
+	if(dancerBY > -10){
+		dancerBVel = -2;
+	}
+	if(dancerBY < -40){
+		dancerBVel = 2;
+	}
+	if(dancerAY > -10){
+		dancerAVel = -1;
+	}
+	if(dancerAY < -40){
+		dancerAVel = 1;
+	}
+
+END

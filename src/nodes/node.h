@@ -11,6 +11,8 @@ static const char * NODE_NAMES[] = {
     "SETTINGS_NODE",
     "DRAW_NODE",
 
+    "SETTINGS_LIST_NODE",
+
     "PLUS_NODE",
     "MINUS_NODE",
     "TIMES_NODE",
@@ -91,6 +93,8 @@ typedef enum nodeType{
     DEFINITIONS_NODE,
     SETTINGS_NODE,
     DRAW_NODE,
+
+    SETTINGS_LIST_NODE,
 
     PLUS_NODE,   /* x + y || 5 + y */
     MINUS_NODE,  /* x - y || 5 - y */

@@ -34,7 +34,7 @@ void addFigureClass(){
     parse(
             "class Figure {\n"
             "\tVector3 fposition = new Vector3();\n"
-            "\tVector3 fscale = new Vector3(1,1,1);\n"
+            "\tVector3 fscale = new Vector3(50,50,50);\n"
             "\tVector3 frotation = new Vector3();\n"
             "\tVector3Int fcolor = new Vector3Int();\n"
             "\tString fpath;\n"
@@ -48,7 +48,9 @@ int parseRootNode(Node * node, U3D_Context *  context){
     addVector3Class();
     addFigureClass();
 
-    parse("Vector3Int _backgroundColor = new Vector3Int(201,201,201);\n\n");
+    parse("Vector3Int _backgroundColor = new Vector3Int(201,201,201);\n");
+    parse("boolean _ColorModeHSB = false;\n");
+    parse("boolean _LightsOn = true;\n\n");
 
     // Parse in order and only parses each block once, despite multiple declarations
     if(parseBlock(node, context, DEFINITIONS_NODE) < 0)
@@ -75,16 +77,16 @@ int parseSettingsNode(Node * node, U3D_Context * context){
     parse("size(1280,720,P3D);\n");
     parse("smooth(8);\n");
 
-    for(int i = 0; i < node->childrenCount; i++){
-        if(parseNode(node->children[i], context) < 0)
-            return -1;
+    Node * child = getChildNode(node, SETTINGS_LIST_NODE);
+    if(child != NULL){
+        parseNode(child, context);
     }
 
     parse("\n}\n");
 
 
     parse("\nvoid setup() { \n");
-    parse("noStroke();\n\n");
+    parse("if(_ColorModeHSB) colorMode(HSB, 360, 100, 100);\n\n");
 
     parseFiguresInit(context);
 
@@ -93,10 +95,18 @@ int parseSettingsNode(Node * node, U3D_Context * context){
     return 0;
 }
 
+int parseSettingsListNode(Node * node, U3D_Context * context){
+    for(int i = 0; i < node->childrenCount; i++){
+        if(parseNode(node->children[i], context) < 0)
+            return -1;
+    }
+    return 0;
+}
+
 int parseDrawNode(Node * node, U3D_Context * context){
     parse("\nvoid draw() { \n");
     parse("background(_backgroundColor.x, _backgroundColor.y, _backgroundColor.z);\n");
-    parse("lights();\n");
+    parse("if(_LightsOn) lights();\n");
     parse("translate(width/2, height/2);\n\n");
 
     int ret = 0;

@@ -9,6 +9,8 @@ int parseDefinitionsNode(Node * node, U3D_Context * context);
 
 int parseSettingsNode(Node * node, U3D_Context * context);
 
+int parseSettingsListNode(Node * node, U3D_Context * context);
+
 int parseDrawNode(Node * node, U3D_Context * context);
 
 

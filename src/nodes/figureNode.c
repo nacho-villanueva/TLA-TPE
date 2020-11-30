@@ -309,19 +309,19 @@ int parseModifyFigureColor(size_t paramCount, ParameterValue * values, Parameter
         if(types[1] == PARAMETER_VARIABLE)
             parse("%s;\n", values[1].string);
         else
-            parse("%d;\n", values[1].floating);
+            parse("%d;\n", values[1].integer);
 
         parse("%s.fcolor.y %s= ", figureName, set);
         if(types[2] == PARAMETER_VARIABLE)
             parse("%s;\n", values[2].string);
         else
-            parse("%d;\n", values[2].floating);
+            parse("%d;\n", values[2].integer);
 
         parse("%s.fcolor.z %s= ", figureName, set);
         if(types[3] == PARAMETER_VARIABLE)
             parse("%s;\n\n", values[3].string);
         else
-            parse("%d;\n\n", values[3].floating);
+            parse("%d;\n\n", values[3].integer);
 
         return 0;
     }

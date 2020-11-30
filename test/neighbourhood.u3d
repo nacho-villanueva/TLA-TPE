@@ -153,6 +153,7 @@ SETTINGS
 END
 
 DRAW
+	noStroke();
 	setBackground(186, 245, 239);
 
 	drawFigure(grass);

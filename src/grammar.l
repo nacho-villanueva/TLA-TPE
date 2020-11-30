@@ -23,6 +23,7 @@ boolean_primitive [true|false]
 "-"								return MINUS;
 "*"								return TIMES;
 "/"							    return DIVIDE;
+"%"                             return MODULE;
 "&&"                            return AND;
 "||"                            return OR;
 "<"                             return LT;

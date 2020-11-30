@@ -59,6 +59,8 @@ int parseNode(Node* node, U3D_Context * context){
         return parseDefinitionsNode(node, context);
     case SETTINGS_NODE:
         return parseSettingsNode(node, context);
+    case SETTINGS_LIST_NODE:
+        return parseSettingsListNode(node, context);
     case DRAW_NODE:
         return parseDrawNode(node, context);
     case FIGURE_NODE:
