@@ -38,8 +38,6 @@ SETTINGS
 END
 
 DRAW
-	noStroke();
-
 	danceFloorAHue = danceFloorAHue + 1;
 	danceFloorAHue = danceFloorAHue % 360;
 	danceFloorBHue = danceFloorBHue + 1;

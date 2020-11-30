@@ -1,0 +1,47 @@
+figure ground = {
+	type: box;
+	position: (0, 130, 0);
+	scale: (1500.0, 0.1, 1500.0);
+	color: (100, 100, 200);
+}
+
+figure ball = {
+	type: sphere;
+	position: (-100, -50, 0);
+	scale: (50, 50, 50);
+	color: (230, 100, 100);
+}
+
+float posX = 250.0;
+float posY = -200.0;
+float speedX = 10.0;
+float speedY = 0.0;
+float accY = 1.0;
+
+
+SETTINGS
+
+END
+
+DRAW
+
+	posY = posY + speedY;
+	posX = posX + speedX;
+	speedY = speedY + accY;
+
+	if(speedY > 40){
+		speedY = 10.0;
+	}
+
+	if(posY > 100){
+		speedY = speedY * -0.99;
+	}
+	if(posX > 350 || posX < -350){
+		speedX = speedX * -1;
+	}
+
+	setFigurePosition(ball, posX, posY, 0);
+	drawFigure(ball);
+	drawFigure(ground);
+
+END
