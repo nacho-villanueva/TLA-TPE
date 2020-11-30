@@ -1,0 +1,59 @@
+figure sph = {
+	type: sphere;
+	scale: (50,50,50);
+	color: (250,75,75);
+}
+
+figure pyr = {
+	type: pyramid;
+	scale: (10,10,10);
+	color: (180, 75, 75);
+}
+
+int size = 50;
+int scaling = -1;
+int hue;
+
+SETTINGS
+	lights(1);
+	setColorModeToHSB();
+END
+
+DRAW
+
+	hue = hue + 1;
+	hue = hue % 360;
+	setBackground(hue,40,40);
+
+	size = size + scaling;
+
+	if(size <= 10 || size >= 50){
+		scaling = scaling * -1;
+	}
+
+	scaleFigure(sph, scaling, scaling, scaling);
+	setFigurePosition(sph, 50, 0, 0);
+	drawFigure(sph);
+	setFigurePosition(sph, -50, 0, 0);
+	drawFigure(sph);
+	setFigurePosition(sph, 0, 50, 0);
+	drawFigure(sph);
+	setFigurePosition(sph, 0, -50, 0);
+	drawFigure(sph);
+
+	int inverse = scaling * -3;
+	scaleFigure(pyr, inverse, inverse, inverse);
+	setFigureRotation(pyr, 0, 0, 90);
+	setFigurePosition(pyr, 20, 0, 0);
+	drawFigure(pyr);
+	setFigureRotation(pyr, 0, 0, -90);
+	setFigurePosition(pyr, -20, 0, 0);
+	drawFigure(pyr);
+	setFigureRotation(pyr, 0, 0, 180);
+	setFigurePosition(pyr, 0, 20, 0);
+	drawFigure(pyr);
+	setFigureRotation(pyr, 0, 0, 0);
+	setFigurePosition(pyr, 0, -20, 0);
+	drawFigure(pyr);
+
+END
